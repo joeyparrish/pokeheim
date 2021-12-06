@@ -160,8 +160,11 @@ namespace Pokeheim {
     [PokeheimInit]
     public static void Init() {
       Overlay = AssetUtils.LoadSpriteFromFile(OverlayPath, centerPivot);
+
+#if DEBUG
       CommandManager.Instance.AddConsoleCommand(new SpawnAll());
       CommandManager.Instance.AddConsoleCommand(new SetMountPoint());
+#endif
 
       // If this runs OnVanillaPrefabsAvailable, some (Deer, Neck, Skeleton)
       // will be missing Character components.  Waiting until the scene starts
@@ -554,6 +557,7 @@ namespace Pokeheim {
       return catchRate;
     }
 
+#if DEBUG
     class SpawnAll : ConsoleCommand {
       public override string Name => "spawnall";
       public override string Help => "[opt_faction] - Spawn all of a certain faction, or one of everything in the game.";
@@ -611,5 +615,6 @@ namespace Pokeheim {
         metadata.mountPointPath = mountPointPath;
       }
     }
+#endif
   }
 }
