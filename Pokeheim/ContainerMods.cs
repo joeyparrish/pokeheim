@@ -117,7 +117,6 @@ namespace Pokeheim {
       },
     };
 
-    // FIXME: Some containers are not updating correctly in a fresh world
     [PokeheimInit]
     public static void Init() {
       Utils.OnFirstSceneStart += delegate {
