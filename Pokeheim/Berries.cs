@@ -116,6 +116,9 @@ namespace Pokeheim {
             EatEffect.Create(Monster.transform.position, Quaternion.identity);
             Monster.m_animator.SetTrigger("consume");
             BerryCatchRate = Target.BerryCatchRate();
+            // Drop the target after eating, so the monster must wait another
+            // interval before eating another berry from a stack.
+            Target = null;
           }
         }
 
