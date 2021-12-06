@@ -22,16 +22,16 @@ using Jotunn.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
+// FIXME: Missing debug info in console... bepinex configs?
+// TODO: Evaluate console commands
 // TODO: Tool to enumerate missing translations
 // TODO: Track when all bosses are caught, decide what victory looks like
-// TODO: Consider what to do with Haldor
 // TODO: Replace main menu music, good morning music
 namespace Pokeheim {
   // Attach this attribute to static Init() methods of various parts of the mod.
@@ -149,11 +149,8 @@ namespace Pokeheim {
     class TweakLoadingScreen_Patch {
       static void Postfix(Hud __instance) {
         // Update the tips.
-        __instance.m_loadingTips.Clear();
-        var NumTips = 13;
-        foreach (int index in Enumerable.Range(1, NumTips)) {
-          __instance.m_loadingTips.Add($"$pokeheim_loadscreen_tip{index:D2}");
-        }
+        __instance.m_loadingTips = Utils.GenerateStringList(
+            "$pokeheim_loadscreen_tip", 13);
 
         // Update the logo.
         var image = __instance.m_loadingProgress.transform.Find("text_darken/Logotype");

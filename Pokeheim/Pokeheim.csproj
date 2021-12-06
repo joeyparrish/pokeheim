@@ -91,6 +91,7 @@
     <Compile Include="Debugging.cs" />
     <Compile Include="DressUp.cs" />
     <Compile Include="Fainting.cs" />
+    <Compile Include="Giovanni.cs" />
     <Compile Include="Inhabitant.cs" />
     <Compile Include="InventoryMods.cs" />
     <Compile Include="MonsterMetadata.cs" />

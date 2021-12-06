@@ -20,7 +20,9 @@ using HarmonyLib;
 using Jotunn.Managers;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using UnityEngine;
 
 using Logger = Jotunn.Logger;
@@ -277,6 +279,14 @@ namespace Pokeheim {
 
     public static string PathFrom(this Transform child, GameObject ancestor) {
       return child.PathFrom(ancestor.transform);
+    }
+
+    public static List<string> GenerateStringList(string prefix, int num) {
+      var list = new List<String>();
+      foreach (int index in Enumerable.Range(1, num)) {
+        list.Add(prefix + index.ToString("d2"));
+      }
+      return list;
     }
   }
 }
