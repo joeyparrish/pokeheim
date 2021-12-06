@@ -27,7 +27,6 @@ using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
-// FIXME: Wardrobe doesn't appear in fresh world!
 namespace Pokeheim {
   public static class DressUp {
     private const string WardrobeName = "Wardrobe";
