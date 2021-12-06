@@ -236,7 +236,6 @@ namespace Pokeheim {
       DoReturn(player, monsters, out name, out numReturned);
     }
 
-    // FIXME: Gets fainted monsters without a ragdoll
     private static void DoReturn<T>(
         Player player, IEnumerable<T> monsters,
         out string name, out int numReturned) {
@@ -274,7 +273,9 @@ namespace Pokeheim {
       var playerName = player.GetPlayerName();
       var allCharacters = Character.GetAllCharacters();
       foreach (var character in allCharacters) {
-        if (!character.IsPlayer() && character.GetOwnerName() == playerName) {
+        if (!character.IsPlayer() && character.GetOwnerName() == playerName &&
+            // Fainted monsters don't return automatically when called.
+            !character.IsFainted()) {
           yield return character;
         }
       }
