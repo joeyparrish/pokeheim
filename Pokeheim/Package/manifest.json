@@ -1,0 +1,11 @@
+﻿{
+    "name": "Pokeheim",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/joeyparrish/Pokeheim",
+    "description": "Pokéheim - A Valheim mod about catching 'em all.",
+    "dependencies": [
+        "denikson-BepInExPack_Valheim-5.4.1601",
+        "ValheimModding-Jotunn-2.4.1",
+        "RagnarokHCRP-MountUp-3.2.6"
+    ]
+}

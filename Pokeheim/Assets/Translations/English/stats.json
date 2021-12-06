@@ -1,0 +1,21 @@
+{
+  "pokedex": "Pokédex",
+  "pokedex_percent_complete": "Pokédex ($1% complete)",
+  "stats_name": "Name",
+  "stats_name_none": "(none)",
+  "stats_species": "Species",
+  "stats_type": "Type",
+  "stats_level": "Level",
+  "stats_hp": "HP",
+  "stats_damage": "Damage",
+  "stats_catch_rate": "Catch rate",
+  "stats_caught": "Caught",
+  "faction_forest": "Forest",
+  "faction_undead": "Undead",
+  "faction_demon": "Demon",
+  "faction_mountain": "Mountain",
+  "faction_ocean": "Ocean",
+  "faction_plains": "Plains",
+  "faction_boss": "Boss",
+  "faction_unknown": "???"
+}

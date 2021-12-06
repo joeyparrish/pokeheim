@@ -1,0 +1,9 @@
+{
+  "pokedex": "Pokédex",
+  "stats_name": "Name",
+  "stats_type": "Typ",
+  "stats_level": "Level",
+  "stats_hp": "KP",
+  "stats_damage": "Schaden",
+  "stats_caught": "Gefangen"
+}

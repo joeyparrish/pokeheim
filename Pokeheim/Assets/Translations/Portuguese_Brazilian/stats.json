@@ -1,0 +1,9 @@
+{
+  "pokedex": "Pokédex",
+  "stats_name": "Nome",
+  "stats_type": "Tipo",
+  "stats_level": "Nível",
+  "stats_hp": "PS",
+  "stats_damage": "Dano",
+  "stats_caught": "Pegos"
+}

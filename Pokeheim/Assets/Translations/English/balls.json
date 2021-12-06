@@ -1,0 +1,15 @@
+{
+  "item_pokeball": "Poké Ball",
+  "item_pokeball_description": "A crude device for catching wild creatures and bending them to your will.  Kids love 'em!",
+  "item_greatball": "Great Ball",
+  "item_greatball_description": "A high-performance ball with a higher catch rate than a standard Poké Ball.  Those deer will finally learn to <color=yellow>obey!</color>",
+  "item_ultraball": "Ultra Ball",
+  "item_ultraball_description": "An ultra-performance ball with a higher catch rate than a Great Ball.  Show those monsters once and for all that only <color=yellow>you</color> have free will!",
+  "skill_monster_training": "Monster Training",
+  "skill_monster_training_description": "Have you caught 'em all yet?  ...  Well?  <color=yellow>Have you?</color>",
+  "monster_return": "$1, return!",
+  "monster_return_all": "Everyone, return!",
+  "monster_caught": "Gotcha!",
+  "monster_release": "$1, I choose you!",
+  "monster_recall_key_description": "Recall Monsters:"
+}

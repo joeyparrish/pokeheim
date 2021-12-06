@@ -1,0 +1,77 @@
+{
+  "professor_raven": "Professor Raven",
+  "pokeheim_raven_attention_1": "Hey there, Trainer!",
+  "pokeheim_raven_attention_2": "Hey there, Trainer!",
+  "pokeheim_raven_attention_3": "Hey, Trainer!  Over here!",
+  "pokeheim_raven_attention_4": "Hey, Trainer!  Over here!",
+  "pokeheim_raven_attention_5": "Trainer, we need to talk.",
+  "pokeheim_raven_attention_6": "Trainer, we need to talk.",
+  "pokeheim_raven_attention_7": "Oi!",
+  "pokeheim_raven_bored_1": "I need to get back to Valhalla.",
+  "pokeheim_raven_bored_2": "*yawn*",
+  "pokeheim_raven_bored_3": "*burp*",
+
+  "pokeheim_tutorial_temple1_label": "Prof. Raven: Welcome!",
+  "pokeheim_tutorial_temple1_topic": "Welcome to Pokéheim, Trainer!",
+  "pokeheim_tutorial_temple1_text": "I am <color=yellow>Professor Raven</color>, sent here to guide you in your journey.\n\nEventually, Odin wants you to hunt down and capture at least five giant badass monsters.  He may add more later, but for now, it's just five.\n\nAnd no screwing around building houses here!  Odin says you need to focus.",
+
+  "pokeheim_tutorial_temple2_label": "Prof. Raven: Catching Monsters",
+  "pokeheim_tutorial_temple2_topic": "Catching Monsters",
+  "pokeheim_tutorial_temple2_text": "To catch the big monsters, you'll have to learn to construct Pokéballs and capture lesser monsters to do the fighting for you.  After all, having lesser beings do the dangerous work is what Odin is all about.\n\n<color=yellow>Check out this weird stone</color> to learn where the first big monster is.  It's some kind of deer, but it's way worse than it sounds.",
+
+  "pokeheim_tutorial_inventory_label": "Prof. Raven: Pokéballs",
+  "pokeheim_tutorial_inventory_topic": "Crafting Pokéballs",
+  "pokeheim_tutorial_inventory_text": "<color=yellow>Pokéballs</color> are basically just magic, painted rocks.  You can make them out of ordinary rocks and things like berries.  It shouldn't be too hard.  Just pick up things and see what you can build.\n\nWe've simplified this a lot for you.",
+
+  "pokeheim_tutorial_food_label": "Prof. Raven: Food",
+  "pokeheim_tutorial_food_topic": "Food",
+  "pokeheim_tutorial_food_text": "In Pokéheim, you don't usually need to eat.  You can if you're bored, though.\n\nBut <color=yellow>berries</color> are particularly useful.  You can make Pokéballs with berries, and berries distract wild monsters.  Throw some down if you're trying to catch an especially difficult monster.",
+
+  "pokeheim_tutorial_cold_label": "Prof. Raven: Night",
+  "pokeheim_tutorial_cold_topic": "It's A Rough Neighborhood At Night",
+  "pokeheim_tutorial_cold_text": "Pokéheim is pretty terrible after dark.  There are a lot more monsters out at night, and tougher ones, too.  But maybe that's an <color=yellow>opportunity</color>?  It's up to you.\n\nIf you have a <color=yellow>hammer</color>, somehow that can be used to build a <color=yellow>camp fire</color>.  Not sure how it works.  Odin's sloppy that way.  If you want to, you can camp out for the night.  Or you can just keep working by torchlight.  Torches never run out in Pokéheim!",
+
+  "pokeheim_tutorial_encumbered_label": "Prof. Raven: Encumbered",
+  "pokeheim_tutorial_encumbered_topic": "Encumbered",
+  "pokeheim_tutorial_encumbered_text": "Whoa, Trainer!  You were carrying way too much!\n\nHere's a tip: Pokéballs are much lighter than regular stones.  It will always be more efficient to craft those as quickly as you can, instead of carrying around raw materials.  Besides, there just aren't that many things to craft in Pokéheim.",
+
+  "pokeheim_tutorial_death_label": "Prof. Raven: Death",
+  "pokeheim_tutorial_death_topic": "You Died!",
+  "pokeheim_tutorial_death_text": "Ke...ke...ke...ke...ke...ke!\n\nJust kidding.  You died, though.  That's messed up.  It is not easy for a Trainer to die in Pokéheim to die.  Monsters can't hurt you at all.  We really tried to make this place safe for you.  Just be more careful, okay?",
+
+  "pokeheim_tutorial_hammer_label": "Prof. Raven: Hammer",
+  "pokeheim_tutorial_hammer_topic": "You Made a Hammer!",
+  "pokeheim_tutorial_hammer_text": "With that hammer, you can make a camp fire.  That's all.  It doesn't make much sense, I know.  Odin is not what you might call \"detail-oriented\".\n\nBesides, you're in Pokéheim to catch monsters, not build houses!  Trainers are 10-year-old <color=yellow>vagrants</color>, the way Odin intended.",
+
+  "pokeheim_tutorial_pickaxe_label": "Prof. Raven: Pickaxe",
+  "pokeheim_tutorial_pickaxe_topic": "You Made a Pickaxe!",
+  "pokeheim_tutorial_pickaxe_text": "... I don't want to know where you got those antlers.\n\nBut now you can dig up more rocks to make Pokéballs!",
+
+  "pokeheim_tutorial_Eikthyr_label": "Prof. Raven: Raiding",
+  "pokeheim_tutorial_Eikthyr_topic": "Raiding",
+  "pokeheim_tutorial_Eikthyr_text": "This is the location of a boss monster.  You're going to need a pretty sizeable army of monsters to defeat a boss.\n\nAre you sure you're ready?",
+
+  "pokeheim_tutorial_boss_trophy_label": "Prof. Raven: ...",
+  "pokeheim_tutorial_boss_trophy_topic": "...",
+  "pokeheim_tutorial_boss_trophy_text": "My god, <color=yellow>WHAT HAVE YOU DONE?</color>\n\nI said to <color=yellow>catch</color> the bosses, not beat them to death!\n\nYou know what, Odin brought you here to catch monsters, but it turns out that the only <color=yellow>true</color> monster here is <color=yellow>YOU</color>!",
+
+  "pokeheim_tutorial_pokeball_label": "Prof. Raven: Pokéballs",
+  "pokeheim_tutorial_pokeball_topic": "Pokéballs",
+  "pokeheim_tutorial_pokeball_text": "Nice job, Trainer!  You made your first Pokéball!  You can throw those at monsters to try to catch them.  If you fail, it's still a rock, so it'll do some damage.  The more damage you do, the easier a monster becomes to catch.  If it faints first, you'll catch it for sure.\n\nOh, but one word of advice: don't punch something you want to keep.  Punching your monsters is the only way to truly kill them.  They die of <color=yellow>sadness</color>.",
+
+  "pokeheim_tutorial_caught_label": "Prof. Raven: Catching Monsters",
+  "pokeheim_tutorial_caught_topic": "Catching Monsters",
+  "pokeheim_tutorial_caught_text": "Hey, Trainer!  I see you've caught your first monster.  Way to go!  Don't worry.  They're fine in the ball somehow.  Don't think about it.\n\nJust pick up the ball you caught them in, and throw it again to release them.  After that, they will fight <color=yellow>for you</color>.\n\nCatch them again if you want to carry them around more easily, or press [<color=yellow><b>$KEY_Hide</b></color>] to recall them all at once.",
+
+  "pokeheim_tutorial_caught_boss_label": "Prof. Raven: Catching Bosses",
+  "pokeheim_tutorial_caught_boss_topic": "Catching Bosses",
+  "pokeheim_tutorial_caught_boss_text": "Congratulations, Trainer!  You caught a boss!  Now check out that weird stone with the red engravings, and it will mark the next boss on the map for you.\n\nCatch 'em all!  Seriously.  You <color=yellow>gotta</color>.",
+
+  "pokeheim_tutorial_catch_raven_label": "Prof. Raven: What Is Your Problem?!",
+  "pokeheim_tutorial_catch_raven_topic": "What Is Your Problem?!",
+  "pokeheim_tutorial_catch_raven_text": "Dammit, Trainer!  Do I look like a monster to you?\n\nDon't be a jerk, or I'll change your character's name to Gary.\n\nI mean it.",
+
+  "pokeheim_tutorial_catch_raven_2_label": "Prof. Raven: You Forced My Hand",
+  "pokeheim_tutorial_catch_raven_2_topic": "You Forced My Hand",
+  "pokeheim_tutorial_catch_raven_2_text": "I <color=yellow>WARNED</color> you, Trainer!  That's it.\n\nYour name is Gary now.\n\nJerk."
+}

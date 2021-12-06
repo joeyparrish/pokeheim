@@ -1,0 +1,9 @@
+{
+  "pokedex": "図鑑",
+  "stats_name": "名前",
+  "stats_type": "タイプ",
+  "stats_level": "レベル",
+  "stats_hp": "HP",
+  "stats_damage": "ダメージ量",
+  "stats_caught": "捕まえた数"
+}

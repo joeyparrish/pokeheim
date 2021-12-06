@@ -1,0 +1,9 @@
+{
+  "pokedex": "โปเกเด็กซ์",
+  "stats_name": "ชื่อ",
+  "stats_type": "ประเภท",
+  "stats_level": "เลเวล",
+  "stats_hp": "HP",
+  "stats_damage": "แดเมจ",
+  "stats_caught": "จับ"
+}
