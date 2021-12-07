@@ -30,7 +30,6 @@ using Logger = Jotunn.Logger;
 
 // FIXME: Missing debug info in console... bepinex configs changed?
 // FIXME: spawn Dragon, faintall, killall - crashes, exception not printed
-// TODO: Tool to enumerate missing translations
 // TODO: Track when all bosses are caught, decide what victory looks like
 // TODO: Replace main menu music, good morning music
 namespace Pokeheim {
