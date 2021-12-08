@@ -15,31 +15,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Get Valheim version id
       - name: Get Valheim version id
         id: valheimversion
         run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
 
-      # Install NuGet
-      - name: Install NuGet
-        uses: nuget/setup-nuget@v1
+      # Work around stupid permissions issues that only show up in the
+      # nektos/act environment I use for local testing of workflows.
+      - run: sudo bash -c 'chown -R $SUDO_USER .'
 
-      # Install NuGet dependencies
+      - name: Get build commands
+        run: scripts/install-linux-tools.sh
+
       - name: Install NuGet dependencies
         run: |
           nuget restore Pokeheim.sln
 
-      # Get build commands
-      - name: Get build commands
-        run: |
-          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-          echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-          wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-          sudo dpkg --force-confnew -i packages-microsoft-prod.deb
-          sudo apt-get -y update || true
-          sudo apt-get -y install mono-roslyn mono-complete mono-dbg msbuild unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
-
-      # Cache the results
       - name: Cache Valheim
         id: cachevalheim
         uses: actions/cache@v2
@@ -51,8 +41,7 @@ jobs:
         if: steps.cachevalheim.outputs.cache-hit != 'true'
         uses: CyberAndrii/setup-steamcmd@v1
 
-      # Prepare Valheim dependencies
-      - name: Prepare Valheim dependencies
+      - name: Prepare Pokeheim dependencies
         if: steps.cachevalheim.outputs.cache-hit != 'true'
         run: |
           wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1601/"
@@ -60,6 +49,8 @@ jobs:
           steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
+          wget -O mountup.zip "https://valheim.thunderstore.io/package/download/RagnarokHCRP/MountUp/3.2.6/"
+          unzip mountup.zip -d ~/VHINSTALL/BepInEx/plugins/
 
       - name: Remove old DLLs
         run: |
@@ -70,23 +61,14 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
-      # Build DLLs
       - name: Build solution
         run: |
           msbuild Pokeheim.sln /p:Configuration=Debug
           msbuild Pokeheim.sln /p:Configuration=Release
 
-      # Build zip
       - name: Build zip
-        run: |
-          rm -rf staging
-          mkdir -p staging/Pokeheim/Assets
-          cp Pokeheim/bin/Release/Pokeheim.dll staging/Pokeheim/
-          cp Pokeheim/Assets/*.png staging/Pokeheim/Assets/
-          cp -a Pokeheim/Assets/Translations staging/Pokeheim/Assets/
-          (cd staging; zip -r9 ../Pokeheim.zip Pokeheim/)
+        run: scripts/build-package-zip.sh
 
-      # Upload artifact
       - uses: actions/upload-artifact@v2
         with:
           name: Pokeheim.zip
