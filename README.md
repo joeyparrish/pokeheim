@@ -2,6 +2,8 @@
 
 ![Pokeheim Logo](Pokeheim/Assets/Logo.png)
 
+Source: https://github.com/joeyparrish/Pokeheim
+
 > Long ago, the Allfather Odin created the monsters.  No one knows why he did
 > this.  Some say he was probably drunk.  Others say he was **surely** drunk.
 > In any case, he eventually crammed them all onto a weird, flat planet and
