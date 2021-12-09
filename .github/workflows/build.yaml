@@ -61,6 +61,14 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
+      - name: Set plugin version number
+        run: |
+          version=$(cat Pokeheim/Package/manifest.json | jq -r .version_number)
+          sed -e "s/PluginVersion = .*;/PluginVersion = \"$version\";/" \
+              -i Pokeheim/Pokeheim.cs
+          sed -e "s/(\"0.0.0.0\")/(\"$version.0\")/" \
+              -i Pokeheim/Properties/AssemblyInfo.cs
+
       - name: Build solution
         run: |
           msbuild Pokeheim.sln /p:Configuration=Debug

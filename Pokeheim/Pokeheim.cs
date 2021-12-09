@@ -33,32 +33,6 @@ using Logger = Jotunn.Logger;
 // TODO: Track when all bosses are caught, decide what victory looks like
 // TODO: Replace main menu music, good morning music
 namespace Pokeheim {
-  // Attach this attribute to static Init() methods of various parts of the mod.
-  // These will be invoked once from the plugin's Awake() method.
-  [AttributeUsage(AttributeTargets.Method)]
-  public class PokeheimInit : Attribute {
-    // Find all methods marked with this attribute.
-    public static List<MethodInfo> GetMethods() {
-      var assembly = Assembly.GetExecutingAssembly();
-      var allTypes = assembly.GetTypes();
-
-      var initMethods = new List<MethodInfo>();
-      foreach (var type in allTypes) {
-        var publicStaticMethods =
-            type.GetMethods(BindingFlags.Static | BindingFlags.Public);
-
-        foreach (var method in publicStaticMethods) {
-          var initAttributes =
-              method.GetCustomAttributes(typeof(PokeheimInit), false);
-          if (initAttributes.Length > 0) {
-            initMethods.Add(method);
-          }
-        }
-      }
-      return initMethods;
-    }
-  }
-
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
   // We are incompatible with AllTameable.
   [BepInIncompatibility("meldurson.valheim.AllTameable")]
@@ -72,7 +46,7 @@ namespace Pokeheim {
     // BepInEx' plugin metadata
     public const string PluginGUID = "com.pokeheim";
     public const string PluginName = "Pokeheim";
-    public const string PluginVersion = "1.0.0";
+    public const string PluginVersion = "0.0.0";
 
     internal static readonly Harmony harmony = new Harmony(PluginName);
     private static string PokeheimIntroFlag = "com.pokeheim.IntroSeen";
@@ -170,6 +144,32 @@ namespace Pokeheim {
           Jotunn.Logger.LogError($"Failed to disable MountUp config in menu: {ex}");
         }
       }
+    }
+  }
+
+  // Attach this attribute to static Init() methods of various parts of the mod.
+  // These will be invoked once from the plugin's Awake() method.
+  [AttributeUsage(AttributeTargets.Method)]
+  public class PokeheimInit : Attribute {
+    // Find all methods marked with this attribute.
+    public static List<MethodInfo> GetMethods() {
+      var assembly = Assembly.GetExecutingAssembly();
+      var allTypes = assembly.GetTypes();
+
+      var initMethods = new List<MethodInfo>();
+      foreach (var type in allTypes) {
+        var publicStaticMethods =
+            type.GetMethods(BindingFlags.Static | BindingFlags.Public);
+
+        foreach (var method in publicStaticMethods) {
+          var initAttributes =
+              method.GetCustomAttributes(typeof(PokeheimInit), false);
+          if (initAttributes.Length > 0) {
+            initMethods.Add(method);
+          }
+        }
+      }
+      return initMethods;
     }
   }
 }
