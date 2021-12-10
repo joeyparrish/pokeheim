@@ -30,8 +30,9 @@ using Logger = Jotunn.Logger;
 
 // FIXME: Missing debug info in console... bepinex configs changed?
 // FIXME: spawn Dragon, faintall, killall - crashes, exception not printed
-// TODO: Track when all bosses are caught, decide what victory looks like
-// TODO: Replace main menu music, good morning music
+// FIXME: Track when all bosses are caught, decide what victory looks like
+// FIXME: Replace main menu music, good morning music
+// FIXME: Update testing script
 namespace Pokeheim {
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
   // We are incompatible with AllTameable.
