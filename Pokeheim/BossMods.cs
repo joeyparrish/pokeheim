@@ -176,7 +176,7 @@ namespace Pokeheim {
         var monster = __instance;
         Character attacker = hit.GetAttacker();
 
-        if (monster.IsBoss() && attacker.IsPlayer()) {
+        if (monster.IsBoss() && attacker != null && attacker.IsPlayer()) {
           hit.ApplyModifier(0f);
         }
       }
