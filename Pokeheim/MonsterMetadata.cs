@@ -364,6 +364,8 @@ namespace Pokeheim {
           return;
         }
 
+        // NOTE: There is an exception here in the log, but it gets swallowed
+        // somewhere, somehow.  The Instantiate call completes successfully.
         var clone = UnityEngine.Object.Instantiate(prefab);
         var humanoid = clone.GetComponent<Humanoid>();
         var enemy = ItemDrop.ItemData.AiTarget.Enemy;
