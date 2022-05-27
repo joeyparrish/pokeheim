@@ -9,6 +9,8 @@ set -e
 BUILD_TYPE=Debug
 PLUGINS_PATH=~/.local/share/Steam/steamapps/common/Valheim/BepInEx/plugins
 
+cd "$(dirname "$0")"/..
+
 msbuild Pokeheim.sln /p:Configuration=Release
 msbuild Pokeheim.sln /p:Configuration=Debug
 
