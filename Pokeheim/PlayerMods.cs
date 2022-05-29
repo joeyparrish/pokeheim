@@ -176,12 +176,6 @@ namespace Pokeheim {
       static void Postfix(InventoryGui __instance) {
         var gui = __instance;
 
-        foreach (var component in gui.m_trophiesPanel.GetComponentsInChildren<Text>()) {
-          if (component.name == "topic") {
-            component.text = Localization.instance.Localize("$pokedex");
-          }
-        }
-
         foreach (var component in gui.m_inventoryRoot.GetComponentsInChildren<UITooltip>()) {
           if (component.name == "Trophies") {
             component.Set("", "$pokedex");
@@ -200,19 +194,39 @@ namespace Pokeheim {
       }
     }
 
-    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Show))]
+    [HarmonyPatch]
     class ShowPokedexCompletion_Patch {
-      static void Postfix(InventoryGui __instance) {
-        var gui = __instance;
+      // Annoyingly, the Pokedex title must be patched on every Update().
+      // This was not true in November 2021, and it is true in May of 2022.
+      // Somehow, Valheim changed in a way that makes this kind of patch more
+      // difficult.  To keep the extra Update() code lightweight, we precompute
+      // the Text element and the actual text we set inside it.
+      static Text PokedexTitleElement;
+      static string PokedexTitleText;
 
+      [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnOpenTrophies))]
+      [HarmonyPostfix]
+      static void ComputePokedexTitleElementAndText(InventoryGui __instance) {
+        var pokedexPercent = MonsterMetadata.PokedexFullness() * 100f;
+        Logger.LogInfo($"Pokedex {pokedexPercent:n1}% complete");
+        PokedexTitleText = Localization.instance.Localize(
+            "$pokedex_percent_complete", pokedexPercent.ToString("n1"));
+
+        var gui = __instance;
         foreach (var component in gui.m_trophiesPanel.GetComponentsInChildren<Text>()) {
           if (component.name == "topic") {
-            var pokedexPercent = MonsterMetadata.PokedexFullness() * 100f;
-            Logger.LogInfo($"Pokedex {pokedexPercent:n1}% complete");
-            component.text = Localization.instance.Localize(
-                "$pokedex_percent_complete", pokedexPercent.ToString("n1"));
+            PokedexTitleElement = component;
           }
         }
+      }
+
+      [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Update))]
+      [HarmonyPostfix]
+      static void PatchPokedexTitle(InventoryGui __instance) {
+        if (!InventoryGui.IsVisible()) {
+          return;
+        }
+        PokedexTitleElement.text = PokedexTitleText;
       }
     }
 
