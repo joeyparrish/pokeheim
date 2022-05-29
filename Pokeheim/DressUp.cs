@@ -58,63 +58,30 @@ namespace Pokeheim {
           Type = ItemDrop.ItemData.ItemType.Helmet,
           Options = new List<ClothingData.Option> {
             new ClothingData.Option("$wardrobe_helmet_none", null),
-            new ClothingData.Option("$item_helmet_leather", "HelmetLeather"),
-            new ClothingData.Option("$item_helmet_trollleather", "HelmetTrollLeather"),
-            new ClothingData.Option("$item_helmet_bronze", "HelmetBronze"),
-            new ClothingData.Option("$item_helmet_iron", "HelmetIron"),
-            new ClothingData.Option("$item_helmet_drake", "HelmetDrake"),
-            new ClothingData.Option("$item_helmet_padded", "HelmetPadded"),
-            new ClothingData.Option("$item_helmet_root", "HelmetRoot"),
-            new ClothingData.Option("$item_helmet_dverger", "HelmetDverger"),
-            new ClothingData.Option("$item_helmet_odin", "HelmetOdin"),
-            new ClothingData.Option("$item_helmet_yule", "HelmetYule"),
           },
         }},
         {"$wardrobe_category_cape", new ClothingData {
           Type = ItemDrop.ItemData.ItemType.Shoulder,
           Options = new List<ClothingData.Option> {
             new ClothingData.Option("$wardrobe_cape_none", null),
-            new ClothingData.Option("$item_cape_deerhide", "CapeDeerHide"),
-            new ClothingData.Option("$item_cape_trollhide", "CapeTrollHide"),
-            new ClothingData.Option("$item_cape_wolf", "CapeWolf"),
-            new ClothingData.Option("$item_cape_lox", "CapeLox"),
-            new ClothingData.Option("$item_cape_linen", "CapeLinen"),
-            new ClothingData.Option("$item_cape_odin", "CapeOdin"),
           },
         }},
         {"$wardrobe_category_shirt", new ClothingData {
           Type = ItemDrop.ItemData.ItemType.Chest,
           Options = new List<ClothingData.Option> {
             new ClothingData.Option("$wardrobe_shirt_none", null),
-            new ClothingData.Option("$item_chest_rags", "ArmorRagsChest"),
-            new ClothingData.Option("$item_chest_leather", "ArmorLeatherChest"),
-            new ClothingData.Option("$item_chest_trollleather", "ArmorTrollLeatherChest"),
-            new ClothingData.Option("$item_chest_bronze", "ArmorBronzeChest"),
-            new ClothingData.Option("$item_chest_iron", "ArmorIronChest"),
-            new ClothingData.Option("$item_chest_wolf", "ArmorWolfChest"),
-            new ClothingData.Option("$item_chest_pcuirass", "ArmorPaddedCuirass"),
-            new ClothingData.Option("$item_chest_root", "ArmorRootChest"),
           },
         }},
         {"$wardrobe_category_pants", new ClothingData {
           Type = ItemDrop.ItemData.ItemType.Legs,
           Options = new List<ClothingData.Option> {
             new ClothingData.Option("$wardrobe_pants_none", null),
-            new ClothingData.Option("$item_legs_rags", "ArmorRagsLegs"),
-            new ClothingData.Option("$item_legs_leather", "ArmorLeatherLegs"),
-            new ClothingData.Option("$item_legs_trollleather", "ArmorTrollLeatherLegs"),
-            new ClothingData.Option("$item_legs_bronze", "ArmorBronzeLegs"),
-            new ClothingData.Option("$item_legs_iron", "ArmorIronLegs"),
-            new ClothingData.Option("$item_legs_wolf", "ArmorWolfLegs"),
-            new ClothingData.Option("$item_legs_pgreaves", "ArmorPaddedGreaves"),
-            new ClothingData.Option("$item_legs_root", "ArmorRootLegs"),
           },
         }},
         {"$wardrobe_category_belt", new ClothingData {
           Type = ItemDrop.ItemData.ItemType.Utility,
           Options = new List<ClothingData.Option> {
             new ClothingData.Option("$wardrobe_belt_none", null),
-            new ClothingData.Option("$item_beltstrength", "BeltStrength"),
           },
         }},
       };
@@ -126,6 +93,64 @@ namespace Pokeheim {
         "$wardrobe_category_pants",
         "$wardrobe_category_belt",
       };
+
+      public static void RegisterAllClothing() {
+        // Seek out all clothing and build the menus dynamically.
+        foreach (var prefab in ZNetScene.instance.m_prefabs) {
+          RegisterIfClothing(prefab);
+        }
+      }
+
+      private static void RegisterIfClothing(GameObject prefab) {
+        var itemDrop = prefab.GetComponent<ItemDrop>();
+        if (itemDrop == null) {
+          // Not an item.
+          return;
+        }
+			  if (itemDrop.m_itemData.m_shared.m_icons.Length == 0) {
+          // Not a thing we can hold in inventory.
+          // These can be "items" that are only held by monsters.  For example,
+          // the prefabs "GoblinArmband" and "GoblinBrute_ExecutionerCap".
+          return;
+        }
+        if (prefab.name == "CapeTest") {
+          // This meets all our criteria, but it's garbage.  It's a buggy
+          // version of the CapeLinen model AFAICT.
+          return;
+        }
+
+        var itemName = itemDrop.m_itemData.m_shared.m_name;
+        var itemType = itemDrop.m_itemData.m_shared.m_itemType;
+        string menuName = "";
+
+        switch (itemType) {
+          case ItemDrop.ItemData.ItemType.Helmet:
+            menuName = "$wardrobe_category_helmet";
+            break;
+          case ItemDrop.ItemData.ItemType.Shoulder:
+            menuName = "$wardrobe_category_cape";
+            break;
+          case ItemDrop.ItemData.ItemType.Chest:
+            menuName = "$wardrobe_category_shirt";
+            break;
+          case ItemDrop.ItemData.ItemType.Legs:
+            menuName = "$wardrobe_category_pants";
+            break;
+          case ItemDrop.ItemData.ItemType.Utility:
+            menuName = "$wardrobe_category_belt";
+            break;
+          default:
+            // Not clothing.
+            return;
+        }
+
+        var localizedName = Localization.instance.Localize(itemName);
+        var localizedMenuName = Localization.instance.Localize(menuName);
+        Logger.LogDebug($"Found {prefab.name} ({localizedName}), belongs to {localizedMenuName}");
+
+        var option = new ClothingData.Option(itemName, prefab.name);
+        Clothing[menuName].Options.Add(option);
+      }
 
       public static void Init() {
         Panel = GUIManager.Instance.CreateWoodpanel(
@@ -392,6 +417,10 @@ namespace Pokeheim {
     public static void Init() {
       Utils.OnVanillaPrefabsAvailable += delegate {
         RegisterWardrobe();
+      };
+
+      Utils.OnFirstSceneStart += delegate {
+        DressUpPanel.RegisterAllClothing();
       };
 
       Utils.OnVanillaLocationsAvailable += delegate {
