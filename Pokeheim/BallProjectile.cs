@@ -360,11 +360,19 @@ namespace Pokeheim {
 
     [HarmonyPatch(typeof(Settings), nameof(Settings.Awake))]
     class RenameHideButtonToReturnButton_Patch {
+      static UITextReplacer replacer = null;
+
       static void Postfix(Settings __instance) {
         foreach (var setting in Settings.m_instance.m_keys) {
           if (setting.m_keyName == HideButtonName) {
             var text = setting.m_keyTransform.GetComponentInChildren<Text>();
-            text.text = Localization.instance.Localize(
+            UITextReplacer replacer = new UITextReplacer(
+                typeof(Settings),
+                text,
+                delegate {
+                  return Settings.m_instance.m_settingsPanel.activeSelf;
+                });
+            replacer.text = Localization.instance.Localize(
                 "$monster_recall_key_description");
           }
         }

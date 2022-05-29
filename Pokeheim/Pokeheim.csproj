@@ -105,6 +105,7 @@
     <Compile Include="Riding.cs" />
     <Compile Include="Sounds.cs" />
     <Compile Include="Suppressipes.cs" />
+    <Compile Include="UITextReplacer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
