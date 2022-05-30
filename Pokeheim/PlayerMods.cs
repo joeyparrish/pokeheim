@@ -79,8 +79,31 @@ namespace Pokeheim {
       return caught > 0;
     }
 
-    public static string GetTrophyName(string prefabName) {
-      return MonsterMetadata.Get(prefabName)?.TrophyName;
+    public static string GetTrophyPrefabName(string prefabName) {
+      return MonsterMetadata.Get(prefabName).TrophyName;
+    }
+
+    // Untranslated name
+    public static string GetEntryName(string prefabName) {
+      var metadata = MonsterMetadata.Get(prefabName);
+
+      var player = Player.m_localPlayer;
+      if (!player.HasInPokedex(prefabName)) {
+        return "???";
+      }
+
+      return metadata.GenericName;
+    }
+
+    public static Sprite GetEntryIcon(string prefabName) {
+      var metadata = MonsterMetadata.Get(prefabName);
+
+      var player = Player.m_localPlayer;
+      if (!player.HasInPokedex(prefabName)) {
+        return metadata.TrophyShadowIcon;
+      } else {
+        return metadata.TrophyIcon;
+      }
     }
 
     public static string GetLore(string prefabName) {
@@ -93,36 +116,16 @@ namespace Pokeheim {
       var player = Player.m_localPlayer;
       player.m_knownStations.TryGetValue(fakeStationName, out caught);
 
+      if (caught == 0) {
+        return "";
+      }
+
       var lore = $"$stats_type: {metadata.FactionName}\n";
       lore += $"$stats_hp: {metadata.BaseHealth}\n";
       lore += $"$stats_damage: {metadata.TotalDamage}\n";
       lore += $"$stats_catch_rate: {metadata.CatchRate:P2}\n";
       lore += $"$stats_caught: {caught}";
       return lore;
-    }
-
-    public static IEnumerable<string> GetKnownPokedexEntries(Player player) {
-      // Abuse m_knownStations (maps string to int) to keep track of monsters
-      // caught for the Pokedex.
-      var keys = new List<string>(player.m_knownStations.Keys);
-      foreach (var key in keys) {
-        // The text after the prefix is a monster prefab name.
-        if (key.StartsWith(PokedexFakeStationPrefix)) {
-          var prefabName = key.Substring(PokedexFakeStationPrefix.Length);
-
-          // If we added an alias after the data was stored, we may need to
-          // coalesce two entries into one.
-          var metadata = MonsterMetadata.Get(prefabName);
-          if (metadata.PrefabName != prefabName) {
-            var value = player.m_knownStations[key];
-            player.m_knownStations[PokedexFakeStationPrefix + metadata.PrefabName] += value;
-            player.m_knownStations.Remove(key);
-            continue;
-          }
-
-          yield return prefabName;
-        }
-      }
     }
 
     class ResetPokedex : ConsoleCommand {
@@ -154,18 +157,10 @@ namespace Pokeheim {
     // Instead of trophy prefab names, this will return monster prefab names.
     [HarmonyPatch(typeof(Player), nameof(Player.GetTrophies))]
     class OverrideTrophiesToDrivePokedex_Patch {
-      static List<string> Postfix(List<string> ignored, Player __instance) {
-        var player = __instance;
+      static List<string> Postfix(List<string> ignored) {
         var result = new List<string>();
-
-        foreach (var prefabName in GetKnownPokedexEntries(player)) {
-          // Only add the prefab name to the list if there's a trophy
-          // associated with it.  Otherwise, we will not be able to display
-          // it in the Pokedex.
-          var metadata = MonsterMetadata.Get(prefabName);
-          if (metadata.TrophyName != null) {
-            result.Add(prefabName);
-          }
+        foreach (var metadata in MonsterMetadata.GetAllMonsters()) {
+          result.Add(metadata.PrefabName);
         }
         return result;
       }
@@ -222,13 +217,21 @@ namespace Pokeheim {
           IEnumerable<CodeInstruction> instructions,
           ILGenerator generator) {
         var foundGetStringItem = false;
+        var foundNameTarget = false;
+        var foundIconTarget = false;
         var foundLoreTarget = false;
 
         var monsterNameBackupVar = generator.DeclareLocal(typeof(String));
 
         var getStringItemMethod = typeof(List<string>).GetMethod("get_Item");
+        var localizeMethod = typeof(Localization).GetMethod(
+            "Localize", new Type[] { typeof(string) });
+        var getIconMethod = typeof(ItemDrop.ItemData).GetMethod("GetIcon");
+
+        var getTrophyPrefabNameMethod = typeof(PlayerMods).GetMethod(nameof(PlayerMods.GetTrophyPrefabName));
+        var getEntryNameMethod = typeof(PlayerMods).GetMethod(nameof(PlayerMods.GetEntryName));
+        var getEntryIconMethod = typeof(PlayerMods).GetMethod(nameof(PlayerMods.GetEntryIcon));
         var getLoreMethod = typeof(PlayerMods).GetMethod(nameof(PlayerMods.GetLore));
-        var getTrophyNameMethod = typeof(PlayerMods).GetMethod(nameof(PlayerMods.GetTrophyName));
 
         foreach (var code in instructions) {
           // These targets appear in this order.
@@ -249,7 +252,40 @@ namespace Pokeheim {
               // Then convert that to a trophy name.  The original method will
               // now store this into a local var of its own, and we don't care
               // what index it has because we have our own backup.
-              yield return new CodeInstruction(OpCodes.Call, getTrophyNameMethod);
+              yield return new CodeInstruction(OpCodes.Call, getTrophyPrefabNameMethod);
+            }
+          } else if (foundNameTarget == false) {
+            if (code.opcode == OpCodes.Callvirt &&
+                code.operand as MethodInfo == localizeMethod) {
+              // Right before we localize the entry name, replace it.
+              foundNameTarget = true;
+
+              // Remove the trophy name from the stack.
+              yield return new CodeInstruction(OpCodes.Pop);
+              // Load our backup of the original monster name onto the stack.
+              yield return new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar);
+              // Get the replacement name (untranslated) for this Pokedex entry.
+              yield return new CodeInstruction(OpCodes.Call, getEntryNameMethod);
+              // Continue with the Localize() call.
+              yield return code;
+            } else {
+              yield return code;
+            }
+          } else if (foundIconTarget == false) {
+            if (code.opcode == OpCodes.Callvirt &&
+                code.operand as MethodInfo == getIconMethod) {
+              // Instead of loading the icon from the trophy ItemDrop, call our
+              // method instead.
+              foundIconTarget = true;
+
+              // Remove the item data from the stack.
+              yield return new CodeInstruction(OpCodes.Pop);
+              // Load our backup of the original monster name onto the stack.
+              yield return new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar);
+              // Get the replacement icon for this Pokedex entry.
+              yield return new CodeInstruction(OpCodes.Call, getEntryIconMethod);
+            } else {
+              yield return code;
             }
           } else if (foundLoreTarget == false) {
             if (code.opcode == OpCodes.Ldstr &&
@@ -276,9 +312,9 @@ namespace Pokeheim {
           }
         }
 
-        if (!foundGetStringItem || !foundLoreTarget) {
+        if (!foundGetStringItem || !foundNameTarget || !foundIconTarget || !foundLoreTarget) {
           Logger.LogError("Failed to patch UpdateTrophyList! " +
-              $"({foundGetStringItem}, {foundLoreTarget})");
+              $"({foundGetStringItem}, {foundNameTarget}, {foundIconTarget}, {foundLoreTarget})");
         }
       }
     }

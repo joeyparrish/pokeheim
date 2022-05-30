@@ -212,7 +212,7 @@ namespace Pokeheim {
 
         // Now assign them positions in the Pokedex.
         var index = 0;
-        foreach (var metadata in AllMonsters) {
+        foreach (var metadata in GetAllMonsters()) {
           metadata.SetTrophyPosition(index++);
         }
       };
@@ -234,12 +234,25 @@ namespace Pokeheim {
     public static float PokedexFullness() {
       var player = Player.m_localPlayer;
       int found = 0;
-      foreach (var metadata in AllMonsters) {
+      int total = 0;
+      foreach (var metadata in GetAllMonsters()) {
+        total++;
         if (player.HasInPokedex(metadata.PrefabName)) {
           found++;
         }
       }
-      return (float)found / (float)AllMonsters.Count;
+      return (float)found / (float)total;
+    }
+
+    // Only those whose entries are "complete" and can be shown in the Pokedex.
+    public static IEnumerable<Metadata> GetAllMonsters() {
+      foreach (var metadata in AllMonsters) {
+        if (metadata.Incomplete()) {
+          Logger.LogDebug($"Skipping incomplete monster {metadata}");
+          continue;
+        }
+        yield return metadata;
+      }
     }
 
     public class Metadata : IComparable<Metadata> {
@@ -250,6 +263,7 @@ namespace Pokeheim {
       private Vector3 saddleRotation;
       private Character prefabCharacter = null;
       private Sprite trophyIcon = null;
+      private Sprite trophyShadowIcon = null;
       private Sprite capturedIcon = null;
       private float totalDamage = 0f;
       private double baseCatchRate = 0.0;
@@ -260,6 +274,7 @@ namespace Pokeheim {
       public Vector3 SaddleOffset => saddleOffset;
       public Vector3 SaddleRotation => saddleRotation;
       public Sprite TrophyIcon => trophyIcon;
+      public Sprite TrophyShadowIcon => trophyShadowIcon;
       public Sprite CapturedIcon => capturedIcon;
       public float TotalDamage => totalDamage;
 
@@ -356,7 +371,15 @@ namespace Pokeheim {
           this.trophyIcon = trophyItem?.m_itemData?.GetIcon();
         }
 
-        CreateCapturedIcon();
+        if (this.trophyIcon == null) {
+          Logger.LogError($"Unable to load icon for {this.prefabName}");
+          this.trophyIcon = MonsterMap["fallback"].trophyIcon;
+          this.trophyShadowIcon = MonsterMap["fallback"].trophyShadowIcon;
+          this.capturedIcon = MonsterMap["fallback"].capturedIcon;
+        } else {
+          CreateCapturedIcon();
+          CreateShadowIcon();
+        }
       }
 
       private void LoadWeapon(GameObject prefab) {
@@ -442,13 +465,6 @@ namespace Pokeheim {
       }
 
       private void CreateCapturedIcon() {
-        if (this.trophyIcon == null) {
-          Logger.LogError($"Unable to load icon for {this.prefabName}");
-          this.trophyIcon = MonsterMap["fallback"].trophyIcon;
-          this.capturedIcon = MonsterMap["fallback"].capturedIcon;
-          return;
-        }
-
         var parentObject = new GameObject("Icon parent");
 
         var bgObject = new GameObject("Icon bg");
@@ -471,6 +487,24 @@ namespace Pokeheim {
         fgRenderer.sortingOrder = bgRenderer.sortingOrder + 1;
 
         this.capturedIcon = RenderManager.Instance.Render(parentObject);
+      }
+
+      private void CreateShadowIcon() {
+        var parentObject = new GameObject("Icon parent");
+
+        var bgObject = new GameObject("Icon bg");
+        bgObject.transform.SetParent(parentObject.transform);
+        var bgRenderer = bgObject.AddComponent<SpriteRenderer>();
+        bgRenderer.sprite = this.trophyIcon;
+
+        // I wouldn't have noticed that this needed flipping were it not for
+        // the fallback icon, which is a question mark.
+        bgRenderer.flipX = true;
+
+        // Turn the icon into a silhouette by setting the color to black.
+        bgRenderer.color = Color.black;
+
+        this.trophyShadowIcon = RenderManager.Instance.Render(parentObject);
       }
 
       internal void Spawn(Vector3 position) {
@@ -574,12 +608,7 @@ namespace Pokeheim {
           Logger.LogInfo($"Spawning one of everything from the \"{faction}\" faction!");
         }
 
-        foreach (var metadata in AllMonsters) {
-          if (metadata.Incomplete()) {
-            Logger.LogDebug($"Skipping incomplete {metadata}");
-            continue;
-          }
-
+        foreach (var metadata in GetAllMonsters()) {
           if (faction == null || faction.ToLower() == metadata.LocalizedFactionName.ToLower()) {
             Vector3 randomOffset = UnityEngine.Random.insideUnitSphere * 5f;
             Vector3 position = player.transform.position + randomOffset;
