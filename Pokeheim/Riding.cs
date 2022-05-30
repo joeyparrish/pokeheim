@@ -220,7 +220,7 @@ namespace Pokeheim {
           float dx = x.distance;
           float dy = y.distance;
 
-          // Give saddles a 0.5m advantage in sorting by distance.
+          // Give saddles an advantage in sorting by distance.
           if (HitComponent<Sadle>(x) != null) {
             dx -= SaddleAdvantage;
           }
@@ -231,6 +231,7 @@ namespace Pokeheim {
         });
       }
 
+      // Patch in our custom sort method so we prefer to hover on saddles.
       static IEnumerable<CodeInstruction> Transpiler(
           IEnumerable<CodeInstruction> instructions,
           ILGenerator generator) {
