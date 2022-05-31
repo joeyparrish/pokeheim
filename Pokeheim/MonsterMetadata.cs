@@ -202,7 +202,14 @@ namespace Pokeheim {
           }
 
           Logger.LogWarning($"Adding metadata for new monster {prefab.name}");
-          var metadata = new Metadata(prefab.name, null);
+
+          var trophyName = "Trophy" + prefab.name;
+          if (ZNetScene.instance.GetPrefab(trophyName) == null) {
+            Logger.LogWarning($"Unable to guess trophy name for new monster {prefab.name}");
+            trophyName = null;
+          }
+
+          var metadata = new Metadata(prefab.name, trophyName);
           metadata.Load();
           AllMonsters.Add(metadata);
         }
