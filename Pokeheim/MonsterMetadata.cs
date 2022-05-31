@@ -28,10 +28,29 @@ using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
   public static class MonsterMetadata {
+    // NOTE: Adding New Monsters
+    //
+    // When new content is added to Valheim, it should show up in the Pokedex
+    // automatically.  If a trophy object exists and its prefab name follows a
+    // common formula, we will find it automatically.  Otherwise, there will be
+    // a question mark for the Pokedex icon.
+    //
+    // To add a trophy or replace a default, use null for the trophy prefab in
+    // the Metadata constructor.  Then add a 128x128 PNG to Pokeheim/Assets/
+    // named like PremadeIcon-MONSTER_PREFAB_NAME.png.
+    //
+    // To take a rendering of the monster in-game for use in an icon, use the
+    // debug command "renderanddump PREFAB_NAME 1024", then look for a file
+    // like ~/.config/unity3d/IronGate/Valheim/renders/PREFAB_NAME.png
+    //
+    // TODO: Document saddle placement
     private static List<Metadata> AllMonsters = new List<Metadata> {
       new Metadata("Abomination", "TrophyAbomination",
                    "Armature.001/root/hip/spine1/spine1.002/spine1.003",
                    new Vector3(0.00f, 0.00f, 0.00f)),
+      new Metadata("Bat", null,
+                   null, // TODO: Bat saddle
+                   new Vector3(0.0f, 0.0f, 0.0f)),
       new Metadata("Blob", "TrophyBlob",
                    "blob/Armature/Bone/Bone.002/Bone.002_end",
                    new Vector3(-0.05f, 0.10f, 0.05f)),
@@ -71,6 +90,9 @@ namespace Pokeheim {
       new Metadata("Fenring", null /* Using custom instead of TrophyFenring */,
                    "Armature/Root/Hips/Spine/Spine1/Spine2/Neck/Head",
                    new Vector3(-0.07f, 0.45f, 0.00f)),
+      new Metadata("Fenring_Cultist", "TrophyCultist",
+                   null, // TODO: Fenring_Cultist saddle
+                   new Vector3(0.0f, 0.0f, 0.0f)),
       new Metadata("Ghost", null,
                    "Point light",
                    new Vector3(-0.08f, 0.70f, 0.00f)),
@@ -132,6 +154,9 @@ namespace Pokeheim {
       new Metadata("Troll", "TrophyFrostTroll",
                    "Armature/Root/Spine0/Spine1/Spine2/Head",
                    new Vector3(-0.05f, 1.50f, 0.25f)),
+      new Metadata("Ulv", null /* Using custom instead of TrophyUlv */,
+                   null, // TODO: Ulv saddle
+                   new Vector3(0.0f, 0.0f, 0.0f)),
       new Metadata("Wolf", "TrophyWolf",
                    "WolfSmooth/CG/Pelvis/Spine/Spine1",
                    new Vector3(-0.07f, 0.30f, -0.05f)),

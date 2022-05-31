@@ -218,7 +218,7 @@ namespace Pokeheim {
 
     class RenderAndDump : ConsoleCommand {
       public override string Name => "renderanddump";
-      public override string Help => "[name] - Instantiate a prefab, render it, and dump it to disk";
+      public override string Help => "[name] [size=128] - Instantiate a prefab, render it, and dump it to disk";
       public override bool IsCheat => true;
 
       public override void Run(string[] args) {
