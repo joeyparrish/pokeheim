@@ -32,7 +32,6 @@ using System.Reflection.Emit;
 using Logger = Jotunn.Logger;
 
 // TODO: Make it easier to mount tall things (Troll, gd_king, Dragon)
-// TODO: Prevent player riding another player's monster?
 namespace Pokeheim {
   public static class Riding {
     public static ItemDrop UniversalSaddleItem = null;
@@ -415,6 +414,38 @@ namespace Pokeheim {
           // name.  A status such as "hungry" is meaningless for us.
           Hud.instance.m_mountNameText.text = steed.GetHoverName();
         }
+      }
+    }
+
+    // Not all captured monsters can be saddled by just anyone.
+    [HarmonyPatch(typeof(Tameable), nameof(Tameable.UseItem))]
+    class OnlyOwnerCanSaddle_Patch {
+      static bool Prefix(Tameable __instance, ref bool __result, Humanoid user) {
+        var tameable = __instance;
+        var monster = tameable.m_character;
+
+        if (monster.AlliedWith(user as Player) == false) {
+          __result = false;
+          return false;
+        }
+
+        return true;
+      }
+    }
+
+    // You can't get into or remove a saddle that's on someone else's monster.
+    [HarmonyPatch(typeof(Sadle), nameof(Sadle.Interact))]
+    class OnlyOwnerCanRide_Patch {
+      static bool Prefix(Sadle __instance, ref bool __result, Humanoid character, bool repeat, bool alt) {
+        var saddle = __instance;
+        var monster = saddle.m_character;
+
+        if (monster.AlliedWith(character as Player) == false) {
+          __result = false;
+          return false;
+        }
+
+        return true;
       }
     }
 

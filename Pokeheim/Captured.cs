@@ -455,7 +455,7 @@ namespace Pokeheim {
         var tameable = __instance;
         var monster = tameable.m_character;
 
-        if (monster.IsCaptured() && monster.AlliedWith(user as Player) == false) {
+        if (monster.AlliedWith(user as Player) == false) {
           __result = false;
           return false;
         }
