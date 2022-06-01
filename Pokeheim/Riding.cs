@@ -89,17 +89,26 @@ namespace Pokeheim {
       private static readonly Vector3 riderOffset =
           new Vector3(0.05f, -0.20f, 0.25f);
 
-      // TODO: If this crashes (for example, if MountPointPath is bogus), we
-      // should make it so that saddling a monster fails!  Instead, the saddle
-      // vanishes.  :-(
       public void Awake() {
         var prefabName = this.GetPrefabName();
         var metadata = MonsterMetadata.Get(prefabName);
+        var tameable = GetComponent<Tameable>();
         if (metadata == null) {
           Logger.LogError($"Unable to find metadata for monster {prefabName}");
           return;
         } else if (metadata.MountPointPath == null) {
           Logger.LogError($"Monster {prefabName} has no defined mount point!");
+          return;
+        }
+
+        // This is a monster body part where we will base the mount point.
+        var visualTransform = transform.Find("Visual");
+        var mountPointBase = visualTransform.Find(metadata.MountPointPath);
+        if (mountPointBase == null) {
+          // Deal with this case now.  Otherwise, we may lose saddles attached
+          // to this monster!
+          Logger.LogError($"Monster {prefabName} has nonexistent mount point: {metadata.MountPointPath}!");
+          tameable.m_saddleItem = null;
           return;
         }
 
@@ -114,15 +123,10 @@ namespace Pokeheim {
         nview.Unregister("Controls");
 
         // All monsters can be ridden with a universal saddle item.
-        var tameable = GetComponent<Tameable>();
         tameable.m_saddleItem = UniversalSaddleItem;
 
         // Monsters always drop their saddle on death/capture.
         tameable.m_dropSaddleOnDeath = true;
-
-        // This is a monster body part where we will base the mount point.
-        var visualTransform = transform.Find("Visual");
-        var mountPointBase = visualTransform.Find(metadata.MountPointPath);
 
         // This will be the parent of the saddle object.
         // It will be attached exactly to the mount point base, and will reset
