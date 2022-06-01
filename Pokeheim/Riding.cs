@@ -83,14 +83,15 @@ namespace Pokeheim {
     }
 
     public class Mountable : MonoBehaviour {
-      internal Transform saddleOffset;
-
       // The offset from the saddle object to the rider, so that the player's
       // hands are on the pommel.  With a consistent, single saddle size, this
       // is a constant.
       private static readonly Vector3 riderOffset =
           new Vector3(0.05f, -0.20f, 0.25f);
 
+      // TODO: If this crashes (for example, if MountPointPath is bogus), we
+      // should make it so that saddling a monster fails!  Instead, the saddle
+      // vanishes.  :-(
       public void Awake() {
         var prefabName = this.GetPrefabName();
         var metadata = MonsterMetadata.Get(prefabName);
@@ -155,10 +156,6 @@ namespace Pokeheim {
 
         // Initially inactive until the saddle item is used on the monster.
         saddleGameObject.SetActive(value: false);
-
-        // This is used internally for debugging and adjusting saddle positions
-        // during development.
-        saddleOffset = saddleGameObject.transform;
 
         // This is the rider's position, which is offset somewhat from the
         // saddle position by a fixed amount.
@@ -418,6 +415,13 @@ namespace Pokeheim {
     }
 
 #if DEBUG
+    // X, Y, and Z keys adjust in those axes.
+    // +X is to the monster's right, +Z is the direction it faces, and +Y is
+    // toward the sky.
+    // Left-Alt means a position change of 0.05 m.
+    // Right-Alt means a rotation of 5.00 degrees.
+    // Left-Control means to invert the change.
+    // Left-Command/Left-Windows means to make the change small (20% normal).
     [HarmonyPatch(typeof(Player), nameof(Player.Update))]
     class AdjustMount_Patch {
       static void Postfix() {
@@ -479,12 +483,15 @@ namespace Pokeheim {
           if (saddled == null) {
             Logger.LogDebug($"No mount found");
           } else {
-            var transform = saddled.saddleOffset;
+            var tameable = saddled.GetComponent<Tameable>();
+            var saddle = tameable.m_saddle.gameObject;
+            var transform = saddle.transform;
             transform.localPosition += posAdjustment;
             transform.localRotation *= Quaternion.Euler(rotAdjustment);
             Logger.LogDebug(
-                $"New position {transform.localPosition.ToString("F2")}" +
-                $" rotation {transform.localRotation.eulerAngles.ToString("F2")}");
+                $"Mounted: {saddled}" +
+                $" new position: {transform.localPosition.ToString("F2")}" +
+                $" new rotation: {transform.localRotation.eulerAngles.ToString("F2")}");
           }
         }
       }
