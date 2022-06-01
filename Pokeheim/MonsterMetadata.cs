@@ -43,14 +43,44 @@ namespace Pokeheim {
     // debug command "renderanddump PREFAB_NAME 1024", then look for a file
     // like ~/.config/unity3d/IronGate/Valheim/renders/PREFAB_NAME.png
     //
-    // TODO: Document saddle placement
+    // To find the best place to saddle a new monster, spawn one and catch it
+    // (see also the "catchemall" debug command).  Then release it and dump a
+    // list of body parts with the debug command "dumpbodyparts PREFAB_NAME".
+    // A list of parts will appear in the log.  Choose a likely mount point for
+    // the saddle (a spine, a head, a neck, shoulders, whatever).  You may have
+    // to change it if the saddle moves in a weird way when attached to that
+    // point.
+    //
+    // Make sure the path you choose from the log starts with "Visual/", but
+    // leave that out of the path when you use it.  ("Visual/" is an implied
+    // base for saddles.)
+    //
+    // You can set the mount point in the Metadata constructor, then rebuild
+    // and launch the game.  Or you can set it at runtime with the debug
+    // command "setmountpoint PREFAB_NAME MOUNT_PATH".
+    //
+    // With a mount point set, saddle the monster and optionally mount it.  Use
+    // the special key combinations Alt+X, Alt+Y, Alt+Z to adjust the saddle
+    // position:
+    //   X, Y, and Z keys adjust in those axes.
+    //   +X is to the monster's right, +Z is the direction it faces, and +Y is
+    //   toward the sky.
+    //   Left-Alt means a position change of 0.05 m.
+    //   Right-Alt means a rotation of 5.00 degrees.
+    //   Left-Control means to invert the change.
+    //   Left-Command/Left-Windows means to make the change small (20% normal).
+    //
+    // Test out the position, and if the saddle moves in a weird way when
+    // attached to that point of the armature, you can try another body part.
+    // When you're happy with the mount point and runtime-adjusted position, be
+    // sure to record both in the Metadata constructor.
     private static List<Metadata> AllMonsters = new List<Metadata> {
       new Metadata("Abomination", "TrophyAbomination",
                    "Armature.001/root/hip/spine1/spine1.002/spine1.003",
                    new Vector3(0.00f, 0.00f, 0.00f)),
       new Metadata("Bat", null,
-                   null, // TODO: Bat saddle
-                   new Vector3(0.0f, 0.0f, 0.0f)),
+                   "CaveBat/Armature/Root/Hip/Spine/Head",
+                   new Vector3(-0.10f, 0.35f, 0.00f)),
       new Metadata("Blob", "TrophyBlob",
                    "blob/Armature/Bone/Bone.002/Bone.002_end",
                    new Vector3(-0.05f, 0.10f, 0.05f)),
@@ -91,8 +121,8 @@ namespace Pokeheim {
                    "Armature/Root/Hips/Spine/Spine1/Spine2/Neck/Head",
                    new Vector3(-0.07f, 0.45f, 0.00f)),
       new Metadata("Fenring_Cultist", "TrophyCultist",
-                   null, // TODO: Fenring_Cultist saddle
-                   new Vector3(0.0f, 0.0f, 0.0f)),
+                   "Armature/Root/Hips/Spine/Spine1/Spine2/Neck/Head",
+                   new Vector3(-0.06f, 0.29f, -0.08f)),
       new Metadata("Ghost", null,
                    "Point light",
                    new Vector3(-0.08f, 0.70f, 0.00f)),
@@ -155,8 +185,8 @@ namespace Pokeheim {
                    "Armature/Root/Spine0/Spine1/Spine2/Head",
                    new Vector3(-0.05f, 1.50f, 0.25f)),
       new Metadata("Ulv", null /* Using custom instead of TrophyUlv */,
-                   null, // TODO: Ulv saddle
-                   new Vector3(0.0f, 0.0f, 0.0f)),
+                   "Ulv/Armature/Root/Hips/Spine/Spine1/Spine2",
+                   new Vector3(-0.07f, 0.35f, 0.00f)),
       new Metadata("Wolf", "TrophyWolf",
                    "WolfSmooth/CG/Pelvis/Spine/Spine1",
                    new Vector3(-0.07f, 0.30f, -0.05f)),
