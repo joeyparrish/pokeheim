@@ -206,8 +206,8 @@ namespace Pokeheim {
       static void ComputePokedexTitleElementAndText(InventoryGui __instance) {
         var pokedexPercent = MonsterMetadata.PokedexFullness() * 100f;
         Logger.LogInfo($"Pokedex {pokedexPercent:n1}% complete");
-        PokedexTitleReplacer.text = Localization.instance.Localize(
-            "$pokedex_percent_complete", pokedexPercent.ToString("n1"));
+        PokedexTitleReplacer.SetText(Localization.instance.Localize(
+            "$pokedex_percent_complete", pokedexPercent.ToString("n1")));
       }
     }
 

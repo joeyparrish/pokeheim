@@ -372,8 +372,8 @@ namespace Pokeheim {
                 delegate {
                   return Settings.m_instance.m_settingsPanel.activeSelf;
                 });
-            replacer.text = Localization.instance.Localize(
-                "$monster_recall_key_description");
+            replacer.SetText(Localization.instance.Localize(
+                "$monster_recall_key_description"));
           }
         }
       }

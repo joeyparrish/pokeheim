@@ -91,6 +91,10 @@ namespace Pokeheim {
       }
     }
 
+    public void SetText(string text) {
+      this.text = text;
+    }
+
     public void UpdateHook() {
       if (shouldUpdate()) {
         textElement.text = text;
