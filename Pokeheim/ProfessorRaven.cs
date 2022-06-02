@@ -265,6 +265,13 @@ namespace Pokeheim {
           text.m_topic = $"$pokeheim_tutorial_{key}_topic";
           text.m_text = $"$pokeheim_tutorial_{key}_text";
           text.m_label = $"$pokeheim_tutorial_{key}_label";
+
+          // This specific text needs us to pre-localize and insert a value for
+          // the number of bosses.  That's called future-proofing!
+          if (key == "temple1") {
+            text.m_text = Localization.instance.Localize(
+                text.m_text, MonsterMetadata.NumberOfBosses().ToString());
+          }
           return true;
         }
 

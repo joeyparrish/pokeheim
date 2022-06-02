@@ -180,7 +180,7 @@ namespace Pokeheim {
                    new Vector3(-0.05f, 0.25f, 0.00f)),
       new Metadata("TentaRoot", null,
                    "Tentaroots/Armature/Root/Bone1",
-                   new Vector3(-0.05f, 0.45f, 0.55f)),
+                   new Vector3(-0.05f, 0.45f, 0.55f)).MarkSubordinate(),
       new Metadata("Troll", "TrophyFrostTroll",
                    "Armature/Root/Spine0/Spine1/Spine2/Head",
                    new Vector3(-0.05f, 1.50f, 0.25f)),
@@ -306,6 +306,18 @@ namespace Pokeheim {
       return (float)found / (float)total;
     }
 
+    public static int NumberOfBosses() {
+      int numBosses = 0;
+
+      foreach (var metadata in AllMonsters) {
+        if (metadata.IsBoss) {
+          numBosses++;
+        }
+      }
+
+      return numBosses;
+    }
+
     // Only those whose entries are "complete" and can be shown in the Pokedex.
     public static IEnumerable<Metadata> GetAllMonsters() {
       foreach (var metadata in AllMonsters) {
@@ -329,6 +341,7 @@ namespace Pokeheim {
       private Sprite capturedIcon = null;
       private float totalDamage = 0f;
       private double baseCatchRate = 0.0;
+      private bool subordinate = false;
 
       public string PrefabName => prefabName;
       public string TrophyName => trophyName;
@@ -347,6 +360,7 @@ namespace Pokeheim {
       public string LocalizedFactionName => Localization.instance.Localize(FactionName);
       public float BaseHealth => prefabCharacter.m_health;
       public double CatchRate => baseCatchRate;
+      public bool IsBoss => Faction == Character.Faction.Boss && !subordinate;
 
       public Metadata(
           string prefabName,
@@ -484,6 +498,11 @@ namespace Pokeheim {
         }
 
         trophyItem.m_itemData.m_shared.m_trophyPos = new Vector2Int(x, y);
+      }
+
+      internal Metadata MarkSubordinate() {
+        this.subordinate = true;
+        return this;
       }
 
       private void ComputeBaseCatchRate() {
