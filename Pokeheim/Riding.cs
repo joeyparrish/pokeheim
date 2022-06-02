@@ -188,6 +188,29 @@ namespace Pokeheim {
       }
     }
 
+    // This is the same logic FindHoverObject uses to decide what object to
+    // return for each hit.
+    public static GameObject GetGameObject(this RaycastHit hit) {
+      var hoverable = hit.collider.GetComponent<Hoverable>();
+      if (hoverable != null) {
+        return hit.collider.gameObject;
+      }
+      if (hit.collider.attachedRigidbody != null) {
+        return hit.collider.attachedRigidbody.gameObject;
+      }
+      return hit.collider.gameObject;
+    }
+
+    public static T HitComponent<T>(this RaycastHit hit) {
+      return hit.GetGameObject().GetComponent<T>();
+    }
+
+    public static void FlattenDistance(this RaycastHit hit) {
+      var observer = GameCamera.instance.transform.position;
+      var target = hit.GetGameObject().transform.position;
+      hit.distance = Utils.DistanceXZ(observer, target);
+    }
+
     // The FindHoverObject method finds the nearest object in the path of the
     // cursor.  However, for some monsters, the monster "extends" beyond the
     // saddle, making it extremely difficult to use or remove the saddle.
@@ -198,33 +221,30 @@ namespace Pokeheim {
       // The "advantage" we give to saddles in sorting objects by distance.
       // Effectively, for the purposes of hovering, a saddle is this much
       // closer than it really is (in meters).
-      private const float SaddleAdvantage = 20f;
+      private const float SaddleAdvantage = 5f;
 
-      // This is the same logic FindHoverObject uses to decide what object to
-      // return for each hit.
-      private static T HitComponent<T>(RaycastHit hit) {
-        var hoverable = hit.collider.GetComponent<Hoverable>();
-        if (hoverable != null) {
-          return hit.collider.gameObject.GetComponent<T>();
-        }
-        if (hit.collider.attachedRigidbody != null) {
-          return hit.collider.attachedRigidbody.gameObject.GetComponent<T>();
-        }
-        return hit.collider.gameObject.GetComponent<T>();
-      }
-
-      // Sort the hits as FindHoverObject would, but with an advantage given to
-      // saddles.
       public static void CustomSort(RaycastHit[] array) {
+        // We will find saddles as far away as 50 meters, but we have a max
+        // interaction distance of 5 meters.  To make it possible to reach a
+        // saddle on a very tall monster, only consider the XZ (flat) distance
+        // for saddles.
+        foreach (var hit in array) {
+          if (hit.HitComponent<Sadle>() != null) {
+            hit.FlattenDistance();
+          }
+        }
+
+        // Sort the hits as FindHoverObject would, but with an advantage given
+        // to saddles.
         Array.Sort(array, (RaycastHit x, RaycastHit y) => {
           float dx = x.distance;
           float dy = y.distance;
 
           // Give saddles an advantage in sorting by distance.
-          if (HitComponent<Sadle>(x) != null) {
+          if (x.HitComponent<Sadle>() != null) {
             dx -= SaddleAdvantage;
           }
-          if (HitComponent<Sadle>(y) != null) {
+          if (y.HitComponent<Sadle>() != null) {
             dy -= SaddleAdvantage;
           }
           return dx.CompareTo(dy);
