@@ -31,7 +31,6 @@ using System.Reflection.Emit;
 
 using Logger = Jotunn.Logger;
 
-// TODO: Make it easier to mount tall things (Troll, gd_king, Dragon)
 namespace Pokeheim {
   public static class Riding {
     public static ItemDrop UniversalSaddleItem = null;
@@ -205,10 +204,21 @@ namespace Pokeheim {
       return hit.GetGameObject().GetComponent<T>();
     }
 
-    public static void FlattenDistance(this RaycastHit hit) {
-      var observer = GameCamera.instance.transform.position;
-      var target = hit.GetGameObject().transform.position;
-      hit.distance = Utils.DistanceXZ(observer, target);
+    // PreferToHoverOverSaddles_Patch below handles making the saddle
+    // "interactable" at a distance, but Sadle has its own filter for what's in
+    // range.  This also needs to be patched, or else the saddles on tall
+    // monsters will say "Too far" when hovered.
+    [HarmonyPatch(typeof(Sadle), nameof(Sadle.InUseDistance))]
+    class SaddleDistanceInXZPlaneOnly_Patch {
+      static bool Prefix(Sadle __instance, ref bool __result, Humanoid human) {
+        var saddle = __instance;
+        var flatDistance = Utils.DistanceXZ(
+		        human.transform.position, saddle.m_attachPoint.position);
+        __result = flatDistance < saddle.m_maxUseRange;
+        Logger.LogDebug($"Saddle InUseDistance: flatDistance={flatDistance}, max={saddle.m_maxUseRange}, result={__result}");
+        // Suppress the original.
+        return false;
+      }
     }
 
     // The FindHoverObject method finds the nearest object in the path of the
@@ -224,16 +234,6 @@ namespace Pokeheim {
       private const float SaddleAdvantage = 5f;
 
       public static void CustomSort(RaycastHit[] array) {
-        // We will find saddles as far away as 50 meters, but we have a max
-        // interaction distance of 5 meters.  To make it possible to reach a
-        // saddle on a very tall monster, only consider the XZ (flat) distance
-        // for saddles.
-        foreach (var hit in array) {
-          if (hit.HitComponent<Sadle>() != null) {
-            hit.FlattenDistance();
-          }
-        }
-
         // Sort the hits as FindHoverObject would, but with an advantage given
         // to saddles.
         Array.Sort(array, (RaycastHit x, RaycastHit y) => {
@@ -251,31 +251,89 @@ namespace Pokeheim {
         });
       }
 
-      // Patch in our custom sort method so we prefer to hover on saddles.
+      // Only consider XZ distance for saddles, to make it easier to reach
+      // saddles on tall monsters.
+      public static float HitDistance(Vector3 a, Vector3 b, RaycastHit hit) {
+        if (hit.HitComponent<Sadle>() != null) {
+          return Utils.DistanceXZ(a, b);
+        } else {
+          return Vector3.Distance(a, b);
+        }
+      }
+
+      // Patch in our custom sort and distance methods so we prefer to hover on
+      // saddles and can interact with them on tall monsters.
+      // TODO: This pattern appears a lot in transpilers.  Build a utility.
       static IEnumerable<CodeInstruction> Transpiler(
           IEnumerable<CodeInstruction> instructions,
           ILGenerator generator) {
+        bool foundSortCall = false;
+        bool foundLoadElement = false;
+        bool foundDistanceCall = false;
+
+        var hitBackupVar = generator.DeclareLocal(typeof(RaycastHit));
+
+        var vector3DistanceMethod = typeof(Vector3).GetMethod(
+            "Distance",
+            BindingFlags.Static | BindingFlags.Public);
+
         var sortMethod = typeof(PreferToHoverOverSaddles_Patch).GetMethod(
             nameof(PreferToHoverOverSaddles_Patch.CustomSort));
+        var distanceMethod = typeof(PreferToHoverOverSaddles_Patch).GetMethod(
+            nameof(PreferToHoverOverSaddles_Patch.HitDistance));
 
         foreach (var code in instructions) {
           var methodInfo = code.operand as MethodInfo;
 
-          // Seeking Array::Sort(
-          //   UnityEngine.RaycastHit[] array,
-          //   System.Comparison<UnityEngine.RaycastHit> comparison)
-          if (code.opcode == OpCodes.Call &&
-              methodInfo != null && methodInfo.Name == "Sort") {
-            yield return code;
-            // The top of the stack is the sorted array.
+          if (foundSortCall == false) {
+            if (code.opcode == OpCodes.Call &&
+                methodInfo != null && methodInfo.Name == "Sort") {
+              foundSortCall = true;
 
-            // Duplicate the array ref on the stack.
-            yield return new CodeInstruction(OpCodes.Dup);
-            // Call our custom sorting method, which consumes one stack element.
-            yield return new CodeInstruction(OpCodes.Call, sortMethod);
-            // Now the array has been sorted again using our custom method.
+              // This is Array::Sort(
+              //   UnityEngine.RaycastHit[] array,
+              //   System.Comparison<UnityEngine.RaycastHit> comparison)
+              yield return code;
+              // The top of the stack is the sorted array.
 
-            // We leave one array ref on the stack, which is where we started.
+              // Duplicate the array ref on the stack.
+              yield return new CodeInstruction(OpCodes.Dup);
+              // Call our custom sorting method, which consumes one stack element.
+              yield return new CodeInstruction(OpCodes.Call, sortMethod);
+              // Now the array has been sorted again using our custom method.
+
+              // We leave one array ref on the stack, which is where we started.
+            } else {
+              yield return code;
+            }
+          } else if (foundLoadElement == false) {
+            if (code.opcode == OpCodes.Ldelem) {
+              foundLoadElement = true;
+              // This loads an element (RaycastHit) from an array.
+              yield return code;
+
+              // After the original instruction, inject instructions to back up
+              // the hit in our own local var.
+              yield return new CodeInstruction(OpCodes.Dup);
+              yield return new CodeInstruction(OpCodes.Stloc_S, hitBackupVar);
+            } else {
+              yield return code;
+            }
+          } else if (foundDistanceCall == false) {
+            if (code.opcode == OpCodes.Call &&
+                methodInfo == vector3DistanceMethod) {
+              foundDistanceCall = true;
+              // This is Vector3::Distance(Vector3, Vector3).  We replace it.
+
+              // Put one more argument on the stack: the hit itself.
+              yield return new CodeInstruction(OpCodes.Ldloc_S, hitBackupVar);
+
+              // Now call our distance method, which uses the hit context to
+              // change the distance used for saddles.
+              yield return new CodeInstruction(OpCodes.Call, distanceMethod);
+            } else {
+              yield return code;
+            }
           } else {
             yield return code;
           }
