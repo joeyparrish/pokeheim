@@ -360,8 +360,6 @@ namespace Pokeheim {
 
     [HarmonyPatch(typeof(Settings), nameof(Settings.Awake))]
     class RenameHideButtonToReturnButton_Patch {
-      static UITextReplacer replacer = null;
-
       static void Postfix(Settings __instance) {
         foreach (var setting in Settings.m_instance.m_keys) {
           if (setting.m_keyName == HideButtonName) {
