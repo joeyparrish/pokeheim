@@ -357,25 +357,23 @@ namespace Pokeheim {
     class DismountIsAlwaysSafe_Patch {
       static bool dismounting = false;
       static bool complete = false;
+      static Rigidbody lastContact = null;
 
-      /* TODO: This doesn't work, because when we "land" from a normal
-       * dismount, it's the monster we land on, not the ground.  So this patch
-       * doesn't really save us in this case.  We are at least saved from a
-       * "dismount" triggered by recalling the monster (via OnDeath below).
       [HarmonyPrefix]
       [HarmonyPatch(typeof(Sadle), nameof(Sadle.OnUseStop))]
       static void onDismount(Sadle __instance, Player player) {
         if (player == Player.m_localPlayer) {
+          Logger.LogDebug($"Dismounting: {__instance.m_character}");
           dismounting = true;
         }
       }
-      */
 
       [HarmonyPrefix]
       [HarmonyPatch(typeof(Tameable), nameof(Tameable.OnDeath))]
       static void onMountDeathOrCapture(Tameable __instance) {
         var tameable = __instance;
         if (tameable.HaveSaddle() && tameable.m_saddle.IsLocalUser()) {
+          Logger.LogDebug($"Dismounting on death: {__instance.m_character}");
           dismounting = true;
         }
       }
@@ -390,7 +388,25 @@ namespace Pokeheim {
           // the altitude so that it appears to be from a distance of zero and
           // doesn't hurt.
           character.m_maxAirAltitude = character.transform.position.y;
-          complete = true;
+
+          var contactObj = character.m_lowestContactCollider?.attachedRigidbody;
+          if (contactObj &&
+              (contactObj.GetComponent<Mountable>() != null ||
+               contactObj.GetComponent<Sadle>() != null)) {
+            // If we're touching the saddle or Mountable monster, don't count
+            // this fall as complete.  We haven't hit actual ground yet.
+
+            if (contactObj != lastContact) {
+              lastContact = contactObj;
+              Logger.LogDebug($"Fall incomplete: {contactObj}");
+            }
+          } else {
+            // We're on the actual ground (or something else that isn't the
+            // Mountable monster or the saddle), so count this fall as
+            // "complete" and disable the safeguards.
+            complete = true;
+            Logger.LogDebug($"Fall complete: {contactObj}");
+          }
         }
       }
 
