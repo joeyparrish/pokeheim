@@ -24,6 +24,14 @@ using System.Reflection;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
+  // Transpilers often need to look for a specific sequence of instructions, in
+  // order, to replace.  They also need to log errors if the unpatched code
+  // changes in a way that breaks the sequence matching.  This utility allows
+  // the caller to define a sequence of Phases, each of which has a matcher
+  // callback and a replacer callback.  When the matcher matches the current
+  // instruction, it is replaced by the output of the replacer.  Matches only
+  // proceed in order of phases, and an error is logged if we don't complete
+  // the final phase.
   public class TranspilerSequence {
     public delegate bool MatchInstructionCallbackType(CodeInstruction code);
     public delegate CodeInstruction[] InstructionReplacerCallbackType(CodeInstruction code);
