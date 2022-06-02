@@ -204,35 +204,39 @@ namespace Pokeheim {
       return hit.GetGameObject().GetComponent<T>();
     }
 
-    // PreferToHoverOverSaddles_Patch below handles making the saddle
-    // "interactable" at a distance, but Sadle has its own filter for what's in
-    // range.  This also needs to be patched, or else the saddles on tall
-    // monsters will say "Too far" when hovered.
-    [HarmonyPatch(typeof(Sadle), nameof(Sadle.InUseDistance))]
-    class SaddleDistanceInXZPlaneOnly_Patch {
-      static bool Prefix(Sadle __instance, ref bool __result, Humanoid human) {
+    // There are a few issues with saddles that we need to patch:
+    //   1. Some monsters "extend" beyond the saddle, making it difficult to
+    //      use or remove.  We need to prefer saddles when we hover the cursor
+    //      over a saddled monster, so that the saddle is easier to interact
+    //      with.
+    //   2. Some monsters (like gd_king) are very tall.  We need to be able to
+    //      interact with a saddle mounted on the boss's shoulder, so we should
+    //      only consider the X-Z distance (parallel to the ground), and not
+    //      the complete 3D distance (including the up-down Y axis).
+    [HarmonyPatch]
+    class SaddleDistance_Patch {
+      // Sadle [sic] has its own filter for when a Player is in range to
+      // interact with it.  If the Player is not in range, the hover text is
+      // "too far", and it refuses interactions.  Only consider the X-Z
+      // distance for this, to make it possible to use saddles on very tall
+      // monsters.
+      [HarmonyPatch(typeof(Sadle), nameof(Sadle.InUseDistance))]
+      [HarmonyPrefix]
+      static bool SaddleUseDistanceOnlyInXZ(Sadle __instance, ref bool __result, Humanoid human) {
         var saddle = __instance;
         var flatDistance = Utils.DistanceXZ(
 		        human.transform.position, saddle.m_attachPoint.position);
         __result = flatDistance < saddle.m_maxUseRange;
-        Logger.LogDebug($"Saddle InUseDistance: flatDistance={flatDistance}, max={saddle.m_maxUseRange}, result={__result}");
         // Suppress the original.
         return false;
       }
-    }
 
-    // The FindHoverObject method finds the nearest object in the path of the
-    // cursor.  However, for some monsters, the monster "extends" beyond the
-    // saddle, making it extremely difficult to use or remove the saddle.
-    // This patch fudges the "distance" measurement for saddle objects so that
-    // they are easier to interact with.
-    [HarmonyPatch(typeof(Player), nameof(Player.FindHoverObject))]
-    class PreferToHoverOverSaddles_Patch {
       // The "advantage" we give to saddles in sorting objects by distance.
       // Effectively, for the purposes of hovering, a saddle is this much
       // closer than it really is (in meters).
       private const float SaddleAdvantage = 5f;
 
+      // Sort by distance, with an advantage given to saddles.
       public static void CustomSort(RaycastHit[] array) {
         // Sort the hits as FindHoverObject would, but with an advantage given
         // to saddles.
@@ -264,7 +268,9 @@ namespace Pokeheim {
       // Patch in our custom sort and distance methods so we prefer to hover on
       // saddles and can interact with them on tall monsters.
       // TODO: This pattern appears a lot in transpilers.  Build a utility.
-      static IEnumerable<CodeInstruction> Transpiler(
+      [HarmonyPatch(typeof(Player), nameof(Player.FindHoverObject))]
+      [HarmonyTranspiler]
+      static IEnumerable<CodeInstruction> HoverObjectTranspiler(
           IEnumerable<CodeInstruction> instructions,
           ILGenerator generator) {
         bool foundSortCall = false;
@@ -277,10 +283,10 @@ namespace Pokeheim {
             "Distance",
             BindingFlags.Static | BindingFlags.Public);
 
-        var sortMethod = typeof(PreferToHoverOverSaddles_Patch).GetMethod(
-            nameof(PreferToHoverOverSaddles_Patch.CustomSort));
-        var distanceMethod = typeof(PreferToHoverOverSaddles_Patch).GetMethod(
-            nameof(PreferToHoverOverSaddles_Patch.HitDistance));
+        var sortMethod = typeof(SaddleDistance_Patch).GetMethod(
+            nameof(SaddleDistance_Patch.CustomSort));
+        var distanceMethod = typeof(SaddleDistance_Patch).GetMethod(
+            nameof(SaddleDistance_Patch.HitDistance));
 
         foreach (var code in instructions) {
           var methodInfo = code.operand as MethodInfo;
@@ -337,9 +343,9 @@ namespace Pokeheim {
           } else {
             yield return code;
           }
-        }
-      }
-    }
+        }  // foreach (var code in instructions)
+      }  // static IEnumerable<CodeInstruction> HoverObjectTranspiler
+    }  // class SaddleDistance_Patch
 
     [HarmonyPatch(typeof(Sadle))]
     class DisableSaddleRestrictions_Patch {
