@@ -553,19 +553,24 @@ namespace Pokeheim {
         ILGenerator generator) {
       var syncCapturedStatus = typeof(Captured).GetMethod("SyncCapturedStatus");
 
-      foreach (var code in instructions) {
-        var methodInfo = code.operand as MethodInfo;
-        yield return code;
+      var phases = new TranspilerSequence.Phase[] {
+        new TranspilerSequence.Phase {
+          matcher = code => (code.opcode == OpCodes.Call &&
+                             (code.operand as MethodInfo).Name == "Instantiate"),
+          replacer = code => new CodeInstruction[] {
+            // Call Instantiate().
+            code,
 
-        // Right after the spawned object is instantiated, call out to our
-        // method to make sure that spawns of captured monsters are also
-        // captured.
-        if (code.opcode == OpCodes.Call && methodInfo.Name == "Instantiate") {
-          yield return new CodeInstruction(OpCodes.Dup);
-          yield return new CodeInstruction(OpCodes.Ldloc_1);
-          yield return new CodeInstruction(OpCodes.Call, syncCapturedStatus);
-        }
-      }
+            // Right after the spawned object is instantiated, call out to our
+            // method to make sure that spawns of captured monsters are also
+            // captured.
+            new CodeInstruction(OpCodes.Dup),
+            new CodeInstruction(OpCodes.Ldloc_1),
+            new CodeInstruction(OpCodes.Call, syncCapturedStatus),
+          },
+        },
+      };
+      return TranspilerSequence.Execute("SpawnAbility", phases, instructions);
     }
   }
 }

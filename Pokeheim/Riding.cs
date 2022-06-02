@@ -267,16 +267,11 @@ namespace Pokeheim {
 
       // Patch in our custom sort and distance methods so we prefer to hover on
       // saddles and can interact with them on tall monsters.
-      // TODO: This pattern appears a lot in transpilers.  Build a utility.
       [HarmonyPatch(typeof(Player), nameof(Player.FindHoverObject))]
       [HarmonyTranspiler]
       static IEnumerable<CodeInstruction> HoverObjectTranspiler(
           IEnumerable<CodeInstruction> instructions,
           ILGenerator generator) {
-        bool foundSortCall = false;
-        bool foundLoadElement = false;
-        bool foundDistanceCall = false;
-
         var hitBackupVar = generator.DeclareLocal(typeof(RaycastHit));
 
         var vector3DistanceMethod = typeof(Vector3).GetMethod(
@@ -288,62 +283,58 @@ namespace Pokeheim {
         var distanceMethod = typeof(SaddleDistance_Patch).GetMethod(
             nameof(SaddleDistance_Patch.HitDistance));
 
-        foreach (var code in instructions) {
-          var methodInfo = code.operand as MethodInfo;
-
-          if (foundSortCall == false) {
-            if (code.opcode == OpCodes.Call &&
-                methodInfo != null && methodInfo.Name == "Sort") {
-              foundSortCall = true;
-
+        var phases = new TranspilerSequence.Phase[] {
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Call &&
+                               (code.operand as MethodInfo).Name == "Sort"),
+            replacer = code => new CodeInstruction[] {
               // This is Array::Sort(
               //   UnityEngine.RaycastHit[] array,
               //   System.Comparison<UnityEngine.RaycastHit> comparison)
-              yield return code;
+              code,
               // The top of the stack is the sorted array.
 
               // Duplicate the array ref on the stack.
-              yield return new CodeInstruction(OpCodes.Dup);
-              // Call our custom sorting method, which consumes one stack element.
-              yield return new CodeInstruction(OpCodes.Call, sortMethod);
-              // Now the array has been sorted again using our custom method.
+              new CodeInstruction(OpCodes.Dup),
+              // Call our custom sorting method, which consumes one stack
+              // element.
+              new CodeInstruction(OpCodes.Call, sortMethod),
+              // Now the array has been sorted again using our custom
+              // method.
 
-              // We leave one array ref on the stack, which is where we started.
-            } else {
-              yield return code;
-            }
-          } else if (foundLoadElement == false) {
-            if (code.opcode == OpCodes.Ldelem) {
-              foundLoadElement = true;
+              // We leave one array ref on the stack, which is where we
+              // started.
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Ldelem),
+            replacer = code => new CodeInstruction[] {
               // This loads an element (RaycastHit) from an array.
-              yield return code;
+              code,
 
-              // After the original instruction, inject instructions to back up
-              // the hit in our own local var.
-              yield return new CodeInstruction(OpCodes.Dup);
-              yield return new CodeInstruction(OpCodes.Stloc_S, hitBackupVar);
-            } else {
-              yield return code;
-            }
-          } else if (foundDistanceCall == false) {
-            if (code.opcode == OpCodes.Call &&
-                methodInfo == vector3DistanceMethod) {
-              foundDistanceCall = true;
-              // This is Vector3::Distance(Vector3, Vector3).  We replace it.
-
+              // After the original instruction, inject instructions to
+              // back up the hit in our own local var.
+              new CodeInstruction(OpCodes.Dup),
+              new CodeInstruction(OpCodes.Stloc_S, hitBackupVar),
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Call &&
+                               (code.operand as MethodInfo) == vector3DistanceMethod),
+            replacer = code => new CodeInstruction[] {
+              // This is Vector3::Distance(Vector3, Vector3). We replace it.
               // Put one more argument on the stack: the hit itself.
-              yield return new CodeInstruction(OpCodes.Ldloc_S, hitBackupVar);
+              new CodeInstruction(OpCodes.Ldloc_S, hitBackupVar),
 
-              // Now call our distance method, which uses the hit context to
-              // change the distance used for saddles.
-              yield return new CodeInstruction(OpCodes.Call, distanceMethod);
-            } else {
-              yield return code;
-            }
-          } else {
-            yield return code;
-          }
-        }  // foreach (var code in instructions)
+              // Now call _our_ distance method, which uses the hit context
+              // to change the distance used for saddles.
+              new CodeInstruction(OpCodes.Call, distanceMethod),
+            },
+          },
+        };
+
+        return TranspilerSequence.Execute(
+            "FindHoverObject", phases, instructions);
       }  // static IEnumerable<CodeInstruction> HoverObjectTranspiler
     }  // class SaddleDistance_Patch
 

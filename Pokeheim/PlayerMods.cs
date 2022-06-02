@@ -216,11 +216,6 @@ namespace Pokeheim {
       static IEnumerable<CodeInstruction> Transpiler(
           IEnumerable<CodeInstruction> instructions,
           ILGenerator generator) {
-        var foundGetStringItem = false;
-        var foundNameTarget = false;
-        var foundIconTarget = false;
-        var foundLoreTarget = false;
-
         var monsterNameBackupVar = generator.DeclareLocal(typeof(String));
 
         var getStringItemMethod = typeof(List<string>).GetMethod("get_Item");
@@ -233,89 +228,75 @@ namespace Pokeheim {
         var getEntryIconMethod = typeof(PlayerMods).GetMethod(nameof(PlayerMods.GetEntryIcon));
         var getLoreMethod = typeof(PlayerMods).GetMethod(nameof(PlayerMods.GetLore));
 
-        foreach (var code in instructions) {
-          // These targets appear in this order.
-          if (foundGetStringItem == false) {
-            yield return code;
-
-            if (code.opcode == OpCodes.Callvirt &&
-                code.operand as MethodInfo == getStringItemMethod) {
-              // This is getting the next string from the trophy list.
-              foundGetStringItem = true;
+        var phases = new TranspilerSequence.Phase[] {
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == getStringItemMethod),
+            replacer = code => new CodeInstruction[] {
+              // Load a string from the array of trophy prefab names.
+              code,
 
               // After the original instruction, inject instructions to back up
-              // the original monster name in our own local var.  Hopefully
-              // nobody else is using the same slot number in another mod's
-              // transpiler for the same method...
-              yield return new CodeInstruction(OpCodes.Stloc_S, monsterNameBackupVar);
-              yield return new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar);
+              // the original monster name in our own local var.
+              new CodeInstruction(OpCodes.Stloc_S, monsterNameBackupVar),
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
+
               // Then convert that to a trophy name.  The original method will
               // now store this into a local var of its own, and we don't care
               // what index it has because we have our own backup.
-              yield return new CodeInstruction(OpCodes.Call, getTrophyPrefabNameMethod);
-            }
-          } else if (foundNameTarget == false) {
-            if (code.opcode == OpCodes.Callvirt &&
-                code.operand as MethodInfo == localizeMethod) {
+              new CodeInstruction(OpCodes.Call, getTrophyPrefabNameMethod),
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == localizeMethod),
+            replacer = code => new CodeInstruction[] {
               // Right before we localize the entry name, replace it.
-              foundNameTarget = true;
-
               // Remove the trophy name from the stack.
-              yield return new CodeInstruction(OpCodes.Pop);
+              new CodeInstruction(OpCodes.Pop),
               // Load our backup of the original monster name onto the stack.
-              yield return new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar);
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
               // Get the replacement name (untranslated) for this Pokedex entry.
-              yield return new CodeInstruction(OpCodes.Call, getEntryNameMethod);
+              new CodeInstruction(OpCodes.Call, getEntryNameMethod),
               // Continue with the Localize() call.
-              yield return code;
-            } else {
-              yield return code;
-            }
-          } else if (foundIconTarget == false) {
-            if (code.opcode == OpCodes.Callvirt &&
-                code.operand as MethodInfo == getIconMethod) {
+              code,
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == getIconMethod),
+            replacer = code => new CodeInstruction[] {
               // Instead of loading the icon from the trophy ItemDrop, call our
               // method instead.
-              foundIconTarget = true;
-
               // Remove the item data from the stack.
-              yield return new CodeInstruction(OpCodes.Pop);
+              new CodeInstruction(OpCodes.Pop),
               // Load our backup of the original monster name onto the stack.
-              yield return new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar);
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
               // Get the replacement icon for this Pokedex entry.
-              yield return new CodeInstruction(OpCodes.Call, getEntryIconMethod);
-            } else {
-              yield return code;
-            }
-          } else if (foundLoreTarget == false) {
-            if (code.opcode == OpCodes.Ldstr &&
-                code.operand as String == "_lore") {
+              new CodeInstruction(OpCodes.Call, getEntryIconMethod),
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Ldstr &&
+                               (code.operand as String) == "_lore"),
+            replacer = code => new CodeInstruction[] {
               // This occurs right before the original method concatenates the
               // trophy name with "_lore".  Skip this, and instead...
-              foundLoreTarget = true;
-
               // Remove the trophy name from the stack.
-              yield return new CodeInstruction(OpCodes.Pop);
+              new CodeInstruction(OpCodes.Pop),
               // Load our backup of the original monster name onto the stack.
-              yield return new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar);
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
               // Get the replacement lore (untranslated) for this Pokedex entry.
-              yield return new CodeInstruction(OpCodes.Call, getLoreMethod);
+              new CodeInstruction(OpCodes.Call, getLoreMethod),
               // The next instruction is a 2-string concat operation.  So place
               // a blank string onto the stack.
-              yield return new CodeInstruction(OpCodes.Ldstr, "");
+              new CodeInstruction(OpCodes.Ldstr, ""),
               // The rest of the loop will now concat the two and then localize.
-            } else {
-              yield return code;
-            }
-          } else {
-            yield return code;
-          }
-        }
-
-        if (!foundGetStringItem || !foundNameTarget || !foundIconTarget || !foundLoreTarget) {
-          Logger.LogError("Failed to patch UpdateTrophyList! " +
-              $"({foundGetStringItem}, {foundNameTarget}, {foundIconTarget}, {foundLoreTarget})");
-        }
+            },
+          },
+        };
+        return TranspilerSequence.Execute(
+            "UpdateTrophyList", phases, instructions);
       }
     }
 
