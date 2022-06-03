@@ -135,7 +135,7 @@ namespace Pokeheim {
         player.LogCapture(inhabitant.PrefabName);
         player.Message(MessageHud.MessageType.Center, "$monster_caught");
         if (MonsterMetadata.PokedexFullness() == 1f) {
-          player.PokeheimTutorial("caught_em_all");
+          player.PokeheimTutorial("caught_em_all", immediate: true);
         } else {
           player.PokeheimTutorial("caught");
         }

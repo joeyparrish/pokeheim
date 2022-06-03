@@ -127,13 +127,15 @@ namespace Pokeheim {
         } else {
           Raven.m_tempTexts.Add(ravenText);
         }
+      }
+    }
 
-        // This tutorial triggers a side-effect, but we only want to do it once.
-        // So the side-effect is triggered from here, where we are guarded
-        // against triggering it multiple times.
-        if (name == "caught_em_all") {
-          OdinMods.SpawnStaticOdin();
-        }
+    internal static void OnTutorialHook(string key) {
+      // This tutorial triggers a side-effect.  This is only triggered when you
+      // actually talk to Professor Raven, but not when he spawns and not when
+      // the tutorial is invoked (since that can happen multiple times).
+      if (key == "caught_em_all") {
+        OdinMods.SpawnStaticOdin();
       }
     }
 
@@ -197,6 +199,7 @@ namespace Pokeheim {
     class LogAllTutorials_Patch {
       static void Postfix(Raven __instance) {
         var tutorial = __instance.m_currentText;
+        OnTutorialHook(tutorial.m_key);
         Logger.LogInfo($"Showing tutorial key: {tutorial.m_key} text: {tutorial.m_text}");
       }
     }
@@ -406,7 +409,7 @@ namespace Pokeheim {
           Player.m_localPlayer.ShowTutorial(key);
         } else {
           Debug.Log($"Activating Pokeheim tutorial \"{key}\".");
-          Player.m_localPlayer.PokeheimTutorial(key);
+          Player.m_localPlayer.PokeheimTutorial(key, immediate: true);
         }
       }
     }

@@ -35,6 +35,14 @@ namespace Pokeheim {
       private const float textCullDistance = 20f;
       private const float dialogVisibleTime = 10f;
 
+      private void Awake() {
+        staticOdin = GetComponent<Odin>();
+      }
+
+      private void OnDestroy() {
+        staticOdin = null;
+      }
+
       public string GetHoverName() {
         return Localization.instance.Localize("$odin");
       }
@@ -60,19 +68,13 @@ namespace Pokeheim {
             },
           });
 
+          // Wait for dramatic effect...
           this.DelayCall(10f /* seconds */, delegate {
-            // Roll the outro text.
-            TextViewer.instance.ShowText(
-                TextViewer.Style.Intro,
-                "INTRO",
-                "$pokeheim_outro",
-                 autoHide: false);
+            Credits.Roll(withOutro: true);
 
-            this.DelayCall(2f /* seconds */, delegate {
-              // Despawn Odin.  This must come last, or the delayed call won't
-              // happen.
-              Despawn();
-            });
+            // Despawn Odin.  Since this delayed call is attached to him, this
+            // step must come last.
+            Despawn();
           });
         } else {
           hasTalked = true;
@@ -103,7 +105,7 @@ namespace Pokeheim {
     public static void SpawnStaticOdin() {
       // Just because he's the All-Father doesn't mean you can have as many of
       // him as you want.
-      if (staticOdin != null && staticOdin.enabled) {
+      if (staticOdin != null) {
         return;
       }
 
@@ -115,9 +117,8 @@ namespace Pokeheim {
       var clone = UnityEngine.Object.Instantiate(
           odinPrefab, templePosition, rotation);
 
-      staticOdin = clone.GetComponent<Odin>();
-      staticOdin.SetStatic();
-      Logger.LogDebug($"Spawned static Odin: {staticOdin}");
+      clone.GetComponent<Odin>().SetStatic();
+      Logger.LogDebug($"Spawned static Odin: {clone}");
     }
 
     public static void SetStatic(this Odin odin) {
@@ -134,7 +135,7 @@ namespace Pokeheim {
          UnityEngine.Object.Destroy(body);
       }
 
-      // Make Odin interactable.
+      // Make Odin interactable if he's not already.
       if (odin.GetComponent<OdinInteraction>() == null) {
         odin.gameObject.AddComponent<OdinInteraction>();
       }
@@ -151,10 +152,9 @@ namespace Pokeheim {
         Odin odin = __instance;
 
         if (odin.IsStatic()) {
-          staticOdin = odin;
           // The flag is already set, but we may need to reapply other mods to
           // static Odin.
-          staticOdin.SetStatic();
+          odin.SetStatic();
         }
       }
     }

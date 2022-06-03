@@ -93,6 +93,7 @@
     <Compile Include="BallProjectile.cs" />
     <Compile Include="Captured.cs" />
     <Compile Include="ContainerMods.cs" />
+    <Compile Include="Credits.cs" />
     <Compile Include="Debugging.cs" />
     <Compile Include="DressUp.cs" />
     <Compile Include="Fainting.cs" />
