@@ -29,9 +29,17 @@ namespace Pokeheim {
     // Let the outro play for this long before replacing it with credits.
     private const float outroTime = 40f;  // seconds
 
-    private struct Contributor {
+    private class Contributor {
       public string name;
-      public string link;
+      public string link = "";  // Optional
+
+      new public string ToString() {
+        if (link != "") {
+          return name + " - " + link;
+        } else {
+          return name;
+        }
+      }
     }
 
     // Let the contributors list play for this long before replacing it with
@@ -84,7 +92,7 @@ namespace Pokeheim {
     private static string GetContributors() {
       var text = "$pokeheim_contributors\n===== ===== =====\n";
       foreach (var contributor in contributors) {
-        text += contributor.name + " - " + contributor.link + "\n";
+        text += contributor.ToString() + "\n";
       }
       return text;
     }
@@ -96,7 +104,7 @@ namespace Pokeheim {
         text += language + "\n===== ===== =====\n";
 
         foreach (var translator in entry.Value) {
-          text += translator.name + " - " + translator.link + "\n";
+          text += translator.ToString() + "\n";
         }
         text += "\n\n";
       }
