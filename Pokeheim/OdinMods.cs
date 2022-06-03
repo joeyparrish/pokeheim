@@ -22,6 +22,7 @@ using UnityEngine;
 
 using Logger = Jotunn.Logger;
 
+// TODO: Can all Players see Odin when he spawns for just one?
 namespace Pokeheim {
   public static class OdinMods {
     // These are keys which will be used to store additional fields in ZDO.
@@ -30,7 +31,8 @@ namespace Pokeheim {
     private static Odin staticOdin = null;
 
     public class OdinInteraction : MonoBehaviour, Hoverable, Interactable {
-      private bool hasTalked = false;
+      private Player activatingPlayer = null;
+
       private const float textOffset = 1.5f;
       private const float textCullDistance = 20f;
       private const float dialogVisibleTime = 10f;
@@ -41,6 +43,20 @@ namespace Pokeheim {
 
       private void OnDestroy() {
         staticOdin = null;
+      }
+
+      private void Update() {
+        if (activatingPlayer == null) {
+          // Not activated yet.
+          return;
+        }
+
+        var distanceToPlayer = Vector3.Distance(
+            transform.position, activatingPlayer.transform.position);
+        if (distanceToPlayer > textCullDistance) {
+          // The player ran away!
+          DoMurder();
+        }
       }
 
       public string GetHoverName() {
@@ -56,28 +72,13 @@ namespace Pokeheim {
           return false;
         }
 
-        if (hasTalked && Chat.instance.IsDialogVisible(gameObject)) {
-          Chat.instance.ClearNpcText(gameObject);
+        if (character == activatingPlayer) {
+          // The player is dismissing the chat dialog.
+          DoMurder();
+        } else if (activatingPlayer == null) {
+          // The player is activating the chat dialog.
+          activatingPlayer = character as Player;
 
-          // Kill the player, but suppress the "death" tutorial if it hasn't
-          // been seen before.
-          (character as Player).SetSeenTutorial("death");
-          character.Damage(new HitData {
-            m_damage = {
-              m_damage = 1E+10f,
-            },
-          });
-
-          // Wait for dramatic effect...
-          this.DelayCall(10f /* seconds */, delegate {
-            Credits.Roll(withOutro: true);
-
-            // Despawn Odin.  Since this delayed call is attached to him, this
-            // step must come last.
-            Despawn();
-          });
-        } else {
-          hasTalked = true;
           Chat.instance.SetNpcText(
               gameObject,
               Vector3.up * textOffset,
@@ -93,6 +94,28 @@ namespace Pokeheim {
 
       public bool UseItem(Humanoid user, ItemDrop.ItemData item) {
         return false;
+      }
+
+      private void DoMurder() {
+        Chat.instance.ClearNpcText(gameObject);
+
+        // Kill the player, but suppress the "death" tutorial if it hasn't
+        // been seen before.
+        activatingPlayer.SetSeenTutorial("death");
+        activatingPlayer.Damage(new HitData {
+          m_damage = {
+            m_damage = 1E+10f,
+          },
+        });
+
+        // Wait for dramatic effect...
+        this.DelayCall(10f /* seconds */, delegate {
+          Credits.Roll(withOutro: true);
+
+          // Despawn Odin.  Since this delayed call is attached to him, this
+          // step must come last.
+          Despawn();
+        });
       }
 
       private void Despawn() {
