@@ -67,6 +67,14 @@
   "pokeheim_tutorial_caught_boss_topic": "Catching Bosses",
   "pokeheim_tutorial_caught_boss_text": "Congratulations, Trainer!  You caught a boss!  Now check out that weird stone with the red engravings, and it will mark the next boss on the map for you.\n\nCatch 'em all!  Seriously.  You <color=yellow>gotta</color>.",
 
+  "pokeheim_tutorial_caught_all_bosses_label": "Prof. Raven: All The Bosses",
+  "pokeheim_tutorial_caught_all_bosses_topic": "All The Bosses!",
+  "pokeheim_tutorial_caught_all_bosses_text": "Congratulations, Trainer!  You did it!  You caught all the bosses!\n\nBut Odin says that's not good enough.  Honestly, he's not that impressed with you, Trainer.  He says you're slacking.\n\nNow you <color=yellow>gotta catch 'em all</color>.  Talk to me again when your Pokédex is full.",
+
+  "pokeheim_tutorial_caught_em_all_label": "Prof. Raven: You Caught 'Em All",
+  "pokeheim_tutorial_caught_em_all_topic": "You Caught 'Em All!",
+  "pokeheim_tutorial_caught_em_all_text": "Finally, Trainer!  What took you so long?\n\nNow head back to the starting location to <color=yellow>meet Odin</color>.",
+
   "pokeheim_tutorial_catch_raven_label": "Prof. Raven: What Is Your Problem?!",
   "pokeheim_tutorial_catch_raven_topic": "What Is Your Problem?!",
   "pokeheim_tutorial_catch_raven_text": "Dammit, Trainer!  Do I look like a monster to you?\n\nDon't be a jerk, or I'll change your character's name to Gary.\n\nI mean it.",

@@ -132,9 +132,13 @@ namespace Pokeheim {
         player.Message(MessageHud.MessageType.Center,
             Localization.instance.Localize("$monster_return", name));
       } else {
-        player.Message(MessageHud.MessageType.Center, "$monster_caught");
-        player.PokeheimTutorial("caught");
         player.LogCapture(inhabitant.PrefabName);
+        player.Message(MessageHud.MessageType.Center, "$monster_caught");
+        if (MonsterMetadata.PokedexFullness() == 1f) {
+          player.PokeheimTutorial("caught_em_all");
+        } else {
+          player.PokeheimTutorial("caught");
+        }
       }
 
       // Destroy the original game object.  NOTE: This must come after all

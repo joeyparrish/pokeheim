@@ -318,6 +318,16 @@ namespace Pokeheim {
       return numBosses;
     }
 
+    public static bool CaughtAllBosses() {
+      var player = Player.m_localPlayer;
+      foreach (var metadata in AllMonsters) {
+        if (metadata.IsBoss && !player.HasInPokedex(metadata.PrefabName)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
     // Only those whose entries are "complete" and can be shown in the Pokedex.
     public static IEnumerable<Metadata> GetAllMonsters() {
       foreach (var metadata in AllMonsters) {

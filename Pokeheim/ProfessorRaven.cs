@@ -45,6 +45,8 @@ namespace Pokeheim {
       "pokeball",
       "caught",
       "caught_boss",
+      "caught_all_bosses",
+      "caught_em_all",
       "catch_raven",
     };
 
@@ -323,7 +325,11 @@ namespace Pokeheim {
 
         foreach (var item in player.m_inventory.GetAllItems()) {
           if (item.GetInhabitant()?.Faction == Character.Faction.Boss) {
-            player.PokeheimTutorial("caught_boss");
+            if (MonsterMetadata.CaughtAllBosses()) {
+              player.PokeheimTutorial("caught_all_bosses");
+            } else {
+              player.PokeheimTutorial("caught_boss");
+            }
           } else if (BossTrophies.Contains(item.m_shared.m_name)) {
             player.PokeheimTutorial("boss_trophy");
           } else if (item.IsBall()) {
