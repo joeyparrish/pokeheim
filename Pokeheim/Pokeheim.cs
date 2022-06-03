@@ -28,7 +28,6 @@ using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
-// FIXME: Track when all bosses are caught, decide what victory looks like
 // FIXME: Replace main menu music, good morning music
 // FIXME: Update testing script
 namespace Pokeheim {
