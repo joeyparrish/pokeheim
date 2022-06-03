@@ -1,5 +1,6 @@
 {
   "professor_raven": "Professor Raven",
+
   "pokeheim_raven_attention_1": "Hey there, Trainer!",
   "pokeheim_raven_attention_2": "Hey there, Trainer!",
   "pokeheim_raven_attention_3": "Hey, Trainer!  Over here!",
@@ -81,5 +82,9 @@
 
   "pokeheim_tutorial_catch_raven_2_label": "Prof. Raven: You Forced My Hand",
   "pokeheim_tutorial_catch_raven_2_topic": "You Forced My Hand",
-  "pokeheim_tutorial_catch_raven_2_text": "I <color=yellow>WARNED</color> you, Trainer!  That's it.\n\nYour name is Gary now.\n\nJerk."
+  "pokeheim_tutorial_catch_raven_2_text": "I <color=yellow>WARNED</color> you, Trainer!  That's it.\n\nYour name is Gary now.\n\nJerk.",
+
+  "odin": "Odin",
+  "odin_congratulations_topic": "Congratulations!",
+  "odin_congratulations_text": "Your work here is done, Trainer!  Let's go."
 }

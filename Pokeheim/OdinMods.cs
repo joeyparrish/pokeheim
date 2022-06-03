@@ -23,12 +23,82 @@ using UnityEngine;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
-  // TODO: Now Odin is here... what's the final interaction?
   public static class OdinMods {
     // These are keys which will be used to store additional fields in ZDO.
     private const string IsStaticKey = "com.pokeheim.IsStatic";
 
     private static Odin staticOdin = null;
+
+    public class OdinInteraction : MonoBehaviour, Hoverable, Interactable {
+      private bool hasTalked = false;
+      private const float textOffset = 1.5f;
+      private const float textCullDistance = 20f;
+      private const float dialogVisibleTime = 10f;
+
+      public string GetHoverName() {
+        return Localization.instance.Localize("$odin");
+      }
+
+      public string GetHoverText() {
+        return Localization.instance.Localize("$odin\n[<color=yellow><b>$KEY_Use</b></color>] $raven_interact");
+      }
+
+      public bool Interact(Humanoid character, bool hold, bool alt) {
+        if (hold) {
+          return false;
+        }
+
+        if (hasTalked && Chat.instance.IsDialogVisible(gameObject)) {
+          Chat.instance.ClearNpcText(gameObject);
+
+          // Kill the player, but suppress the "death" tutorial if it hasn't
+          // been seen before.
+          (character as Player).SetSeenTutorial("death");
+          character.Damage(new HitData {
+            m_damage = {
+              m_damage = 1E+10f,
+            },
+          });
+
+          this.DelayCall(10f /* seconds */, delegate {
+            // Roll the outro text.
+            TextViewer.instance.ShowText(
+                TextViewer.Style.Intro,
+                "INTRO",
+                "$pokeheim_outro",
+                 autoHide: false);
+
+            this.DelayCall(2f /* seconds */, delegate {
+              // Despawn Odin.  This must come last, or the delayed call won't
+              // happen.
+              Despawn();
+            });
+          });
+        } else {
+          hasTalked = true;
+          Chat.instance.SetNpcText(
+              gameObject,
+              Vector3.up * textOffset,
+              textCullDistance,
+              dialogVisibleTime,
+              "$odin_congratulations_topic",
+              "$odin_congratulations_text",
+              /* large */ true);
+        }
+
+        return false;
+      }
+
+      public bool UseItem(Humanoid user, ItemDrop.ItemData item) {
+        return false;
+      }
+
+      private void Despawn() {
+        var odin = GetComponent<Odin>();
+        odin.m_despawn.Create(transform.position, transform.rotation);
+        odin.m_nview.Destroy();
+      }
+    }
 
     public static void SpawnStaticOdin() {
       // Just because he's the All-Father doesn't mean you can have as many of
@@ -51,12 +121,22 @@ namespace Pokeheim {
     }
 
     public static void SetStatic(this Odin odin) {
+      // Set the static flag.
       odin.SetExtraData(IsStaticKey, true);
+
+      // Make other mods for static Odin.  These may need to be reapplied on
+      // reload, so take care to make this method work when called more than
+      // once.
 
       // Make static Odin impossible to push around by removing his physics.
       var body = odin.GetComponent<Rigidbody>();
       if (body != null) {
          UnityEngine.Object.Destroy(body);
+      }
+
+      // Make Odin interactable.
+      if (odin.GetComponent<OdinInteraction>() == null) {
+        odin.gameObject.AddComponent<OdinInteraction>();
       }
     }
 
@@ -72,6 +152,9 @@ namespace Pokeheim {
 
         if (odin.IsStatic()) {
           staticOdin = odin;
+          // The flag is already set, but we may need to reapply other mods to
+          // static Odin.
+          staticOdin.SetStatic();
         }
       }
     }

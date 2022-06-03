@@ -127,6 +127,13 @@ namespace Pokeheim {
         } else {
           Raven.m_tempTexts.Add(ravenText);
         }
+
+        // This tutorial triggers a side-effect, but we only want to do it once.
+        // So the side-effect is triggered from here, where we are guarded
+        // against triggering it multiple times.
+        if (name == "caught_em_all") {
+          OdinMods.SpawnStaticOdin();
+        }
       }
     }
 

@@ -136,7 +136,6 @@ namespace Pokeheim {
         player.Message(MessageHud.MessageType.Center, "$monster_caught");
         if (MonsterMetadata.PokedexFullness() == 1f) {
           player.PokeheimTutorial("caught_em_all");
-          OdinMods.SpawnStaticOdin();
         } else {
           player.PokeheimTutorial("caught");
         }
