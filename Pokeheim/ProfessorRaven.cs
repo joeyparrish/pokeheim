@@ -48,6 +48,7 @@ namespace Pokeheim {
       "caught_all_bosses",
       "caught_em_all",
       "catch_raven",
+      "swimming",
     };
 
     private static HashSet<string> SkippedTutorials = new HashSet<string> {
@@ -84,8 +85,11 @@ namespace Pokeheim {
 
     [PokeheimInit]
     public static void Init() {
+#if DEBUG
       CommandManager.Instance.AddConsoleCommand(new ActivateTutorial());
       CommandManager.Instance.AddConsoleCommand(new ResetLogBook());
+      CommandManager.Instance.AddConsoleCommand(new ResetTutorial());
+#endif
     }
 
     // Rather than injecting all our custom tutorials into Tutorials, do what
@@ -344,7 +348,37 @@ namespace Pokeheim {
             player.PokeheimTutorial("boss_trophy");
           } else if (item.IsBall()) {
             player.PokeheimTutorial("pokeball");
+          } else if (item.m_shared.m_name == Riding.SaddleName) {
+            if (!Player.m_localPlayer.HaveSeenTutorial("swimming")) {
+              Logger.LogDebug("Suppressing swimming tutorial.");
+              // Once the player makes a saddle, don't bother with a the
+              // "swimming" tutorial, which gives hints about building a saddle.
+              player.SetSeenTutorial("swimming");
+            }
           }
+        }
+      }
+    }
+
+    // Hook into swimming and show a tutorial with more hints on building
+    // saddles.
+    [HarmonyPatch(typeof(Character), nameof(Character.UpdateWater))]
+    class SwimTutorial_Patch {
+      static bool triggered = false;
+
+      static void Postfix(Player __instance) {
+        // Since this runs on every Update(), make it as cheap as possible to
+        // leave this method early after triggering the tutorial once.
+        if (triggered) {
+          return;
+        }
+
+        var player = __instance as Player;
+        if (player != null && player == Player.m_localPlayer &&
+            player.IsSwiming()) {
+          triggered = true;
+          Logger.LogDebug("Triggering swimming tutorial.");
+          player.PokeheimTutorial("swimming", immediate: true);
         }
       }
     }
@@ -369,6 +403,7 @@ namespace Pokeheim {
       }
     }
 
+#if DEBUG
     class ActivateTutorial : ConsoleCommand {
       public override string Name => "tutorial";
       public override string Help => "[key] Activates a specific tutorial by its key.";
@@ -423,5 +458,22 @@ namespace Pokeheim {
         Player.m_localPlayer.m_knownTexts.Clear();
       }
     }
+
+    class ResetTutorial : ConsoleCommand {
+      public override string Name => "resettutorial";
+      public override string Help => "[key] Resets a single tutorial.";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        if (args.Length > 0) {
+          var key = args[0];
+          Player.m_localPlayer.m_shownTutorials.Remove(key);
+          Debug.Log($"Reset tutorial {key}.");
+        } else {
+          Debug.Log($"Please specify a tutorial to reset.");
+        }
+      }
+    }
+#endif
   }
 }

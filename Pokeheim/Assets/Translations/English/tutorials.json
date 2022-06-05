@@ -84,6 +84,10 @@
   "pokeheim_tutorial_catch_raven_2_topic": "You Forced My Hand",
   "pokeheim_tutorial_catch_raven_2_text": "I <color=yellow>WARNED</color> you, Trainer!  That's it.\n\nYour name is Gary now.\n\nJerk.",
 
+  "pokeheim_tutorial_swimming_label": "Prof. Raven: Swimming Is For Losers",
+  "pokeheim_tutorial_swimming_topic": "Swimming Is For Losers",
+  "pokeheim_tutorial_swimming_text": "Listen, Trainer.  Swimming is not a great way for a human to get anywhere.  You can't hold your breath long enough.  Why don't you try building a <color=yellow>leather saddle</color> and make someone else do the swimming for you?",
+
   "odin": "Odin",
   "odin_congratulations_topic": "Congratulations!",
   "odin_congratulations_text": "Your work here is done, Trainer!  Let's go."

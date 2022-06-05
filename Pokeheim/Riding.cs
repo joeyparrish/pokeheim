@@ -35,7 +35,7 @@ namespace Pokeheim {
   public static class Riding {
     public static ItemDrop UniversalSaddleItem = null;
     private static GameObject SaddlePrefab = null;
-    private const string SaddleName = "$item_saddle_pokeheim";
+    public const string SaddleName = "$item_saddle_pokeheim";
 
     [PokeheimInit]
     public static void Init() {
@@ -52,7 +52,7 @@ namespace Pokeheim {
           Requirements = new[] {
             new RequirementConfig {
               Item = "LeatherScraps",
-              Amount = 10,
+              Amount = 5,
             },
           },
         });
