@@ -168,7 +168,7 @@ namespace Pokeheim {
 
     [HarmonyPatch]
     class RenameTrophiesPanel_Patch {
-      static UITextReplacer PokedexTitleReplacer = null;
+      static Text TrophyPanelTitle = null;
 
       [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
       [HarmonyPostfix]
@@ -177,10 +177,8 @@ namespace Pokeheim {
 
         foreach (var component in gui.m_trophiesPanel.GetComponentsInChildren<Text>()) {
           if (component.name == "topic") {
-            PokedexTitleReplacer = new UITextReplacer(
-                typeof(InventoryGui),
-                component,
-                delegate { return InventoryGui.IsVisible(); });
+            TrophyPanelTitle = component;
+            break;
           }
         }
 
@@ -206,7 +204,8 @@ namespace Pokeheim {
       static void ComputePokedexTitleElementAndText(InventoryGui __instance) {
         var pokedexPercent = MonsterMetadata.PokedexFullness() * 100f;
         Logger.LogInfo($"Pokedex {pokedexPercent:n1}% complete");
-        PokedexTitleReplacer.SetText(Localization.instance.Localize(
+        Utils.PatchUIText(TrophyPanelTitle,
+            Localization.instance.Localize(
             "$pokedex_percent_complete", pokedexPercent.ToString("n1")));
       }
     }

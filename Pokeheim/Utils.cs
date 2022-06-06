@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
@@ -287,6 +288,21 @@ namespace Pokeheim {
         list.Add(prefix + index.ToString("d2"));
       }
       return list;
+    }
+
+    // Some UI Text elements are automatically re-localized on Update() by
+    // Valheim's Localization class.  This makes it impossible to patch their
+    // text contents without also patching the text cached in Localization.
+    // (This was not true in November 2021, and it is true in May of 2022.)
+    // This encapsulates the solution and patches the text in both the Text
+    // element itself and the cached data in Localization (if present).
+    public static void PatchUIText(Text element, string newText) {
+      element.text = newText;
+
+      var dictionary = Localization.instance.textStrings;
+      if (dictionary.ContainsKey(element)) {
+        dictionary[element] = newText;
+      }
     }
   }
 }

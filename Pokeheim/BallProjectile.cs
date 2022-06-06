@@ -368,14 +368,9 @@ namespace Pokeheim {
         foreach (var setting in Settings.m_instance.m_keys) {
           if (setting.m_keyName == HideButtonName) {
             var text = setting.m_keyTransform.GetComponentInChildren<Text>();
-            UITextReplacer replacer = new UITextReplacer(
-                typeof(Settings),
-                text,
-                delegate {
-                  return Settings.m_instance.m_settingsPanel.activeSelf;
-                });
-            replacer.SetText(Localization.instance.Localize(
+            Utils.PatchUIText(text, Localization.instance.Localize(
                 "$monster_recall_key_description"));
+            break;
           }
         }
       }

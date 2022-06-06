@@ -108,7 +108,6 @@
     <Compile Include="Sounds.cs" />
     <Compile Include="Suppressipes.cs" />
     <Compile Include="TranspilerSequence.cs" />
-    <Compile Include="UITextReplacer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
