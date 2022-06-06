@@ -16,9 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 
@@ -73,9 +75,9 @@ namespace Pokeheim {
       public string name;
       public string link = "";  // Optional
 
-      new public string ToString() {
+      public string Format(bool oneLine) {
         if (link != "") {
-          return name + " - " + link;
+          return name + (oneLine ? " - " : "\n") + link;
         } else {
           return name;
         }
@@ -100,8 +102,8 @@ namespace Pokeheim {
     }
 
     private static void RollCreditsOnly() {
-      RollText(GetContributors(), contributorsTime, () => {
-        RollText(GetTranslators());
+      RollText(GetContributors(richText: false), contributorsTime, () => {
+        RollText(GetTranslators(richText: false));
       });
     }
 
@@ -109,22 +111,55 @@ namespace Pokeheim {
       return "$pokeheim_outro";
     }
 
-    private static string GetContributors() {
-      var text = "$pokeheim_contributors\n===== ===== =====\n";
+    private static string GetContributors(bool richText, int headingSize=0) {
+      string text = "";
+      if (richText) {
+        if (headingSize != 0) {
+          text += $"<size={headingSize}>";
+        }
+        text += "<color=orange>$pokeheim_contributors</color>";
+        if (headingSize != 0) {
+          text += "</size>";
+        }
+        text += "\n";
+      } else {
+        text += "$pokeheim_contributors\n";
+        text += "===== ===== =====\n";
+      }
+
       foreach (var contributor in contributors) {
-        text += contributor.ToString() + "\n";
+        text += contributor.Format(oneLine: !richText) + "\n";
       }
       return text;
     }
 
-    private static string GetTranslators() {
-      var text = "$pokeheim_translators\n\n";
+    private static string GetTranslators(bool richText, int headingSize=0) {
+      string text = "";
+      if (richText) {
+        if (headingSize != 0) {
+          text += $"<size={headingSize}>";
+        }
+        text += "<color=orange>$pokeheim_translators</color>";
+        if (headingSize != 0) {
+          text += "</size>";
+        }
+        text += "\n\n";
+      } else {
+        text += "$pokeheim_translators\n\n";
+      }
+
       foreach (var entry in translators) {
         var language = entry.Key;
-        text += language + "\n===== ===== =====\n";
+        var translators = entry.Value;
 
-        foreach (var translator in entry.Value) {
-          text += translator.ToString() + "\n";
+        if (richText) {
+          text += $"<color=orange>{language}</color>\n";
+        } else {
+          text += $"{language}\n===== ===== =====\n";
+        }
+
+        foreach (var translator in translators) {
+          text += translator.Format(oneLine: !richText) + "\n";
         }
         text += "\n\n";
       }
@@ -152,6 +187,99 @@ namespace Pokeheim {
     [PokeheimInit]
     public static void Init() {
       CommandManager.Instance.AddConsoleCommand(new CreditsCommand());
+    }
+
+    private static float GetTextHeight(
+        Text template, string newText, int newFontSize = 0) {
+      TextGenerationSettings generationSettings =
+          template.GetGenerationSettings(template.rectTransform.rect.size);
+      if (newFontSize != 0) {
+        generationSettings.fontSize = newFontSize;
+      }
+      TextGenerator textGen = new TextGenerator();
+      return textGen.GetPreferredHeight(newText, generationSettings);
+    }
+
+    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
+    class HookIntoMainMenuCredits_Patch {
+      static void Postfix(FejdStartup __instance) {
+        var creditsList = __instance.m_creditsList;
+
+        Text templateHeading =
+            creditsList.Find("Irongate")?.GetComponent<Text>();
+        if (templateHeading == null) {
+          Logger.LogError("Failed to find UI heading to hook credits!");
+          return;
+        }
+
+        Text heading = UnityEngine.Object.Instantiate(
+            templateHeading,
+            templateHeading.transform.parent).GetComponent<Text>();
+
+        Text text = null;
+        foreach (var child in heading.GetComponentsInChildren<Text>()) {
+          if (child != heading) {
+            text = child;
+            break;
+          }
+        }
+        if (text == null) {
+          Logger.LogError("Failed to find UI text to hook credits!");
+          return;
+        }
+
+        var headingText = "Pokéheim";
+        //var headingHeight = GetTextHeight(heading, headingText);
+        var headingHeight = heading.rectTransform.sizeDelta.y;
+
+        // Use a smaller font size
+        var originalFontSize = text.fontSize;
+        var textFontSize = (int)((float)text.fontSize * 0.8f);
+        var textText = GetContributors(richText: true, headingSize: originalFontSize) +
+                       "\n\n" +
+                       GetTranslators(richText: true, headingSize: originalFontSize);
+        var textHeight = GetTextHeight(text, textText, textFontSize);
+
+        var paddingHeight = headingHeight * 2f;
+        var totalHeight = headingHeight + textHeight + paddingHeight;
+        Logger.LogDebug($"Added credits size: {totalHeight}");
+
+        var headingPosition = heading.rectTransform.position;
+        headingPosition.y += totalHeight;
+        heading.rectTransform.position = headingPosition;
+
+        heading.text = headingText;
+        text.text = textText;
+        text.fontSize = textFontSize;
+
+        // Grow the text area to fit the new text.  Make it 1.5x as wide as it
+        // used to be.
+        text.rectTransform.sizeDelta = new Vector2(
+            text.rectTransform.sizeDelta.x * 1.5f,
+            textHeight);
+
+        // Grow the credits list to account for the new text, as well.
+        creditsList.sizeDelta = new Vector2(
+            creditsList.sizeDelta.x,
+            creditsList.sizeDelta.y + totalHeight);
+        Logger.LogDebug($"Overall credits size: {creditsList.rect}");
+
+        // Shift all the credits children down.
+        foreach (Transform child in creditsList) {
+          var childTransform = child.GetComponent<RectTransform>();
+          if (childTransform != null &&
+              // NOTE: The "Thank you!" text is anchored to the bottom of the
+              // credits object, so don't adjust its position.
+              child.gameObject.name != "Thank you") {
+            var position = childTransform.position;
+            position.y -= totalHeight;
+            Logger.LogDebug(
+                $"Adjusted credits element: {childTransform}" +
+                $" from {childTransform.position} to {position}");
+            childTransform.position = position;
+          }
+        }
+      }
     }
 
     class CreditsCommand : ConsoleCommand {
