@@ -26,26 +26,6 @@ using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
   public static class Credits {
-    // Let the outro play for this long before replacing it with credits.
-    private const float outroTime = 40f;  // seconds
-
-    private class Contributor {
-      public string name;
-      public string link = "";  // Optional
-
-      new public string ToString() {
-        if (link != "") {
-          return name + " - " + link;
-        } else {
-          return name;
-        }
-      }
-    }
-
-    // Let the contributors list play for this long before replacing it with
-    // translators.
-    private const float contributorsTime = 30f;  // seconds
-
     private static List<Contributor> contributors = new List<Contributor> {
       new Contributor {
         name = "Joey Parrish",
@@ -53,6 +33,13 @@ namespace Pokeheim {
       },
 
       // Add new entries above this line.
+
+      // These come last.
+      Contributor.Spacer(),
+      new Contributor {
+        name = "Built with Jötunn: The Valheim Library",
+        link = "https://valheim-modding.github.io/Jotunn/",
+      },
     };
 
     private static Dictionary<string, List<Contributor>> translators = new Dictionary<string, List<Contributor>> {
@@ -78,6 +65,30 @@ namespace Pokeheim {
         },
       }},
     };
+
+    // Let the outro play for this long before replacing it with credits.
+    private const float outroTime = 40f;  // seconds
+
+    private class Contributor {
+      public string name;
+      public string link = "";  // Optional
+
+      new public string ToString() {
+        if (link != "") {
+          return name + " - " + link;
+        } else {
+          return name;
+        }
+      }
+
+      public static Contributor Spacer() {
+        return new Contributor{ name = "" };
+      }
+    }
+
+    // Let the contributors list play for this long before replacing it with
+    // translators.
+    private const float contributorsTime = 30f;  // seconds
 
     // Roll credits, with or without the outro text.
     public static void Roll(bool withOutro) {
