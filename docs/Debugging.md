@@ -2,7 +2,9 @@
 
 ## BepInEx Settings
 
-By default, BepInEx logs only certain events.  For development and debugging of Pokeheim, you should change some of the default settings in the BepInEx config file.
+By default, BepInEx logs only certain events.  For development and debugging of
+Pokeheim, you should change some of the default settings in the BepInEx config
+file.
 
 On Linux, the config file defaults to
 `~/.local/share/Steam/steamapps/common/Valheim/BepInEx/config/BepInEx.cfg`

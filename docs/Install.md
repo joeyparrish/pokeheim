@@ -32,7 +32,7 @@ experienced Linux user).
 5. Search R2Modman for Valheim.
 6. _(Linux only)_ Copy the wrapper command.
 7. _(Linux only)_ Configure steam to use the wrapper command.
-   See [STEAM.md](STEAM.md).
+   See [Steam.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Steam.md)
 8. If you don't know what profiles are, just select the default profile.
 
 
@@ -78,7 +78,8 @@ experienced Linux user).
 7. Unpack the MountUp zip into the `BepInEx/plugins/` folder.
 8. Unpack the Pokéheim zip into the `BepInEx/plugins/` folder.
 9. _(If **not using** Steam)_ Run `start_game_bepinex.sh` to launch Pokéheim.
-10. _(If **using** Steam)_ See [STEAM.md](STEAM.md).
+10. _(If **using** Steam)_
+   See [Steam.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Steam.md)
 
 
 ### Manually uninstalling Pokéheim and its dependencies
@@ -95,4 +96,5 @@ experienced Linux user).
   rm ~/Library/Application\ Support/Steam/steamapps/common/Valheim/BepInEx/plugins/MountUp.dll
   rm ~/Library/Application\ Support/Steam/steamapps/common/Valheim/BepInEx/plugins/Jotunn.dll
   ```
-3. _(optional)_ Revert Steam configuration: [STEAM.md#reverting)(STEAM.md#reverting)
+3. _(optional)_ Revert Steam configuration:
+   See [Steam.md#reverting](https://github.com/joeyparrish/pokeheim/blob/main/docs/Steam.md#reverting)

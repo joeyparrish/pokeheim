@@ -41,4 +41,3 @@
          ```sh
          ./scripts/build-and-launch.sh
          ```
-

@@ -60,14 +60,19 @@ same version of the mod.
 
 ## Installation
 
-See [INSTALL.md](INSTALL.md)
+See [docs/Install.md](https://github.com/joeyparrish/pokeheim/docs/Install.md)
 
 
 ## Translate
 
 Help translate Pokéheim into your language!
 
-See [TRANSLATE.md](TRANSLATE.md)
+See [docs/Translate.md](https://github.com/joeyparrish/pokeheim/docs/Translate.md)
+
+
+## Building from source
+
+See [docs/Building.md](https://github.com/joeyparrish/pokeheim/docs/Building.md)
 
 
 ## Credits
@@ -79,7 +84,8 @@ Company or Niantic.  This is both a parody and tribute.
 
 ### Jötunn
 
-Pokéheim is made possible by [Jötunn: The Valheim Library](https://valheim-modding.github.io/Jotunn/).
+Pokéheim is made possible by
+[Jötunn: The Valheim Library](https://valheim-modding.github.io/Jotunn/).
 Many thanks to the authors of Jötunn for their wonderful library and their
 support on Discord!
 
@@ -92,4 +98,5 @@ from [FlatIcon](https://www.flaticon.com/)
 ### "Borrowed" Translations
 
 Translations of things like "Pokédex" and "Pokéball" were extracted from the
-[Pokémon Go](https://pokemongolive.com/) [APK](https://www.apkmirror.com/apk/niantic-inc/pokemon-go/).
+[Pokémon Go](https://pokemongolive.com/)
+[APK](https://www.apkmirror.com/apk/niantic-inc/pokemon-go/).
