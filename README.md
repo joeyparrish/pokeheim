@@ -51,12 +51,54 @@ safe than sorry.
    - Pokéheim has its own way of making monsters Tameable (by capturing them),
      so you should not use it with the AllTameable mod.
 
+### Multiplayer
 
-### Pokédex Icon
+The server and all players must be using the mod, and everyone must use the
+same version of the mod.
 
-[Pokédex icon](Pokeheim/Assets/Pokedex icon.png) made by
-[Roundicons Freebies](https://www.flaticon.com/authors/roundicons-freebies)
-from [FlatIcon](https://www.flaticon.com/)
+
+## Installation
+
+### Using R2Modman
+
+> :pencil: **TODO**: Write R2Modman instructions
+
+
+### Using Thunderstore Mod Manager
+
+> :pencil: **TODO**: Write Thunderstore Mod Manager instructions
+
+
+### Manual Installation
+
+1. Download:
+
+ - BepInEx: https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1900/
+ - Jötunn: https://github.com/Valheim-Modding/Jotunn/releases/tag/v2.6.7
+ - MountUp: https://valheim.thunderstore.io/package/download/Oran1/Mountup/3.2.9/
+ - Pokéheim: :pencil: **TODO**: first release!
+
+2. Unpack the BepInEx zip into some temporary location.
+3. Move the `BepInExPack_Valheim` folder into the Valheim install folder.
+4. Make the file `run_bepinex.sh` executable:
+   ```sh
+   chmod 755 /path/to/valheim/BepInExPack_Valheim/run_bepinex.sh
+   ```
+4. Move `Jotunn.dll` to the `BepInEx/plugins/` folder inside the Valheim
+   install folder.
+5. Unpack the MountUp zip into the `BepInEx/plugins/` folder.
+6. Unpack the Pokéheim zip into the `BepInEx/plugins/` folder.
+7. If not using Steam, run `run_bepinex.sh` to launch Pokéheim.
+8. If using Steam:
+
+   1. Open the game's properties on Steam:
+      ![Open game properties on Steam by right-clicking the game name](screenshots/steam_props.png)
+   2. Next, click Set launch options button which will open a new window:
+      ![Click Set launch options to set launch options](screenshots/steam_launch_opts.png)
+   3. Now, change the launch options to:
+      ```sh
+      ./run_bepinex.sh %command%
+      ```
 
 
 ## Translate
@@ -147,3 +189,28 @@ translation in `English/language.json` with something like:
   "language_pig_latin": "Igpay Atinlay"
 }
 ```
+
+
+## Credits
+
+Pokéheim was created by [Joey Parrish](https://joeyparrish.github.io/).
+
+The authors and contributors of Pokéheim have no affiliation with the Pokémon
+Company or Niantic.  This is both a parody and tribute.
+
+### Jötunn
+
+Pokéheim is made possible by [Jötunn: The Valheim Library](https://valheim-modding.github.io/Jotunn/).
+Many thanks to the authors of Jötunn for their wonderful library and their
+support on Discord!
+
+### Pokédex Icon
+
+[Pokédex icon](Pokeheim/Assets/Pokedex icon.png) made by
+[Roundicons Freebies](https://www.flaticon.com/authors/roundicons-freebies)
+from [FlatIcon](https://www.flaticon.com/)
+
+### "Borrowed" Translations
+
+Translations of things like "Pokédex" and "Pokéball" were extracted from the
+[Pokémon Go](https://pokemongolive.com/) [APK](https://www.apkmirror.com/apk/niantic-inc/pokemon-go/).
