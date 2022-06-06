@@ -27,8 +27,7 @@ jobs:
         run: scripts/install-linux-tools.sh
 
       - name: Install NuGet dependencies
-        run: |
-          nuget restore Pokeheim.sln
+        run: nuget restore Pokeheim.sln
 
       - name: Cache Valheim
         id: cachevalheim
@@ -71,8 +70,8 @@ jobs:
 
       - name: Build solution
         run: |
-          msbuild Pokeheim.sln /p:Configuration=Debug
-          msbuild Pokeheim.sln /p:Configuration=Release
+          ./scripts/build.sh Debug
+          ./scripts/build.sh Release
 
       - name: Build zip
         run: scripts/build-package-zip.sh

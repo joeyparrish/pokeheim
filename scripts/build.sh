@@ -14,5 +14,4 @@ fi
 
 cd "$(dirname "$0")"/..
 
-msbuild Pokeheim.sln /p:Configuration=Release
-msbuild Pokeheim.sln /p:Configuration=Debug
+msbuild Pokeheim.sln /p:Configuration="$BUILD_TYPE"
