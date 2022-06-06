@@ -82,8 +82,13 @@
 6. Check that greyling follows you
 7. Spawn wild greyling
 8. Check the they fight each other
-9. Spawn Eikthyr
-10. Check that they fight each other (no monster natively fights a boss)
+9. Get rid of wild greyling
+10. Release captured greyling
+11. Spawn Eikthyr
+12. Freeze Eikthyr to ensure it doesn't kill the greyling too quickly
+13. Check that greyling fights Eikthyr (no monster natively fights a boss)
+14. Unfreeze Eikthyr
+15. Check that Eikthyr fights greyling
 
 
 ## 5. Renaming
@@ -120,34 +125,35 @@
 
 1. Release greyling at starting temple
 2. Check that PVP is off
-3. Punch greyling, should not hit
-4. Wait for cooldown, enable PVP
-5. Punch greyling, should hit
-6. Punch greyling to death, should actually die
-7. Release another two greylings
-8. Log out
-9. Change players and log back in
-10. Check that PVP is off
-11. Check that new player can pet/rename greyling
-12. Run away
-13. Check that greyling does not follow, even with PVP off
-14. Enable PVP
-15. Check that greyling attacks
-16. Disable PVP
-17. Check that greyling stops attacking
-18. Enable PVP
-19. Release own greyling
-20. Check that greylings attack each other
-21. Disable PVP
-22. Check that greylings stop attacking each other
-23. Enable PVP
-24. Try to catch one of the other player's greylings, should not be trivial
-25. Check that capture message was "Gotcha!" and not "return!"
-26. Disable PVP
-27. Recall all, check that only your own greyling was recalled, with the
+3. Hit greyling with torch, should not hit
+4. Punch greyling, should still hit because fists are special
+5. Punch greyling to death, should actually die
+6. Wait for cooldown, enable PVP
+7. Hit greyling with torch, should hit this time
+8. Release another two greylings
+9. Log out
+10. Change players and log back in
+11. Check that PVP is off
+12. Check that new player can pet/rename greyling
+13. Run away
+14. Check that greyling does not follow, even with PVP off
+15. Enable PVP
+16. Check that greyling attacks
+17. Disable PVP
+18. Check that greyling stops attacking
+19. Enable PVP
+20. Release own greyling
+21. Check that greylings attack each other
+22. Disable PVP
+23. Check that greylings stop attacking each other
+24. Enable PVP
+25. Try to catch one of the other player's greylings, should not be trivial
+26. Check that capture message was "Gotcha!" and not "return!"
+27. Disable PVP
+28. Recall all, check that only your own greyling was recalled, with the
     message "Greyling, return!" and not "Everyone, return!"
-28. Try to catch the other player's remaining greyling, should work right away
-29. Check that capture message was "Gotcha!" and not "return!"
+29. Try to catch the other player's remaining greyling, should work right away
+30. Check that capture message was "Gotcha!" and not "return!"
 
 
 ## 7. Projectiles
@@ -187,14 +193,36 @@
 
 ## 9. Crafting
 
-1. Spawn "raspberry"
-2. Spawn "stone" x5
-3. Craft pokeball
-4. Spawn "blueberry"
-5. Craft greatball
-6. Spawn "mushroomyellow"
-7. Craft ultraball
-8. TODO: Other things you can craft
+1. Use debug command "tutorialreset"
+2. Spawn:
+  - "stone" x50
+  - "wood" x50
+  - "flint" x50
+  - "feathers" x50
+  - "LeatherScraps" x50
+  - "TrophyDeer"
+  - "raspberry"
+  - "blueberries"
+  - "mushroomyellow"
+3. Craft:
+  - pokeball
+  - greatball
+  - ultraball
+  - wood arrows
+  - flint arrows
+  - stone axe
+  - club
+  - hammer
+  - hoe
+  - pickaxe
+  - torch
+  - bow
+  - saddle
+4. Verify that you see tutorials for:
+  - berries
+  - pokeballs
+  - hammer
+  - pickaxe
 
 
 ## 10. Bosses
@@ -278,4 +306,4 @@
 
 ## 15. Riding
 
-1. TODO: Implement riding
+1. TODO: Test riding and saddles
