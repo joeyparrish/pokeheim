@@ -51,6 +51,8 @@ namespace Pokeheim {
         name = "Joey Parrish",
         link = "https://github.com/joeyparrish",
       },
+
+      // Add new entries above this line.
     };
 
     private static Dictionary<string, List<Contributor>> translators = new Dictionary<string, List<Contributor>> {
@@ -61,11 +63,18 @@ namespace Pokeheim {
         },
       }},
 
-      // This comes last.
+      // Add new entries above this line.
+
+      // These come last.
       { "\"Borrowed\" translations", new List<Contributor> {
         new Contributor {
           name = "Pokémon Go Android APK",
           link = "https://pokemongolive.com/",
+        },
+      }},
+      { "Translate Pokéheim", new List<Contributor> {
+        new Contributor {
+          name = "https://github.com/joeyparrish/pokeheim#translate",
         },
       }},
     };

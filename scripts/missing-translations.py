@@ -4,11 +4,24 @@ import json
 import os
 import sys
 
+def shown_languages():
+  if len(sys.argv) > 1:
+    return [sys.argv[1]]
+  return all_languages()
+
+def all_languages():
+  return os.listdir("Pokeheim/Assets/Translations")
+
 def load_translations(language):
   path = "Pokeheim/Assets/Translations/" + language
 
   d = {}
   for json_filename in os.listdir(path):
+    # New language names only appear in the English localizations, so don't
+    # count them.
+    if json_filename == "language.json":
+      continue
+
     json_path = os.path.join(path, json_filename)
     d[json_filename] = json.load(open(json_path, "r"))
 
@@ -16,7 +29,7 @@ def load_translations(language):
 
 all_keys = {}
 
-for language in os.listdir("Pokeheim/Assets/Translations"):
+for language in all_languages():
   translations = load_translations(language)
 
   for filename in translations.keys():
@@ -30,7 +43,11 @@ num_keys = 0
 for filename in all_keys:
   num_keys += len(all_keys[filename])
 
-for language in os.listdir("Pokeheim/Assets/Translations"):
+
+summary = {}
+
+for language in shown_languages():
+  print("{}\n=====".format(language))
   translations = load_translations(language)
   completeness = 0
 
@@ -46,4 +63,12 @@ for language in os.listdir("Pokeheim/Assets/Translations"):
         print("Missing {} translation for {} in {}".format(language, key, filename))
 
   completeness = 100.0 * completeness / num_keys
-  print("*** {} translation is {:.1f}% complete. ***".format(language, completeness))
+  summary[language] = completeness
+
+  print("{} translation is {:.1f}% complete".format(language, completeness))
+  print()
+
+print("Summary:")
+for language in shown_languages():
+  print("  {}: {:.1f}% complete".format(language, summary[language]))
+
