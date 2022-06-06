@@ -1,7 +1,7 @@
 ﻿{
     "name": "Pokeheim",
     "version_number": "1.0.0",
-    "website_url": "https://github.com/joeyparrish/Pokeheim",
+    "website_url": "https://github.com/joeyparrish/pokeheim",
     "description": "Pokéheim - A Valheim mod about catching 'em all.",
     "dependencies": [
         "denikson-BepInExPack_Valheim-5.4.1900",
