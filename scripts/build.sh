@@ -14,8 +14,5 @@ fi
 
 cd "$(dirname "$0")"/..
 
-./scripts/build.sh "$BUILD_TYPE"
-./scripts/install-mod.sh "$BUILD_TYPE"
-
-cd ~/.local/share/Steam/steamapps/common/Valheim
-./start_game_bepinex.sh ~/.local/share/Steam/steamapps/common/Valheim/valheim.x86_64 -force-glcore -console
+msbuild Pokeheim.sln /p:Configuration=Release
+msbuild Pokeheim.sln /p:Configuration=Debug

@@ -3,6 +3,10 @@
 set -e
 set -x
 
+cd "$(dirname "$0")"/..
+
+./scripts/build.sh Release
+
 rm -rf staging Pokeheim.zip
 mkdir -p staging/Pokeheim/Assets
 cp Pokeheim/bin/Release/Pokeheim.dll staging/Pokeheim/
