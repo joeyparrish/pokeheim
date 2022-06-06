@@ -424,10 +424,20 @@ namespace Pokeheim {
       };
 
       Utils.OnVanillaLocationsAvailable += delegate {
-        var temple = ZoneManager.Instance.GetZoneLocation("StartTemple");
+        var templeObject = Utils.GetSpawnedLocationOrPrefab("StartTemple");
         var wardrobePrefab = PrefabManager.Instance.GetPrefab(WardrobeName);
 
-        var wardrobe = UnityEngine.Object.Instantiate(wardrobePrefab, temple.m_prefab.transform);
+        Transform wardrobeTransform =
+            templeObject.transform.Find(WardrobeName + "(Clone)");
+        GameObject wardrobe = null;
+        if (wardrobeTransform != null) {
+          Logger.LogDebug($"Found an existing {WardrobeName} at the temple!");
+          wardrobe = wardrobeTransform.gameObject;
+        } else {
+          Logger.LogDebug($"Found no {WardrobeName} at the temple!");
+          wardrobe = UnityEngine.Object.Instantiate(
+              wardrobePrefab, templeObject.transform);
+        }
 
         // Place it on the ground, a little off-center from the starting area.
         wardrobe.transform.localPosition = new Vector3(-5f, -0.1f, -5f);

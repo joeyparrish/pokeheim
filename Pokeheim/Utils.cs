@@ -304,5 +304,27 @@ namespace Pokeheim {
         dictionary[element] = newText;
       }
     }
+
+    // If a unique location hasn't spawned, you should modify the prefab of it.
+    // Otherwise, you should modify the one that already exists in the world.
+    public static GameObject GetSpawnedLocationOrPrefab(string name) {
+      var zoneLocation = ZoneManager.Instance.GetZoneLocation(name);
+      if (zoneLocation == null) {
+        Logger.LogError($"No such location: {name}");
+        return null;
+      }
+
+      var prefabName = zoneLocation.m_prefab.name;
+      var cloneName = prefabName + "(Clone)";
+      foreach (var location in Location.m_allLocations) {
+        if (location.gameObject.name == cloneName) {
+          Logger.LogDebug($"Found existing instance of location {name}.");
+          return location.gameObject;
+        }
+      }
+
+      Logger.LogDebug($"Found no existing instances of location {name}.");
+      return zoneLocation.m_prefab;
+    }
   }
 }

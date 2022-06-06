@@ -32,50 +32,64 @@ namespace Pokeheim {
         var prefab =
             temple.m_prefab.GetComponentInChildren<Vegvisir>().gameObject;
 
-        AddVegvisir(prefab, "Eikthyrnir", "GDKing", "$enemy_gdking");
-        AddVegvisir(prefab, "GDKing", "Bonemass", "$enemy_bonemass");
-        AddVegvisir(prefab, "Bonemass", "Dragonqueen", "$enemy_dragon");
-        var moderStone = AddVegvisir(
-            prefab, "Dragonqueen", "GoblinKing", "$enemy_goblinking");
-        AddVegvisir(prefab, "GoblinKing", null, null);
+        AddVegvisir(prefab, "Eikthyrnir", "GDKing", "$enemy_gdking",
+            overridePosition: true,
+            new Vector3(-7.0f, 0.8f, -0.4f));
 
-        // This one is in the wrong place if we just copy the original rune's
-        // local position and rotation.  (It ends up way in the sky.)
-        moderStone.transform.localPosition = new Vector3(0f, 1.5f, 5f);
-        moderStone.transform.localRotation = Quaternion.identity;
+        AddVegvisir(prefab, "GDKing", "Bonemass", "$enemy_bonemass");
+
+        AddVegvisir(prefab, "Bonemass", "Dragonqueen", "$enemy_dragon");
+
+        AddVegvisir(prefab, "Dragonqueen", "GoblinKing", "$enemy_goblinking",
+            overridePosition: true,
+            new Vector3(0f, 1.5f, 5f),
+            overrideRotation: true,
+            Quaternion.identity);
+
+        AddVegvisir(prefab, "GoblinKing", null, null);
       };
     }
 
-    private static GameObject AddVegvisir(
+    private static void AddVegvisir(
         GameObject prefab,
         string locationName,
         string nextLocationName,
-        string nextEnemyName) {
-      var location = ZoneManager.Instance.GetZoneLocation(locationName);
-      if (location == null) {
-        Logger.LogError($"No such location: {locationName}");
-        return null;
+        string nextEnemyName,
+        bool overridePosition = false,
+        Vector3 position = default(Vector3),
+        bool overrideRotation = false,
+        Quaternion rotation = default(Quaternion)) {
+      var locationObject = Utils.GetSpawnedLocationOrPrefab(locationName);
+
+      if (locationObject.GetComponentInChildren<Vegvisir>() != null) {
+        Logger.LogDebug($"{locationName} already has a Vegvisir!");
+        return;
       }
 
       // Find the runestone with the boss's altar instructions.
       var runeStone =
-          location.m_prefab.transform.GetComponentInChildren<RuneStone>();
+          locationObject.transform.GetComponentInChildren<RuneStone>();
       if (runeStone == null) {
-        Logger.LogError($"Stone not found!");
-        return null;
+        Logger.LogError($"Stone not found in {locationName}!");
+        return;
       }
 
-      // Copy the position of the original stone, then deactivate it.
-      var position = runeStone.transform.localPosition;
-      var rotation = runeStone.transform.localRotation;
+      // Copy the position and rotation of the original stone if needed.
+      if (overridePosition == false) {
+        position = runeStone.transform.localPosition;
+      }
+      if (overrideRotation == false) {
+        rotation = runeStone.transform.localRotation;
+      }
+
+      // Deactivate the original stone.
       runeStone.gameObject.SetActive(false);
 
       GameObject vegvisir = null;
-
       if (nextLocationName != null) {
         // Create a new Vegvisir pointing to the next boss.
         vegvisir = UnityEngine.Object.Instantiate(
-              prefab, location.m_prefab.transform);
+              prefab, locationObject.transform);
         vegvisir.name = $"Vegvisir_{nextLocationName}";
 
         vegvisir.transform.localPosition = position;
@@ -88,8 +102,6 @@ namespace Pokeheim {
       }
 
       // For some reason, removing item stands here does not work.
-
-      return vegvisir;
     }
 
     // Allow spawning bosses at altars without any specific items, but only one
