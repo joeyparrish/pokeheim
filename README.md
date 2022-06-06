@@ -37,10 +37,10 @@ safe than sorry.
 
 ### Dependencies
 
- - MountUp, v3.2.6
+ - MountUp, v3.2.9
    - We borrow the generic saddle prefab from this mod, and disable the rest.
      We have our own mounting, saddle placement, and riding system in Pokéheim.
- - Jötunn, v2.4.1+
+ - Jötunn, v2.6.7+
    - Framework on which Pokéheim is built.
  - BepInEx, v5.4+
 

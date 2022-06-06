@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/VHINSTALL
-          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-5.4.1601
+          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-5.4.1900
 
       - name: Install SteamCMD
         if: steps.cachevalheim.outputs.cache-hit != 'true'
@@ -44,12 +44,12 @@ jobs:
       - name: Prepare Pokeheim dependencies
         if: steps.cachevalheim.outputs.cache-hit != 'true'
         run: |
-          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1601/"
+          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1900/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
-          wget -O mountup.zip "https://valheim.thunderstore.io/package/download/RagnarokHCRP/MountUp/3.2.6/"
+          wget -O mountup.zip "https://valheim.thunderstore.io/package/download/Oran1/Mountup/3.2.9/"
           unzip mountup.zip -d ~/VHINSTALL/BepInEx/plugins/
 
       - name: Remove old DLLs
