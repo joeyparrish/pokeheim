@@ -42,6 +42,7 @@ namespace Pokeheim {
       {"Serpent", 0f},
       {"Wraith", 90f},
       {"Deathsquito", 180f},
+      {"Bat", 0f},
       {"Bonemass", 0f},
       {"Dragon", 0f},
     };
