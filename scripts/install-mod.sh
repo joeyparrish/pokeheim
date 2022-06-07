@@ -25,4 +25,5 @@ mkdir -p $PLUGINS_PATH/Pokeheim/Assets/
 cp Pokeheim/bin/$BUILD_TYPE/Jotunn.dll $PLUGINS_PATH/
 cp Pokeheim/bin/$BUILD_TYPE/Pokeheim.dll $PLUGINS_PATH/Pokeheim/
 cp Pokeheim/Assets/*.png $PLUGINS_PATH/Pokeheim/Assets/
+cp Pokeheim/Assets/*.mp3 $PLUGINS_PATH/Pokeheim/Assets/
 cp -a Pokeheim/Assets/Translations $PLUGINS_PATH/Pokeheim/Assets/

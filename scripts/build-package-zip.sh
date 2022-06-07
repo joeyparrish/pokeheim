@@ -11,6 +11,7 @@ rm -rf staging Pokeheim.zip
 mkdir -p staging/Pokeheim/Assets
 cp Pokeheim/bin/Release/Pokeheim.dll staging/Pokeheim/
 cp Pokeheim/Assets/*.png staging/Pokeheim/Assets/
+cp Pokeheim/Assets/*.mp3 staging/Pokeheim/Assets/
 cp Pokeheim/Package/{icon.png,manifest.json} staging/
 cp README.md staging/
 cp -a Pokeheim/Assets/Translations staging/Pokeheim/Assets/

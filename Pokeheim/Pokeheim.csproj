@@ -101,6 +101,7 @@
     <Compile Include="Inhabitant.cs" />
     <Compile Include="InventoryMods.cs" />
     <Compile Include="MonsterMetadata.cs" />
+    <Compile Include="MusicMods.cs" />
     <Compile Include="OdinMods.cs" />
     <Compile Include="PlayerMods.cs" />
     <Compile Include="ProfessorRaven.cs" />

@@ -28,7 +28,6 @@ using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
-// TODO: Replace main menu music, good morning music
 namespace Pokeheim {
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
   // We are incompatible with AllTameable.
