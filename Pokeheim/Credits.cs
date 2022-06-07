@@ -75,9 +75,9 @@ namespace Pokeheim {
       public string name;
       public string link = "";  // Optional
 
-      public string Format(bool oneLine) {
+      public string Format() {
         if (link != "") {
-          return name + (oneLine ? " - " : "\n") + link;
+          return name + "\n" + link;
         } else {
           return name;
         }
@@ -102,8 +102,8 @@ namespace Pokeheim {
     }
 
     private static void RollCreditsOnly() {
-      RollText(GetContributors(richText: false), contributorsTime, () => {
-        RollText(GetTranslators(richText: false));
+      RollText(GetContributors(), contributorsTime, () => {
+        RollText(GetTranslators());
       });
     }
 
@@ -111,55 +111,41 @@ namespace Pokeheim {
       return "$pokeheim_outro";
     }
 
-    private static string GetContributors(bool richText, int headingSize=0) {
+    private static string GetContributors(int headingSize=0) {
       string text = "";
-      if (richText) {
-        if (headingSize != 0) {
-          text += $"<size={headingSize}>";
-        }
-        text += "<color=orange>$pokeheim_contributors</color>";
-        if (headingSize != 0) {
-          text += "</size>";
-        }
-        text += "\n";
-      } else {
-        text += "$pokeheim_contributors\n";
-        text += "===== ===== =====\n";
+      if (headingSize != 0) {
+        text += $"<size={headingSize}>";
       }
+      text += "<color=orange>$pokeheim_contributors</color>";
+      if (headingSize != 0) {
+        text += "</size>";
+      }
+      text += "\n";
 
       foreach (var contributor in contributors) {
-        text += contributor.Format(oneLine: !richText) + "\n";
+        text += contributor.Format() + "\n";
       }
       return text;
     }
 
-    private static string GetTranslators(bool richText, int headingSize=0) {
+    private static string GetTranslators(int headingSize=0) {
       string text = "";
-      if (richText) {
-        if (headingSize != 0) {
-          text += $"<size={headingSize}>";
-        }
-        text += "<color=orange>$pokeheim_translators</color>";
-        if (headingSize != 0) {
-          text += "</size>";
-        }
-        text += "\n\n";
-      } else {
-        text += "$pokeheim_translators\n\n";
+      if (headingSize != 0) {
+        text += $"<size={headingSize}>";
       }
+      text += "<color=orange>$pokeheim_translators</color>";
+      if (headingSize != 0) {
+        text += "</size>";
+      }
+      text += "\n\n";
 
       foreach (var entry in translators) {
         var language = entry.Key;
         var translators = entry.Value;
-
-        if (richText) {
-          text += $"<color=orange>{language}</color>\n";
-        } else {
-          text += $"{language}\n===== ===== =====\n";
-        }
+        text += $"<color=orange>{language}</color>\n";
 
         foreach (var translator in translators) {
-          text += translator.Format(oneLine: !richText) + "\n";
+          text += translator.Format() + "\n";
         }
         text += "\n\n";
       }
@@ -235,9 +221,9 @@ namespace Pokeheim {
         // Use a smaller font size
         var originalFontSize = text.fontSize;
         var textFontSize = (int)((float)text.fontSize * 0.8f);
-        var textText = GetContributors(richText: true, headingSize: originalFontSize) +
+        var textText = GetContributors(headingSize: originalFontSize) +
                        "\n\n" +
-                       GetTranslators(richText: true, headingSize: originalFontSize);
+                       GetTranslators(headingSize: originalFontSize);
         var textHeight = GetTextHeight(text, textText, textFontSize);
 
         var paddingHeight = headingHeight * 2f;
