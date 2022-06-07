@@ -335,9 +335,9 @@ namespace Pokeheim {
       }
     }
 
-    // Let the player keep everything when they die.
-    // FIXME: No tombstone!
-    [HarmonyPatch(typeof(Inventory), nameof(Inventory.MoveInventoryToGrave))]
+    // Don't create a tombstone, and let the player keep everything when they
+    // die.
+    [HarmonyPatch(typeof(Player), nameof(Player.CreateTombStone))]
     class PlayerKeepsEverythingOnDeath_Patch {
       static bool Prefix() {
         return false;
