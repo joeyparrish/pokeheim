@@ -243,35 +243,31 @@
 ## 11. Fainting
 
 1. Spawn greyling
-2. Punch greyling until it faints
-3. Check that it doesn't die
-4. Catch it (should always work)
-5. Spawn greyling
-6. Spawn weapon ("club" or "SwordIronFire")
-7. Hit greyling with weapon until it faints
-8. Check that it doesn't die
-9. Catch it
-10. Spawn greyling
-11. Type "killall" in dev console
-12. Confirm that greyling dies
-13. Release greyling
-14. Faint it
-15. Recall all, check that your fainted greyling does not come back
-16. Spawn deathsquito
-17. Attack it until it faints (or use "faintall" in dev console)
-18. Check that it falls from the sky and lands upside down
-19. Spawn blob, wraith, and bonemass
-20. Faint them
-21. Check that they stop fuming
-22. Spawn serpent
-23. Faint it
-24. Check that its tail stops moving
-25. Spawn "dragon" (Moder)
-26. Faint it
-27. Check that it falls from the sky (no ragdoll)
-28. Spawn "hatchling" (Drake)
-29. Faint it
-30. Check that it falls from the sky (ragdoll)
+2. Spawn weapon ("club" or "SwordIronFire")
+3. Hit greyling with weapon until it faints
+4. Check that it doesn't die
+5. Catch it (should always work)
+6. Spawn greyling
+7. Type "killall" in dev console
+8. Confirm that greyling dies
+9. Release greyling
+10. Faint it
+11. Recall all, check that your fainted greyling does not come back
+12. Spawn deathsquito
+13. Attack it until it faints (or use "faintall" in dev console)
+14. Check that it falls from the sky and lands upside down
+15. Spawn blob, wraith, and bonemass
+16. Faint them
+17. Check that they stop fuming
+18. Spawn serpent
+19. Faint it
+20. Check that its tail stops moving
+21. Spawn "dragon" (Moder)
+22. Faint it
+23. Check that it falls from the sky (no ragdoll)
+24. Spawn "hatchling" (Drake)
+25. Faint it
+26. Check that it falls from the sky (ragdoll)
 
 
 ## 12. Inventory
