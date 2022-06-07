@@ -303,3 +303,18 @@
 ## 15. Riding
 
 1. TODO: Test riding and saddles
+
+
+## 16. Giovanni
+
+1. TODO: Test Giovanni
+
+
+## 17. Chests
+
+1. TODO: Test chests
+
+
+## 18. End Game
+
+1. TODO: Test end game

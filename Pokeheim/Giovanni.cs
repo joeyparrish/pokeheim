@@ -23,6 +23,24 @@ using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
   public static class Giovanni {
+    [PokeheimInit]
+    public static void Init() {
+      Utils.OnVanillaLocationsAvailable += delegate {
+        // Find and rename Halstein.  He only exists as a MonoBehaviour with a
+        // HoverText component attached.
+        var locationObject =
+            Utils.GetSpawnedLocationOrPrefab("Vendor_BlackForest");
+        foreach (var hover in locationObject.GetComponentsInChildren<HoverText>()) {
+          if (hover.m_text == "$npc_halstein") {
+            Logger.LogDebug($"Renamed Halstein: {hover}");
+            hover.m_text = "$npc_persian";
+            return;
+          }
+        }
+        Logger.LogError("Unable to locate Halstein!");
+      };
+    }
+
     [HarmonyPatch]
     class Giovanni_Patch {
       // Rename Haldor.
@@ -34,7 +52,6 @@ namespace Pokeheim {
       }
 
       // Make it so that you can't interact with him.
-      // TODO: Battle Giovanni & Halstein.  Make Halstein a shadow Pokemon.
       [HarmonyPatch(typeof(Trader), nameof(Trader.Interact))]
       [HarmonyPrefix]
       static bool disableInteraction(ref bool __result) {
