@@ -19,6 +19,9 @@
 using HarmonyLib;
 using Jotunn.Managers;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 
 using Logger = Jotunn.Logger;
 
@@ -191,6 +194,48 @@ namespace Pokeheim {
         if (monster.IsBoss() && attacker != null && attacker.IsPlayer()) {
           hit.ApplyModifier(0f);
         }
+      }
+    }
+
+    // Normally, a Vegvisir shows you the closest location to itself.
+    // Instead, show the closest location to the starting location.
+    // Since the player will have to circle back to the temple at the end of
+    // the game, this is helpful.
+    [HarmonyPatch(typeof(Vegvisir), nameof(Vegvisir.Interact))]
+    class FindBossesCloseToTemple_Patch {
+      public static Vector3 getTemplePosition() {
+        Vector3 position;
+        ZoneSystem.instance.GetLocationIcon("StartTemple", out position);
+        return position;
+      }
+
+      static IEnumerable<CodeInstruction> Transpiler(
+          IEnumerable<CodeInstruction> instructions,
+          ILGenerator generator) {
+        var getPositionMethod = typeof(Transform).GetMethod("get_position");
+
+        var getTemplePositionMethod =
+            typeof(FindBossesCloseToTemple_Patch).GetMethod(
+                "getTemplePosition",
+                BindingFlags.Static | BindingFlags.Public);
+
+        var phases = new TranspilerSequence.Phase[] {
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == getPositionMethod),
+            replacer = code => new CodeInstruction[] {
+              // After getting the position of this Vegvisir,
+              code,
+              // Pop it from the stack,
+              new CodeInstruction(OpCodes.Pop),
+              // And get the position of the starting temple instead.
+              new CodeInstruction(OpCodes.Call, getTemplePositionMethod),
+            },
+          },
+        };
+
+        return TranspilerSequence.Execute(
+            "Vegvisir.Interact", phases, instructions);
       }
     }
   }
