@@ -100,3 +100,19 @@ from [FlatIcon](https://www.flaticon.com/)
 Translations of things like "Pokédex" and "Pokéball" were extracted from the
 [Pokémon Go](https://pokemongolive.com/)
 [APK](https://www.apkmirror.com/apk/niantic-inc/pokemon-go/).
+
+### Music
+
+Custom music for Pokéheim was arranged by
+[Joey Parrish](https://joeyparrish.github.io/), to parody the work of
+[Jarlestam](https://www.patrikjarlestam.se/),
+[Siegler, and Loeffler](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Theme).
+
+The music was scored in
+[Musescore 3.6](https://musescore.org/en/download)
+and rendered using the
+[Aegean Symphonic Orchestra Soundfont](https://sites.google.com/view/hed-sounds/aegean-symphonic-orchestra).
+
+Special thanks to [TheSlowPianist](https://www.patreon.com/theslowpianist/)
+for [their arrangement of the Valheim menu music](https://youtu.be/7bJopufs-80),
+which informed the Pokéheim theme.

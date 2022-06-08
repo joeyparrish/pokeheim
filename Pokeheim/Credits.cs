@@ -39,6 +39,16 @@ namespace Pokeheim {
       // These come last.
       Contributor.Spacer(),
       new Contributor {
+        name = "Custom music arranged by Joey Parrish\n" +
+               "Parodying the work of Jarlestam, Siegler, and Loeffler",
+      },
+      new Contributor {
+        name = "Special thanks to TheSlowPianist",
+        link = "https://www.patreon.com/theslowpianist/",
+      },
+
+      Contributor.Spacer(),
+      new Contributor {
         name = "Built with Jötunn: The Valheim Library",
         link = "https://valheim-modding.github.io/Jotunn/",
       },
