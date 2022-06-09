@@ -37,7 +37,7 @@ name of the language in English.
 These are the language keys Valheim already knows (as of June 2022):
 
 | key | language |
-| ===== | ===== |
+| ----- | ----- |
 | abenaki | Alnôbaôdwawôgan |
 | bulgarian | български |
 | chinese | 中文 |
