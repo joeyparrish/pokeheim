@@ -1,7 +1,5 @@
 # Configuring Steam with a Wrapper
 
-![Pokéheim Logo](https://github.com/joeyparrish/pokeheim/raw/main/Pokeheim/Assets/Logo.png)
-
 > :information_source: **NOTE**: For multiplayer games, the server and all
 > players must be using the mod, and everyone must use the same version of the
 > mod.

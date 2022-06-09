@@ -1,7 +1,5 @@
 # Pokéheim Translation
 
-![Pokéheim Logo](https://github.com/joeyparrish/pokeheim/raw/main/Pokeheim/Assets/Logo.png)
-
 Help translate Pokéheim into your language!
 
 These instructions assume you are least familiar with `git`.
