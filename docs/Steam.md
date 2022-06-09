@@ -27,8 +27,11 @@ for the debug console:
 
 1. Open Steam
 2. Right-click Valheim and open the game's properties:
+
    ![Open game properties on Steam by right-clicking the game name](screenshots/steam-game-properties.png)
+
 3. Fill in the launch options field with the wrapper command:
+
    ![Fill in the launch options field](screenshots/steam-launch-options.png)
 
 
@@ -36,6 +39,9 @@ for the debug console:
 
 1. Open Steam
 2. Right-click Valheim and open the game's properties:
+
    ![Open game properties on Steam by right-clicking the game name](screenshots/steam-game-properties.png)
+
 3. Erase the contents of the launch options field:
+
    ![Erase the launch options field](screenshots/steam-erase-launch-options.png)
