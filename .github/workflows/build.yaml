@@ -1,10 +1,13 @@
-name: Build and zip
+name: Build, package, release
 
 on:
   pull_request:
   push:
     branches:
       - main
+  push:
+    tags:
+      - "*"
 
 jobs:
   build_merge:
@@ -63,12 +66,26 @@ jobs:
       - name: Build debug version
         run: ./scripts/build.sh Debug
 
+      # Set the version to the tag, if this was a tag push.
+      - name: Prepare release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          RELEASE_VERSION=$(echo "${{ github.ref }}" | sed -e 's@refs/tags/@@')
+          echo "Setting release version to $RELEASE_VERSION"
+
+      # Set a dummy default version for CI builds generated on every push or on
+      # pull requests.
       - name: Build release zip
         run: |
-          # Set a dummy version for CI builds generated on every push.
-          RELEASE_VERSION="0.0.1" ./scripts/build-package-zip.sh
+          RELEASE_VERSION="${RELEASE_VERSION:-0.0.1}" ./scripts/build-package-zip.sh
 
       - uses: actions/upload-artifact@v2
         with:
           name: Pokeheim.zip
           path: Pokeheim.zip
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: Pokeheim.zip
