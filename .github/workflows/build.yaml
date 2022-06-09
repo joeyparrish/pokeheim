@@ -80,7 +80,9 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Pokeheim-staging.zip
+          # Will result in Pokeheim.zip
+          name: Pokeheim
+          # Everything in this folder will be archived, but not the folder
           path: staging/
 
       - name: Release
