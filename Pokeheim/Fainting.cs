@@ -106,7 +106,7 @@ namespace Pokeheim {
 
       // Hide the health HUD if it already exists.  A patch will keep a new
       // one from being created.
-      // FIXME: Will this Destroy() work in multiplayer?
+      // TODO: Will this Destroy() work in multiplayer?
       if (EnemyHud.instance != null) {
         if (EnemyHud.instance.m_huds.TryGetValue(monster, out var hud)) {
           UnityEngine.Object.Destroy(hud.m_gui);
@@ -244,7 +244,7 @@ namespace Pokeheim {
       return true;
     }
 
-    // FIXME: With multi-player, does this need to be an RPC?
+    // TODO: With multi-player, does this need to be an RPC?
     // What else might need to be an RPC?  What are the rules for this?
     public static bool Faint(this Character monster, Vector3 hitDirection) {
       if (monster.IsPlayer()) {
