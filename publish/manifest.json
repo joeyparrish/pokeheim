@@ -1,6 +1,6 @@
 ﻿{
     "name": "Pokeheim",
-    "version_number": "1.0.0",
+    "version_number": "0.0.1",
     "website_url": "https://github.com/joeyparrish/pokeheim",
     "description": "Pokéheim - A Valheim mod about catching 'em all.",
     "dependencies": [

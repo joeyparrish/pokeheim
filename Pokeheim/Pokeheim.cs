@@ -28,7 +28,19 @@ using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
+[assembly: AssemblyTitle("Pokeheim")]
+[assembly: AssemblyProduct("Pokeheim")]
+[assembly: AssemblyCopyright("Copyright © 2021 Joey Parrish")]
+[assembly: AssemblyVersion(Pokeheim.ModVersion.String + ".0")]
+
 namespace Pokeheim {
+#if DEBUG
+  // This is generated at build time for releases.
+  public static class ModVersion {
+    public const string String = "0.0.1";
+  }
+#endif
+
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
   // We are incompatible with AllTameable.
   [BepInIncompatibility("meldurson.valheim.AllTameable")]
@@ -42,7 +54,7 @@ namespace Pokeheim {
     // BepInEx' plugin metadata
     public const string PluginGUID = "com.pokeheim";
     public const string PluginName = "Pokeheim";
-    public const string PluginVersion = "0.0.0";
+    public const string PluginVersion = ModVersion.String;
 
     internal static readonly Harmony harmony = new Harmony(PluginName);
     private static string PokeheimIntroFlag = "com.pokeheim.IntroSeen";

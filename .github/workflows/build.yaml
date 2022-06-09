@@ -60,21 +60,13 @@ jobs:
         run: |
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
-      - name: Set plugin version number
-        run: |
-          version=$(cat Pokeheim/Package/manifest.json | jq -r .version_number)
-          sed -e "s/PluginVersion = .*;/PluginVersion = \"$version\";/" \
-              -i Pokeheim/Pokeheim.cs
-          sed -e "s/(\"0.0.0.0\")/(\"$version.0\")/" \
-              -i Pokeheim/Properties/AssemblyInfo.cs
+      - name: Build debug version
+        run: ./scripts/build.sh Debug
 
-      - name: Build solution
+      - name: Build release zip
         run: |
-          ./scripts/build.sh Debug
-          ./scripts/build.sh Release
-
-      - name: Build zip
-        run: scripts/build-package-zip.sh
+          # Set a dummy version for CI builds generated on every push.
+          RELEASE_VERSION="0.0.1" ./scripts/build-package-zip.sh
 
       - uses: actions/upload-artifact@v2
         with:
