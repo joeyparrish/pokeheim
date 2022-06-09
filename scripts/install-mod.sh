@@ -25,11 +25,17 @@ cd "$(dirname "$0")"/..
 rm -rf "$PLUGINS_PATH"/Pokeheim/
 mkdir -p "$PLUGINS_PATH"/Pokeheim/Assets/
 
-# NOTE: This is always a Debug build of Jotunn, because that's what nuget
-# downloads.  A Release build of Jotunn will be used when Pokeheim is installed
-# through Thunderstore or similar.
-cp Pokeheim/bin/$BUILD_TYPE/Jotunn.dll "$PLUGINS_PATH"/
+# NOTE: What nuget downloads is always a Debug build of Jotunn.
+# To install a true Release build, we need to fetch that from some place like
+# Thunderstore.
+if [ "$BUILD_TYPE" == "Release" ]; then
+  cp $(./scripts/fetch-jotunn-release.sh) "$PLUGINS_PATH"/Jotunn.dll
+else
+  cp Pokeheim/bin/$BUILD_TYPE/Jotunn.dll "$PLUGINS_PATH"/
+fi
 cp Pokeheim/bin/$BUILD_TYPE/Pokeheim.dll "$PLUGINS_PATH"/Pokeheim/
 cp Pokeheim/Assets/*.png "$PLUGINS_PATH"/Pokeheim/Assets/
 cp Pokeheim/Assets/*.mp3 "$PLUGINS_PATH"/Pokeheim/Assets/
 cp -a Pokeheim/Assets/Translations "$PLUGINS_PATH"/Pokeheim/Assets/
+
+echo "Installed $BUILD_TYPE build."
