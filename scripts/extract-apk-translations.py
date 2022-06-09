@@ -7,19 +7,24 @@ import sys
 
 project_root = os.path.dirname(os.path.dirname(__file__))
 
-language_map = {
-  "brazilianportuguese": "Portuguese_Brazilian",
-  "chinesetraditional": "Chinese",
-  "english": "English",
-  "french": "French",
-  "german": "German",
-  "italian": "Italian",
-  "japanese": "Japanese",
-  "korean": "Korean",
-  "russian": "Russian",
-  "spanish": "Spanish",
-  "thai": "Thai",
-}
+language_map = [
+  # Copy pt-BR from APK to both pt-BR and pt-PT, because that's better than
+  # nothing, and Valheim doesn't patch in similar language translations if
+  # they're missing.
+  ["brazilianportuguese", "Portuguese_Brazilian"],
+  ["brazilianportuguese", "Portuguese_European"],
+
+  ["chinesetraditional", "Chinese"],
+  ["english", "English"],
+  ["french", "French"],
+  ["german", "German"],
+  ["italian", "Italian"],
+  ["japanese", "Japanese"],
+  ["korean", "Korean"],
+  ["russian", "Russian"],
+  ["spanish", "Spanish"],
+  ["thai", "Thai"],
+]
 
 def main():
   parser = argparse.ArgumentParser(description='Extract APK translations')
@@ -34,7 +39,7 @@ def main():
 
   transfer_json = json.load(open(args.transfer_map, "r"))
 
-  for srclang, dstlang in language_map.items():
+  for srclang, dstlang in language_map:
     print("Transferring " + dstlang + " translations")
 
     dstpath = os.path.join(
