@@ -40,8 +40,8 @@ safe than sorry.
  - [MountUp](https://www.nexusmods.com/valheim/mods/1091), v3.2.9 - We borrow
      the generic saddle prefab from this mod, and disable the rest.  We have
      our own mounting, saddle placement, and riding system in Pokéheim.
- - [Jötunn](https://www.nexusmods.com/valheim/mods/1138), v2.6.7+ - The
-     framework on which Pokéheim is built.
+ - [Jötunn](https://valheim-modding.github.io/Jotunn/), v2.6.7+ - The framework
+     on which Pokéheim is built.
  - [BepInEx](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/),
      v5.4+ - The framework on which Jötunn is built.
 
