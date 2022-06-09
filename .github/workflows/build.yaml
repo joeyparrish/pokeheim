@@ -76,7 +76,7 @@ jobs:
       # pull requests.
       - name: Build release zip
         run: |
-          RELEASE_VERSION="${RELEASE_VERSION:-0.0.1}" ./scripts/build-package-zip.sh
+          RELEASE_VERSION="${RELEASE_VERSION:-0.0.1}" ./scripts/package.sh
 
       - uses: actions/upload-artifact@v2
         with:
