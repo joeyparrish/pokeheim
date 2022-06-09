@@ -14,7 +14,7 @@ Source: https://github.com/joeyparrish/pokeheim
 >
 > When Odin finally remembered the whole monster thing, he decided that
 > something had to be done to catch 'em...  all of 'em.  But Odin's always been
-> more of an "idea man" so he sent Professor Raven to kidnap you and make
+> more of an "idea man", so he sent Professor Raven to kidnap you and make
 > **you** do it.
 >
 > He says you "gotta"...
