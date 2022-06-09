@@ -1,6 +1,6 @@
 # Extracting Translations from an APK
 
-![Pokéheim Logo](Pokeheim/Assets/Logo.png)
+![Pokéheim Logo](https://github.com/joeyparrish/pokeheim/raw/main/Pokeheim/Assets/Logo.png)
 
 1. Pick a translation file to update.  For example, `giovanni.json`.
 2. Download the APK (complete, not a split APK).

@@ -1,6 +1,6 @@
 # Pokéheim - A Valheim Mod by Joey Parrish
 
-![Pokéheim Logo](Pokeheim/Assets/Logo.png)
+![Pokéheim Logo](https://github.com/joeyparrish/pokeheim/raw/main/Pokeheim/Assets/Logo.png)
 
 Source: https://github.com/joeyparrish/pokeheim
 
@@ -37,13 +37,11 @@ safe than sorry.
 
 ### Dependencies
 
- - MountUp, v3.2.9
-   - We borrow the generic saddle prefab from this mod, and disable the rest.
-     We have our own mounting, saddle placement, and riding system in Pokéheim.
- - Jötunn, v2.6.7+
-   - The framework on which Pokéheim is built.
- - BepInEx, v5.4+
-   - The framework on which Jötunn is built.
+ - MountUp, v3.2.9 - We borrow the generic saddle prefab from this mod, and
+     disable the rest.  We have our own mounting, saddle placement, and riding
+     system in Pokéheim.
+ - Jötunn, v2.6.7+ - The framework on which Pokéheim is built.
+ - BepInEx, v5.4+ - The framework on which Jötunn is built.
 
 
 ### Incompatibilities
@@ -60,19 +58,19 @@ same version of the mod.
 
 ## Installation
 
-See [docs/Install.md](https://github.com/joeyparrish/pokeheim/docs/Install.md)
+See [docs/Install.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Install.md)
 
 
 ## Translate
 
 Help translate Pokéheim into your language!
 
-See [docs/Translate.md](https://github.com/joeyparrish/pokeheim/docs/Translate.md)
+See [docs/Translate.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Translate.md)
 
 
 ## Building from source
 
-See [docs/Building.md](https://github.com/joeyparrish/pokeheim/docs/Building.md)
+See [docs/Building.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Building.md)
 
 
 ## Credits
@@ -91,7 +89,8 @@ support on Discord!
 
 ### Pokédex Icon
 
-[Pokédex icon](Pokeheim/Assets/Pokedex icon.png) made by
+[Pokédex icon](https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Assets/Pokedex%20icon.png)
+made by
 [Roundicons Freebies](https://www.flaticon.com/authors/roundicons-freebies)
 from [FlatIcon](https://www.flaticon.com/)
 
