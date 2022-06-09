@@ -12,8 +12,8 @@
 You may use the mod manager of your choice, or install the mod manually.  It is
 available from:
  - [GitHub](https://github.com/joeyparrish/pokeheim/releases)
- - [Thunderstore](https://TODO)
- - [Nexus Mods](https://TODO)
+ - [Thunderstore](https://valheim.thunderstore.io/package/joeyparrish/Pokeheim/)
+ - [Nexus Mods](https://www.nexusmods.com/valheim/mods/1919)
 
 Instructions are provided here for both R2ModMan (recommended if you've never
 modded before) and for manual installation (if you are a power user or
