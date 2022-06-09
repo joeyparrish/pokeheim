@@ -80,8 +80,8 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Pokeheim.zip
-          path: Pokeheim.zip
+          name: Pokeheim-staging.zip
+          path: staging/
 
       - name: Release
         uses: softprops/action-gh-release@v1
