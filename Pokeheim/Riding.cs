@@ -426,30 +426,18 @@ namespace Pokeheim {
 
     [HarmonyPatch(typeof(Player), nameof(Player.SetControls))]
     class FlyAndAttackControls_Patch {
-      static void Prefix(
+      static bool Prefix(
           Player __instance,
-          ref Vector3 movedir,
-          ref bool jump, ref bool crouch, ref bool attack) {
+          Vector3 movedir,
+          bool attack, bool secondaryAttack, bool block, bool jump,
+          bool crouch, bool run) {
         var player = __instance;
         var saddle = player.m_doodadController as Sadle;
         var steed = saddle?.m_character;
         var canFly = (steed?.m_baseAI.m_randomFly ?? false) ||
                      (steed?.IsFlying() ?? false);
 
-        if (canFly) {
-          // If the player is riding a flying monster with a saddle, use jump
-          // and crouch to direct that monster up or down.
-          if (jump) {
-            MoveSteed(saddle, player.GetLookDir() + Vector3.up);
-          } else if (crouch) {
-            MoveSteed(saddle, player.GetLookDir() + Vector3.down);
-          }
-
-          // Turn these off now so that the player isn't forced to dismount.
-          jump = false;
-          crouch = false;
-        }
-
+        // TODO: Use secondaryAttack while riding
         if (steed != null && attack) {
           // Make the steed attack for us.
           steed.StartAttack(null, false);
@@ -457,13 +445,109 @@ namespace Pokeheim {
           // Turn this off so that the player isn't forced to dismount.
           attack = false;
         }
+
+        if (canFly) {
+          // If the player is riding a flying monster with a saddle, use jump
+          // and crouch to direct that monster up or down.  Incorporate that
+          // into movedir.
+          Vector3 augmentedMoveDir = movedir;
+          if (jump) {
+            augmentedMoveDir.y = Vector3.up.y;
+          } else if (crouch) {
+            augmentedMoveDir.y = Vector3.down.y;
+          }
+
+          FlySteed(
+              saddle,
+              player.GetLookDir(),
+              augmentedMoveDir,
+              run,
+              block);
+
+          // Suppress the original.  Our flying controls take over.
+          return false;
+        }
+
+        // Run the original.
+        return true;
       }
 
-      // This bypasses the game logic in Sadle.ApplyControlls() that would
+      // This replaces the game logic in Sadle.ApplyControlls() that would
       // remove the "y" component from the direction.
-      static void MoveSteed(Sadle saddle, Vector3 direction) {
-        saddle.m_nview.InvokeRPC(
-            "Controls", direction, (int)Sadle.Speed.Walk, saddle.m_rideSkill);
+      static void FlySteed(
+          Sadle saddle, Vector3 lookDir, Vector3 controlDir,
+          bool run, bool block) {
+        /* NOTE: Original code for reference.
+        Speed speed = Speed.NoChange;
+        Vector3 vector = Vector3.zero;
+        if (block || controlDir.z > 0.5f || run) {
+          Vector3 vector2 = lookDir;
+          vector2.y = 0f;
+          vector2.Normalize();
+          vector = vector2;
+        }
+
+        if (run) {
+          speed = Sadle.Speed.Run;
+        } else if (controlDir.z > 0.5f) {
+          speed = Sadle.Speed.Walk;
+        } else if (controlDir.z < -0.5f) {
+          speed = Sadle.Speed.Stop;
+        } else if (block) {
+          speed = Sadle.Speed.Turn;
+        }
+        */
+
+        Sadle.Speed speed = Sadle.Speed.NoChange;
+        Vector3 goThisWay = Vector3.zero;
+        if (block || controlDir.z > 0.5f) {
+          // If the mount is being told to go forward at all, move in the XZ
+          // direction of the camera, but use the Y component (up/down) of the
+          // controls.  Forward+Up is CameraForward + WorldUp.
+          goThisWay = lookDir;
+          goThisWay.y = controlDir.y;
+          goThisWay.Normalize();
+        } else if (controlDir.z == 0f && Math.Abs(controlDir.y) > 0.5f) {
+          // If we're only directing the steed up/down, first see if we're
+          // already moving in an XZ direction.
+          var steed = saddle.m_character;
+
+          goThisWay = steed.m_moveDir;
+          goThisWay.y = 0f;
+
+          if (goThisWay.magnitude < 0.5f) {
+            // In the XZ plane, we're not moving toward anything.
+            // Head up/down while keeping the steed's facing direction.
+            // For this, we set the XZ components very small, then set Y.
+            goThisWay = steed.m_lookDir;
+            goThisWay *= 0.001f;
+            goThisWay.y = controlDir.y;
+          } else {
+            // In the XZ plane, we're already moving toward something.
+            // Keep that, and add the Y component.
+            goThisWay.y = controlDir.y;
+            goThisWay.Normalize();
+          }
+        }
+
+        if (run) {
+          speed = Sadle.Speed.Run;
+        } else if (controlDir.z > 0.5f || Math.Abs(controlDir.y) > 0.5) {
+          speed = Sadle.Speed.Walk;
+        } else if (controlDir.z < -0.5f) {
+          speed = Sadle.Speed.Stop;
+        } else if (block) {
+          speed = Sadle.Speed.Turn;
+        }
+
+        if (speed != Sadle.Speed.NoChange) {
+          Logger.LogDebug("FlySteed: " +
+              $"controlDir: {controlDir}, " +
+              $"output: {goThisWay} @ speed {speed}");
+
+          saddle.m_nview.InvokeRPC(
+              "Controls", goThisWay, (int)speed, saddle.m_rideSkill);
+        }
       }
     }
 
