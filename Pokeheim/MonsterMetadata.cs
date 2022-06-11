@@ -488,7 +488,10 @@ namespace Pokeheim {
           foreach (var item in humanoid.m_inventory.GetAllItems()) {
             var targetType = item.m_shared.m_aiTargetType;
             if (item.IsWeapon() && targetType == enemy) {
-              this.totalDamage = item.m_shared.m_damages.GetTotalDamage();
+              // What we put into the Pokedex is the most damaging attack.
+              var itemDamage = item.m_shared.m_damages.GetTotalDamage();
+              this.totalDamage = Mathf.Max(this.totalDamage, itemDamage);
+              Logger.LogDebug($"Monster: {humanoid}, damage: {itemDamage}, prio: {item.m_shared.m_aiPrioritized}, weapon: {item.m_shared.m_name}");
             }
           }
         }

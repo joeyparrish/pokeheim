@@ -303,6 +303,8 @@
 ## 15. Riding
 
 1. TODO: Test riding and saddles
+1. TODO: Test riding flying things
+1. TODO: Test attacking while riding, with example of secondary attack
 
 
 ## 16. Giovanni

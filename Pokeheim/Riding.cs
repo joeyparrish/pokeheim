@@ -429,21 +429,33 @@ namespace Pokeheim {
       static bool Prefix(
           Player __instance,
           Vector3 movedir,
-          bool attack, bool secondaryAttack, bool block, bool jump,
+          ref bool attack, ref bool secondaryAttack, bool block, bool jump,
           bool crouch, bool run) {
         var player = __instance;
         var saddle = player.m_doodadController as Sadle;
         var steed = saddle?.m_character;
         var canFly = (steed?.m_baseAI.m_randomFly ?? false) ||
                      (steed?.IsFlying() ?? false);
+        var monsterWithWeapons =
+            steed?.GetComponent<MonsterWithWeapons>() ?? null;
 
-        // TODO: Use secondaryAttack while riding
-        if (steed != null && attack) {
+        if (steed != null && (attack || secondaryAttack)) {
           // Make the steed attack for us.
-          steed.StartAttack(null, false);
+
+          // Note that no monster "weapon" has a "secondary attack" that I've
+          // seen.  Instead, we map the secondaryAttack flag to a separate
+          // "weapon" (which for monsters, is just a form of attack).
+          bool equipped = monsterWithWeapons.EquipWeapon(secondaryAttack);
+
+          // If we asked for a secondary attack, but there is no second weapon,
+          // it will fail to equip and we will not carry out an attack.
+          if (equipped) {
+            steed.StartAttack(null, false);
+          }
 
           // Turn this off so that the player isn't forced to dismount.
           attack = false;
+          secondaryAttack = false;
         }
 
         if (canFly) {
