@@ -36,7 +36,7 @@ namespace Pokeheim {
     // a question mark for the Pokedex icon.
     //
     // To add a trophy or replace a default, use null for the trophy prefab in
-    // the Metadata constructor.  Then add a 128x128 PNG to Pokeheim/Assets/
+    // the Metadata constructor.  Then add a 64x64 PNG to Pokeheim/Assets/
     // named like PremadeIcon-MONSTER_PREFAB_NAME.png.
     //
     // To take a rendering of the monster in-game for use in an icon, use the
@@ -566,6 +566,14 @@ namespace Pokeheim {
         var bgRenderer = bgObject.AddComponent<SpriteRenderer>();
         bgRenderer.sprite = this.trophyIcon;
 
+        // Scale the icon.  Most icons are the same size, but some (Eikthyr,
+        // Bonemass) are much larger.  I don't understand the exact value here,
+        // but it's what the majority of the icons use.  Making them all
+        // consistent in size fixes the size and placement of the overlay.
+        if (bgRenderer.bounds.size.x != 0.6f) {
+          bgRenderer.transform.localScale *= 0.6f / bgRenderer.bounds.size.x;
+        }
+
         // I wouldn't have noticed that this needed flipping were it not for
         // the fallback icon, which is a question mark.
         bgRenderer.flipX = true;
@@ -574,6 +582,7 @@ namespace Pokeheim {
         fgObject.transform.SetParent(parentObject.transform);
         var fgRenderer = fgObject.AddComponent<SpriteRenderer>();
         fgRenderer.sprite = Overlay;
+        fgRenderer.flipX = true;
 
         // Set the alpha of the foreground overlay.
         fgRenderer.color = new Color(1f, 1f, 1f, OverlayAlpha);
