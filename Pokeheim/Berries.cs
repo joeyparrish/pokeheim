@@ -58,18 +58,26 @@ namespace Pokeheim {
     public class BerryEater : MonoBehaviour {
       public const float BerrySearchInterval = 10f;  // seconds
       public const float BerrySearchRadius = 10f;  // meters
-      // TODO: Does BerryEatRadius need adjusting per monster?
-      // The native version is 1.0 for boars, 1.4 for wolves, and 4.0 for lox.
-      public const float BerryEatRadius = 1f;  // meters
       public const float MaxBerryEatAngle = 20f;
 
       private ItemDrop Target = null;
       private float SearchTimer = 0f;
       private Character Monster;
       private float BerryCatchRate = 1f;
+      private float BerryEatRadius = 1f;  // meters, filled in later
 
       public void Awake() {
         Monster = GetComponent<Character>();
+
+        // | monster | eating distance | radius | ratio |
+        // | ------- | --------------- | ------ | ----- |
+        // | boar    | 1.0             | 0.5    | 2.0   |
+        // | wolf    | 1.4             | 0.65   | 2.15  |
+        // | lox     | 4.0             | 1.5    | 2.666 |
+        //
+        // A fixed ratio of 2.2 seems to look good for all of those monsters.
+        // Also tested on necks and trolls, and seems fine generally.
+        BerryEatRadius = Monster.GetRadius() * 2.2f;
       }
 
       public void NoticeBerries(ItemDrop item) {
@@ -165,7 +173,9 @@ namespace Pokeheim {
     class MonstersAreBerryEaters_Patch {
       static void Postfix(Character __instance) {
         var monster = __instance;
-        monster.gameObject.AddComponent<BerryEater>();
+        if (!monster.IsPlayer()) {
+          monster.gameObject.AddComponent<BerryEater>();
+        }
       }
     }
 
