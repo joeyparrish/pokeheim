@@ -71,6 +71,10 @@ namespace Pokeheim {
       return PrefabName + "|" + level.ToString() + "|" + petName.Replace(' ', '_');
     }
 
+    public int CompareTo(Inhabitant other) {
+      return metadata.CompareTo(other.metadata);
+    }
+
     public void Recreate(Vector3 position, Player player) {
       var prefab = PrefabManager.Instance.GetPrefab(PrefabName);
       Quaternion rotation = Quaternion.identity;

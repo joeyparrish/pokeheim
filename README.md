@@ -89,9 +89,11 @@ Pokéheim is made possible by
 Many thanks to the authors of Jötunn for their wonderful library and their
 support on Discord!
 
-### Pokédex Icon
+### Icon
 
 [Pokédex icon](https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Assets/Pokedex%20icon.png)
+and
+[Sort icon](https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Assets/Sort%20icon.png)
 made by
 [Roundicons Freebies](https://www.flaticon.com/authors/roundicons-freebies)
 from [FlatIcon](https://www.flaticon.com/)

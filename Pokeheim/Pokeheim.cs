@@ -131,7 +131,7 @@ namespace Pokeheim {
       static void Postfix(Hud __instance) {
         // Update the tips.
         __instance.m_loadingTips = Utils.GenerateStringList(
-            "$pokeheim_loadscreen_tip", 13);
+            "$pokeheim_loadscreen_tip", 14);
 
         // Update the logo.
         var image = __instance.m_loadingProgress.transform.Find("text_darken/Logotype");
