@@ -135,7 +135,7 @@ namespace Pokeheim {
       new Metadata("GoblinKing", "TrophyGoblinKing",
                    "Armature/Root/Root2/Hip/Spine1/Spine2/Spine3/Neck/Bone.007/Jaw",
                    new Vector3(-0.05f, -0.85f, 1.95f)),
-      new Metadata("GoblinShaman", "TrophyGoblinShaman",
+      new Metadata("GoblinShaman", null /* Using custom instead of TrophyGoblinShaman */,
                    "Armature/Root/Root2/Hip/Spine1/Spine2/Spine3/Neck/Head",
                    new Vector3(-0.07f, 0.20f, 0.00f)),
       new Metadata("Greydwarf", "TrophyGreydwarf",
