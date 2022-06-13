@@ -17,13 +17,12 @@ Instructions are provided here for both R2ModMan (recommended if you've never
 modded before) and for manual installation (if you are a power user or
 experienced Linux user).
 
+> :information_source: **NOTE**: As of the release of this mod, Valheim is not
+> available for macOS.  If that changes, let us know and we will add
+> macOS-specific instructions.
+
 
 ### Using R2Modman
-
-> :information_source: **NOTE**: R2Modman appears to be available only for
-> Windows and Linux.  If you are on macOS, you will need another manager or a
-> manual installation.
-
 
 #### Installing R2Modman
 
@@ -72,16 +71,12 @@ experienced Linux user).
    ```sh
    chmod 755 ~/.local/share/Steam/steamapps/common/Valheim/start_game_bepinex.sh
    ```
-5. _(macOS only)_ Make the file `start_game_bepinex.sh` executable:
-   ```sh
-   chmod 755 ~/Library/Application\ Support/Steam/steamapps/common/Valheim/start_game_bepinex.sh
-   ```
-6. Move `Jotunn.dll` to the `BepInEx/plugins/` folder inside the Valheim
+5. Move `Jotunn.dll` to the `BepInEx/plugins/` folder inside the Valheim
    install folder.
-7. Unpack the MountUp zip into the `BepInEx/plugins/` folder.
-8. Unpack the Pokéheim zip into the `BepInEx/plugins/` folder.
-9. _(If **not using** Steam)_ Run `start_game_bepinex.sh` to launch Pokéheim.
-10. _(If **using** Steam)_
+6. Unpack the MountUp zip into the `BepInEx/plugins/` folder.
+7. Unpack the Pokéheim zip into the `BepInEx/plugins/` folder.
+8. _(If **not using** Steam)_ Run `start_game_bepinex.sh` to launch Pokéheim.
+9. _(If **using** Steam)_
    See [Steam.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Steam.md)
 
 
@@ -93,11 +88,5 @@ experienced Linux user).
   rm ~/.local/share/Steam/steamapps/common/Valheim/BepInEx/plugins/MountUp.dll
   rm ~/.local/share/Steam/steamapps/common/Valheim/BepInEx/plugins/Jotunn.dll
   ```
-2. _(macOS only)_ Remove the mods:
-  ```sh
-  rm -rf ~/Library/Application\ Support/Steam/steamapps/common/Valheim/BepInEx/plugins/Pokeheim/
-  rm ~/Library/Application\ Support/Steam/steamapps/common/Valheim/BepInEx/plugins/MountUp.dll
-  rm ~/Library/Application\ Support/Steam/steamapps/common/Valheim/BepInEx/plugins/Jotunn.dll
-  ```
-3. _(optional)_ Revert Steam configuration:
+2. _(optional)_ Revert Steam configuration:
    See [Steam.md#reverting](https://github.com/joeyparrish/pokeheim/blob/main/docs/Steam.md#reverting)
