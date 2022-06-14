@@ -89,6 +89,11 @@
   "pokeheim_tutorial_swimming_text": "Listen, Trainer.  Swimming is not a great way for a human to get anywhere.  You can't hold your breath long enough.  Why don't you try building a <color=yellow>leather saddle</color> and make someone else do the swimming for you?",
 
   "odin": "Odin",
+
   "odin_congratulations_topic": "Congratulations!",
-  "odin_congratulations_text": "Your work here is done, Trainer!  Let's go."
+  "odin_congratulations_text_single": "Your work here is done, Trainer.  Let's go!",
+  "odin_congratulations_text_multi": "Your work here is done, Trainers.  Let's go!",
+
+  "odin_wait_topic": "Hmm...",
+  "odin_wait_text": "Let's wait until everyone is here.  They won't want to miss this!"
 }

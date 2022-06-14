@@ -22,7 +22,6 @@ using UnityEngine;
 
 using Logger = Jotunn.Logger;
 
-// TODO: Can all Players see Odin when he spawns for just one?
 namespace Pokeheim {
   public static class OdinMods {
     // These are keys which will be used to store additional fields in ZDO.
@@ -31,14 +30,36 @@ namespace Pokeheim {
     private static Odin staticOdin = null;
 
     public class OdinInteraction : MonoBehaviour, Hoverable, Interactable {
-      private Player activatingPlayer = null;
+      private bool readyToMurder = false;
 
       private const float textOffset = 1.5f;
       private const float textCullDistance = 20f;
       private const float dialogVisibleTime = 10f;
+      private const float templeRadius = 8f;
 
       private void Awake() {
         staticOdin = GetComponent<Odin>();
+
+        ZRoutedRpc.instance.Register<string, string>(
+            "PokeheimOdinMessage", RPC_OdinMessage);
+        ZRoutedRpc.instance.Register(
+            "PokeheimOdinMurders", RPC_OdinMurders);
+      }
+
+      private void SayToAll(string topic, string text) {
+        ZRoutedRpc.instance.InvokeRoutedRPC(
+            ZRoutedRpc.Everybody, "PokeheimOdinMessage", topic, text);
+      }
+
+      private void RPC_OdinMessage(long sender, string topic, string text) {
+        Chat.instance.SetNpcText(
+            gameObject,
+            Vector3.up * textOffset,
+            textCullDistance,
+            dialogVisibleTime,
+            topic,
+            text,
+            /* large */ true);
       }
 
       private void OnDestroy() {
@@ -46,16 +67,16 @@ namespace Pokeheim {
       }
 
       private void Update() {
-        if (activatingPlayer == null) {
+        if (readyToMurder == false) {
           // Not activated yet.
           return;
         }
 
-        var distanceToPlayer = Vector3.Distance(
-            transform.position, activatingPlayer.transform.position);
-        if (distanceToPlayer > textCullDistance) {
-          // The player ran away!
-          DoMurder();
+        var distanceToLocalPlayer = Vector3.Distance(
+            transform.position, Player.m_localPlayer.transform.position);
+        if (distanceToLocalPlayer > templeRadius) {
+          // The local player ran away!
+          DoMurders();
         }
       }
 
@@ -64,7 +85,8 @@ namespace Pokeheim {
       }
 
       public string GetHoverText() {
-        return Localization.instance.Localize("$odin\n[<color=yellow><b>$KEY_Use</b></color>] $raven_interact");
+        return Localization.instance.Localize(
+            "$odin\n[<color=yellow><b>$KEY_Use</b></color>] $raven_interact");
       }
 
       public bool Interact(Humanoid character, bool hold, bool alt) {
@@ -72,21 +94,33 @@ namespace Pokeheim {
           return false;
         }
 
-        if (character == activatingPlayer) {
+        if (readyToMurder) {
           // The player is dismissing the chat dialog.
-          DoMurder();
-        } else if (activatingPlayer == null) {
+          DoMurders();
+        } else {
           // The player is activating the chat dialog.
-          activatingPlayer = character as Player;
+          var activatingPlayer = character as Player;
 
-          Chat.instance.SetNpcText(
-              gameObject,
-              Vector3.up * textOffset,
-              textCullDistance,
-              dialogVisibleTime,
-              "$odin_congratulations_topic",
-              "$odin_congratulations_text",
-              /* large */ true);
+          var allPlayers = Player.GetAllPlayers();
+
+          readyToMurder = true;
+          foreach (var player in allPlayers) {
+            var distance = Vector3.Distance(
+                transform.position, player.transform.position);
+            if (distance > templeRadius) {
+              readyToMurder = false;
+            }
+          }
+
+          if (readyToMurder) {
+            var multiple = allPlayers.Count > 1;
+            SayToAll(
+                "$odin_congratulations_topic",
+                "$odin_congratulations_text_" +
+                (multiple ? "multi" : "single"));
+          } else {
+            SayToAll("$odin_wait_topic", "$odin_wait_text");
+          }
         }
 
         return false;
@@ -96,13 +130,20 @@ namespace Pokeheim {
         return false;
       }
 
-      private void DoMurder() {
+      private void DoMurders() {
+        ZRoutedRpc.instance.InvokeRoutedRPC(
+            ZRoutedRpc.Everybody, "PokeheimOdinMurders");
+      }
+
+      private void RPC_OdinMurders(long sender) {
         Chat.instance.ClearNpcText(gameObject);
+
+        var player = Player.m_localPlayer;
 
         // Kill the player, but suppress the "death" tutorial if it hasn't
         // been seen before.
-        activatingPlayer.SetSeenTutorial("death");
-        activatingPlayer.Damage(new HitData {
+        player.SetSeenTutorial("death");
+        player.Damage(new HitData {
           m_damage = {
             m_damage = 1E+10f,
           },
@@ -115,6 +156,7 @@ namespace Pokeheim {
           // Despawn Odin.  Since this delayed call is attached to him, this
           // step must come last.
           Despawn();
+          // TODO: Should the despawn be called by one specific player?
         });
       }
 
@@ -168,6 +210,41 @@ namespace Pokeheim {
       return odin.GetExtraData(IsStaticKey, false);
     }
 
+    // This is a fork of Odin's Update() method.  Static Odin won't disappear,
+    // and he'll face the weighted center of all Players instead of the closest
+    // one.
+    public static void UpdateStaticOdin(this Odin odin) {
+      if (odin.m_nview == null || !odin.m_nview.IsOwner()) {
+        return;
+      }
+
+      var allPlayers = Player.GetAllPlayers();
+      if (allPlayers.Count == 0) {
+        return;
+      }
+
+      var totalWeight = 0f;
+      var totalWeightedPosition = Vector3.zero;
+
+      foreach (var player in allPlayers) {
+        var distance = Vector3.Distance(
+            odin.transform.position,
+            player.transform.position);
+
+        var weight = 1f / distance;
+        totalWeight += weight;
+        totalWeightedPosition += player.transform.position * weight;
+      }
+
+      var averagePosition = totalWeightedPosition / totalWeight;
+
+      var forward = averagePosition - odin.transform.position;
+      forward.y = 0f;
+      forward.Normalize();
+
+      odin.transform.rotation = Quaternion.LookRotation(forward);
+    }
+
     // Find existing static Odin characters when we reload the game.
     [HarmonyPatch(typeof(Odin), nameof(Odin.Awake))]
     class TrackOdin_Patch {
@@ -193,20 +270,8 @@ namespace Pokeheim {
           return true;
         }
 
-        // This is a fork of Odin's Update() method that does everything except
-        // disappear.
-        if (odin.m_nview != null && odin.m_nview.IsOwner()) {
-          // Face the closest player.
-          Player closestPlayer = Player.GetClosestPlayer(
-              odin.transform.position, 100f);
-          if (closestPlayer != null) {
-            Vector3 forward =
-                closestPlayer.transform.position - odin.transform.position;
-            forward.y = 0f;
-            forward.Normalize();
-            odin.transform.rotation = Quaternion.LookRotation(forward);
-          }
-        }
+        // Call a modified version.
+        odin.UpdateStaticOdin();
 
         // Suppress the original.
         return false;
