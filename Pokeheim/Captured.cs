@@ -30,6 +30,7 @@ namespace Pokeheim {
     // These are keys which will be used to store additional fields in ZDO.
     private const string IsCapturedKey = "com.pokeheim.IsCaptured";
     private const string OwnerKey = "com.pokeheim.Owner";
+    private const string NoReturnKey = "com.pokeheim.NoReturn";
 
     private const int MaxPetNameLength = 20;
     private static EffectList PetEffect = null;
@@ -73,12 +74,28 @@ namespace Pokeheim {
       return ragdoll.GetExtraData(IsCapturedKey, false);
     }
 
+    public static bool WillNotReturn(this Character monster) {
+      return monster.GetExtraData(NoReturnKey, false);
+    }
+
+    public static bool WillNotReturn(this Ragdoll ragdoll) {
+      return ragdoll.GetExtraData(NoReturnKey, false);
+    }
+
     public static void SetCaptured(this Character monster, bool value) {
       monster.SetExtraData(IsCapturedKey, value);
     }
 
     public static void SetCaptured(this Ragdoll ragdoll, bool value) {
       ragdoll.SetExtraData(IsCapturedKey, value);
+    }
+
+    public static void SetNoReturn(this Character monster, bool value) {
+      monster.SetExtraData(NoReturnKey, value);
+    }
+
+    public static void SetNoReturn(this Ragdoll ragdoll, bool value) {
+      ragdoll.SetExtraData(NoReturnKey, value);
     }
 
     // NOTE: Character has a GetOwner already, which returns a ZDO ID as a long
@@ -542,6 +559,10 @@ namespace Pokeheim {
         Logger.LogDebug($"Syncing captured status, owner: {spawner.m_owner}, spawn: {spawnCharacter}");
         var owner = spawner.m_owner.GetOwnerName();
         spawnCharacter.ObeyMe(owner);
+
+        // This subordinate monster will not return when called.  Instead, it
+        // will disappear.
+        spawnCharacter.SetNoReturn(true);
       }
     }
 

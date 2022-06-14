@@ -241,6 +241,7 @@ namespace Pokeheim {
       ragdoll.SetMonsterData((new Inhabitant(monster)).ToString());
       ragdoll.SetCaptured(monster.IsCaptured());
       ragdoll.SetOwner(monster.GetOwnerName());
+      ragdoll.SetNoReturn(monster.WillNotReturn());
 
       // Make the ragdoll durable by canceling its destruction call.
       ragdoll.CancelInvoke();

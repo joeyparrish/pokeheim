@@ -259,13 +259,28 @@ namespace Pokeheim {
 
       numReturned = 0;
       name = "";
-      foreach (var monster in monsters) {
-        if (monster is Character) {
-          name = (monster as Character).GetHoverName();
+      foreach (var thing in monsters) {
+        var monster = thing as Character;
+        var ragdoll = thing as Ragdoll;
+        var willNotReturn = false;
+        GameObject thingGameObject = null;
+
+        if (monster != null) {
+          name = monster.GetHoverName();
+          willNotReturn = monster.WillNotReturn();
+          thingGameObject = monster.gameObject;
+        } else if (ragdoll != null) {
+          willNotReturn = ragdoll.WillNotReturn();
+          thingGameObject = ragdoll.gameObject;
         }
-        // Use DoCapture() to bypass the random chance check in Capture().
-        DoCapture(ball, monster, withSound: false);
-        numReturned++;
+
+        if (willNotReturn) {
+          ZNetScene.instance.Destroy(thingGameObject);
+        } else {
+          // Use DoCapture() to bypass the random chance check in Capture().
+          DoCapture(ball, monster, withSound: false);
+          numReturned++;
+        }
       }
 
       // Destroy the temporary projectile object so that it doesn't collide
