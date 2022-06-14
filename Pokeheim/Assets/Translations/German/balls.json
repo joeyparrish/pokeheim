@@ -2,6 +2,12 @@
   "item_pokeball": "Pokéball",
   "item_greatball": "Superball",
   "item_ultraball": "Hyperball",
+  "sort_items": "Sortieren",
+  "skill_monster_training": "Monster Trainieren",
+  "monster_return": "$1, zurück!",
+  "monster_return_all": "Alle, zurück!",
   "monster_caught": "Klasse!",
-  "monster_release": "$1, du bist dran!"
+  "monster_caught": "Gotcha!",
+  "monster_release": "$1, du bist dran!",
+  "monster_recall_key_description": "Monster zurückziehen:"
 }

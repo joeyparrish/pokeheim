@@ -42,6 +42,7 @@ namespace Pokeheim {
         name = "Custom music arranged by Joey Parrish\n" +
                "Parodying the work of Jarlestam, Siegler, and Loeffler",
       },
+      Contributor.Spacer(),
       new Contributor {
         name = "Special thanks to TheSlowPianist",
         link = "https://www.patreon.com/theslowpianist/",
@@ -56,6 +57,13 @@ namespace Pokeheim {
 
     private static Dictionary<string, List<Contributor>> translators = new Dictionary<string, List<Contributor>> {
       { "Original English text", new List<Contributor> {
+        new Contributor {
+          name = "Joey Parrish",
+          link = "https://github.com/joeyparrish",
+        },
+      }},
+
+      { "Deutsche Übersetzung", new List<Contributor> {
         new Contributor {
           name = "Joey Parrish",
           link = "https://github.com/joeyparrish",

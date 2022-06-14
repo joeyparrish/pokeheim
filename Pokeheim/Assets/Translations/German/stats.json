@@ -1,9 +1,21 @@
 {
   "pokedex": "Pokédex",
+  "pokedex_percent_complete": "Pokédex ($1% gefangen)",
   "stats_name": "Name",
+  "stats_name_none": "(kein)",
+  "stats_species": "Art",
   "stats_type": "Typ",
   "stats_level": "Level",
   "stats_hp": "KP",
   "stats_damage": "Schaden",
-  "stats_caught": "Gefangen"
+  "stats_catch_rate": "Einfangenchance",
+  "stats_caught": "Gefangen",
+  "faction_forest": "Wald",
+  "faction_undead": "Untote",
+  "faction_demon": "Dämon",
+  "faction_mountain": "Gebirge",
+  "faction_ocean": "Ozean",
+  "faction_plains": "Ebenen",
+  "faction_boss": "Boss",
+  "faction_unknown": "???"
 }
