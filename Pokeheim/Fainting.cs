@@ -50,9 +50,6 @@ namespace Pokeheim {
     [PokeheimInit]
     public static void Init() {
       CommandManager.Instance.AddConsoleCommand(new FaintAll());
-
-      ZRoutedRpc.instance.Register<Character>(
-          "PokeheimDestroyEnemyHud", RPC_DestroyEnemyHud);
     }
 
     public static bool IsFainted(this Character monster) {
@@ -86,7 +83,8 @@ namespace Pokeheim {
       return null;
     }
 
-    private static void RPC_DestroyEnemyHud(long sender, Character monster) {
+    private static void RPC_DestroyEnemyHud(
+          this Character monster, long sender) {
       // Hide the health HUD if it already exists.  A patch will keep a new
       // one from being created.
       if (EnemyHud.instance != null) {
@@ -95,6 +93,19 @@ namespace Pokeheim {
           EnemyHud.instance.m_huds.Remove(monster);
         }
       }
+    }
+
+    private static void RegisterCustomRPCs(this Character monster) {
+      // Since the RPCs are themselves extension methods, we have to wrap them
+      // in delegates to register them with the RPC system.
+      monster.m_nview.Register(
+          "PokeheimDestroyEnemyHud",
+          sender => monster.RPC_DestroyEnemyHud(sender));
+    }
+
+    private static void DestroyEnemyHud(this Character monster) {
+      // Send an RPC, because the Enemy HUD is per-player and not synced.
+      monster.m_nview.InvokeRPC("PokeheimDestroyEnemyHud");
     }
 
     // A fainting effect for things like Skeletons which don't have a Ragdoll
@@ -120,8 +131,7 @@ namespace Pokeheim {
 
       // Hide the health HUD if it already exists.  A patch will keep a new
       // one from being created.
-      ZRoutedRpc.instance.InvokeRoutedRPC(
-          ZRoutedRpc.Everybody, "PokeheimDestroyEnemyHud");
+      monster.DestroyEnemyHud();
 
       // Don't vanish!
       if (monsterAI != null && monsterAI.m_nview != null) {
@@ -269,6 +279,18 @@ namespace Pokeheim {
         return monster.FaintWithoutRagdoll(hitDirection);
       } else {
         return monster.FaintWithRagdoll(ragdollEffect);
+      }
+    }
+
+    [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
+    class RegisterMonsterRPCs_Patch {
+      static void Postfix(Character __instance) {
+        var monster = __instance;
+
+        // Only patch non-players.
+        if (!monster.IsPlayer()) {
+          monster.RegisterCustomRPCs();
+        }
       }
     }
 
