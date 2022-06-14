@@ -34,13 +34,12 @@ namespace Pokeheim {
         shorelineSerpentConfig.AddSpawnConfig(new SpawnConfig {
           Name = "ShorelineSerpent",
 
-          MaxSpawned = 1000,  // max shoreline serpents at once globally
+          MaxSpawned = 1,  // max shoreline serpents loaded at once
           SpawnChance = 1f,  // percentage chance of spawn in each interval
-          SpawnInterval = 60f,  // seconds between spawn checks
+          SpawnInterval = 600f,  // seconds between spawn checks
           SpawnDistance = 100f,  // min distance between serpents
-          HuntPlayer = true,
 
-          // All biomes, but only when there's water 3m to 10m deep:
+          // All biomes, but only where there's water 3m to 10m deep:
           Biome = (Heightmap.Biome)0xffff,
           BiomeArea = Heightmap.BiomeArea.Everything,
           MinOceanDepth = 3f,
