@@ -243,6 +243,8 @@ namespace Pokeheim {
         MonsterMap["Boar_piggy"] = MonsterMap["Boar"];
         MonsterMap["Lox_Calf"] = MonsterMap["Lox"];
         MonsterMap["Wolf_cub"] = MonsterMap["Wolf"];
+        // Created in SerpentMods.cs to make them easier to find/catch:
+        MonsterMap["ShorelineSerpent"] = MonsterMap["Serpent"];
 
         // Seek out any new monsters added to the game since the last update of
         // this mod.  These should show up in the Pokedex and count toward

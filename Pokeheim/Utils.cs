@@ -35,15 +35,29 @@ namespace Pokeheim {
     // name, this will only be invoked once.  Use them to call methods like
     // StealFromPrefab, to register custom items, or to modify built-in
     // locations.
+    public static event Action OnVanillaCreaturesAvailable;
     public static event Action OnVanillaPrefabsAvailable;
     public static event Action OnVanillaLocationsAvailable;
     public static event Action OnFirstSceneStart;
 
     [PokeheimInit]
     public static void Init() {
+      CreatureManager.OnVanillaCreaturesAvailable += NotifyVanillaCreaturesAvailable;
       PrefabManager.OnVanillaPrefabsAvailable += NotifyVanillaPrefabsAvailable;
       ZoneManager.OnVanillaLocationsAvailable += NotifyVanillaLocationsAvailable;
       PrefabManager.OnPrefabsRegistered += NotifyFirstSceneStart;
+    }
+
+    private static void NotifyVanillaCreaturesAvailable() {
+      CreatureManager.OnVanillaCreaturesAvailable -= NotifyVanillaCreaturesAvailable;
+
+      foreach (Action callback in OnVanillaCreaturesAvailable.GetInvocationList()) {
+        try {
+          callback();
+        } catch (Exception e) {
+          Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
+        }
+      }
     }
 
     private static void NotifyVanillaPrefabsAvailable() {
