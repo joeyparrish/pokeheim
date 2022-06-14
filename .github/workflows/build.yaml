@@ -21,15 +21,16 @@ jobs:
         id: valheimversion
         run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r ".data.\"896660\".depots.branches.public.buildid")"
 
-      # Work around stupid permissions issues that only show up in the
-      # nektos/act environment I use for local testing of workflows.
-      - run: sudo bash -c 'chown -R $SUDO_USER .'
-
       - name: Get build commands
         run: scripts/install-linux-tools.sh
 
       - name: Install NuGet dependencies
-        run: nuget restore Pokeheim.sln
+        run: |
+          # Fixes weird permission errors that started in GitHub Actions
+          # environments on June 14th:
+          sudo chown -R $USER /tmp/NuGetScratch/
+
+          nuget restore Pokeheim.sln
 
       - name: Cache Valheim
         id: cachevalheim
