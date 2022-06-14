@@ -183,20 +183,6 @@ namespace Pokeheim {
       }
     }
 
-    // The boss is immune to attacks from the Player.  You _must_ use captured
-    // monsters on a boss.
-    [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
-    class BossIsImmuneToPlayer_Patch {
-      static void Prefix(Character __instance, HitData hit) {
-        var monster = __instance;
-        Character attacker = hit.GetAttacker();
-
-        if (monster.IsBoss() && attacker != null && attacker.IsPlayer()) {
-          hit.ApplyModifier(0f);
-        }
-      }
-    }
-
     // Normally, a Vegvisir shows you the closest location to itself.
     // Instead, show the closest location to the starting location.
     // Since the player will have to circle back to the temple at the end of

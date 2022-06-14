@@ -354,5 +354,34 @@ namespace Pokeheim {
         player.m_unarmedWeapon.m_itemData.m_shared.m_tamedOnly = true;
       }
     }
+
+    [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
+    class ModifyPlayerAttacks_Patch {
+      static void Prefix(Character __instance, HitData hit) {
+        var monster = __instance;
+        Character attacker = hit.GetAttacker();
+
+        if (attacker != null && attacker.IsPlayer()) {
+          if (monster.IsBoss()) {
+            // The boss is immune to attacks from the Player.  You _must_ use
+            // captured monsters on a boss.
+            hit.ApplyModifier(0f);
+          } else {
+            // No matter what badass weapons you bring into Pokeheim (which you
+            // shouldn't do!), they will all do about 5 damage, equivalent to a
+            // club.  This forces people to play Pokeheim the way it was meant.
+            // We will back up fire damage, though, and leave that alone, so
+            // that torches stay pretty useful on early monsters.
+            var fireDamage = hit.m_damage.m_fire;
+            hit.m_damage.m_fire = 0f;
+
+            var totalDamage = hit.GetTotalDamage();
+            hit.ApplyModifier(5f / totalDamage);
+
+            hit.m_damage.m_fire = fireDamage;
+          }
+        }
+      }
+    }
   }
 }
