@@ -19,6 +19,9 @@
 using HarmonyLib;
 using Jotunn.Managers;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 
 using Logger = Jotunn.Logger;
 
@@ -28,6 +31,12 @@ namespace Pokeheim {
     private const string IsStaticKey = "com.pokeheim.IsStatic";
 
     private static Odin staticOdin = null;
+
+    private static bool overrideRespawnDelay = false;
+
+    private const float dramaticEffectTime = 10f;  // seconds
+    private const float respawnDelayDuringCredits =
+        Credits.totalCreditsTime + dramaticEffectTime;
 
     public class OdinInteraction : MonoBehaviour, Hoverable, Interactable {
       private bool readyToMurder = false;
@@ -142,6 +151,7 @@ namespace Pokeheim {
 
         // Kill the player, but suppress the "death" tutorial if it hasn't
         // been seen before.
+        overrideRespawnDelay = true;
         player.SetSeenTutorial("death");
         player.Damage(new HitData {
           m_damage = {
@@ -150,7 +160,7 @@ namespace Pokeheim {
         });
 
         // Wait for dramatic effect...
-        this.DelayCall(10f /* seconds */, delegate {
+        this.DelayCall(dramaticEffectTime, delegate {
           Credits.Roll(withOutro: true);
 
           // Despawn Odin.  Since this delayed call is attached to him, this
@@ -165,6 +175,14 @@ namespace Pokeheim {
         odin.m_despawn.Create(transform.position, transform.rotation);
         odin.m_nview.Destroy();
       }
+    }
+
+    private static float RespawnDelay(float defaultDelay) {
+      if (overrideRespawnDelay) {
+        overrideRespawnDelay = false;
+        return respawnDelayDuringCredits;
+      }
+      return defaultDelay;
     }
 
     public static void SpawnStaticOdin() {
@@ -275,6 +293,41 @@ namespace Pokeheim {
 
         // Suppress the original.
         return false;
+      }
+    }
+
+    // When the user is killed by Odin and we show the credits, delay the
+    // respawn even more than usual.  That means the user won't be sitting
+    // around at the temple being hit by things they can hear, but not see.
+    [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+    class DelayRespawnForCredits_Patch {
+      static IEnumerable<CodeInstruction> Transpiler(
+          IEnumerable<CodeInstruction> instructions,
+          ILGenerator generator) {
+        var requestRespawnMethod = typeof(Game).GetMethod("RequestRespawn");
+        var respawnDelayMethod = typeof(OdinMods).GetMethod(
+            "RespawnDelay",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        var phases = new TranspilerSequence.Phase[] {
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == requestRespawnMethod),
+            replacer = code => new CodeInstruction[] {
+              // The top of the stack is the hard-coded delay for respawning.
+
+              // Call our method to compute the delay.  We're passing the
+              // default delay value as an argument.
+              new CodeInstruction(OpCodes.Call, respawnDelayMethod),
+
+              // We leave the return value on the stack, then call the
+              // RequestRespawn method.
+              code,
+            },
+          },
+        };
+
+        return TranspilerSequence.Execute("OnDeath", phases, instructions);
       }
     }
   }

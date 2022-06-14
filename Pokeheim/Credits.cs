@@ -100,7 +100,13 @@ namespace Pokeheim {
 
     // Let the contributors list play for this long before replacing it with
     // translators.
-    private const float contributorsTime = 30f;  // seconds
+    private const float contributorsTime = 40f;  // seconds
+
+    // Let the translators list play for this long before ending the animation.
+    private const float translatorsTime = 50f;  // seconds
+
+    public const float totalCreditsTime =
+        outroTime + contributorsTime + translatorsTime;
 
     // Roll credits, with or without the outro text.
     public static void Roll(bool withOutro) {
@@ -113,7 +119,9 @@ namespace Pokeheim {
 
     private static void RollCreditsOnly() {
       RollText(GetContributors(), contributorsTime, () => {
-        RollText(GetTranslators());
+        RollText(GetTranslators(), translatorsTime, () => {
+          StopText();
+        });
       });
     }
 
@@ -162,12 +170,16 @@ namespace Pokeheim {
       return text;
     }
 
-    private static void RollText(string text, float timeout = 0f, Action thenDoThis = null) {
+    private static void StopText() {
       // If we're already showing something, we need to stop the animation
       // (ResetTrigger), then reset the associated parts of the UI (Rebind) so
       // that the scrolling position of the text resets.
       TextViewer.instance.m_animatorIntro.ResetTrigger("play");
       TextViewer.instance.m_animatorIntro.Rebind();
+    }
+
+    private static void RollText(string text, float timeout = 0f, Action thenDoThis = null) {
+      StopText();
 
       TextViewer.instance.ShowText(
           TextViewer.Style.Intro,
