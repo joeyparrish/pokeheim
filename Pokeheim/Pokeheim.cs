@@ -141,13 +141,17 @@ namespace Pokeheim {
     }
 
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.SetupGui))]
-    class DisableMountUpConfig_Patch {
+    class DisableConfigMenu_Patch {
       static void Prefix() {
         try {
           var pluginInfos = BepInEx.Bootstrap.Chainloader.PluginInfos;
           var mountUp = pluginInfos["Koosemose.MountUp"];
           mountUp.Instance.Config.Clear();
           Jotunn.Logger.LogInfo($"MountUp configuration disabled.");
+
+          var jotunn = pluginInfos["com.jotunn.jotunn"];
+          jotunn.Instance.Config.Clear();
+          Jotunn.Logger.LogInfo($"Jotunn configuration disabled.");
         } catch (Exception ex) {
           Jotunn.Logger.LogError($"Failed to disable MountUp config in menu: {ex}");
         }
