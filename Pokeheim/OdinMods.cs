@@ -149,24 +149,31 @@ namespace Pokeheim {
 
         var player = Player.m_localPlayer;
 
-        // Kill the player, but suppress the "death" tutorial if it hasn't
-        // been seen before.
-        overrideRespawnDelay = true;
-        player.SetSeenTutorial("death");
-        player.Damage(new HitData {
-          m_damage = {
-            m_damage = 1E+10f,
-          },
-        });
+        if (player != null) {
+          // Kill the player, but suppress the "death" tutorial if it hasn't
+          // been seen before.
+          overrideRespawnDelay = true;
+          player.SetSeenTutorial("death");
+          player.Damage(new HitData {
+            m_damage = {
+              m_damage = 1E+10f,
+            },
+          });
+        }
 
         // Wait for dramatic effect...
         this.DelayCall(dramaticEffectTime, delegate {
-          Credits.Roll(withOutro: true);
+          if (player != null) {
+            Credits.Roll(withOutro: true);
+          }
 
-          // Despawn Odin.  Since this delayed call is attached to him, this
-          // step must come last.
-          Despawn();
-          // TODO: Should the despawn be called by one specific player?
+          // This is true on single player games and on the server when there
+          // is one.
+          if (ZNet.instance.IsServer()) {
+            // Despawn Odin.  Since this delayed call is attached to him, this
+            // step must come last.
+            Despawn();
+          }
         });
       }
 
