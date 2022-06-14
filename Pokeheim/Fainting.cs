@@ -50,6 +50,9 @@ namespace Pokeheim {
     [PokeheimInit]
     public static void Init() {
       CommandManager.Instance.AddConsoleCommand(new FaintAll());
+
+      ZRoutedRpc.instance.Register<Character>(
+          "PokeheimDestroyEnemyHud", RPC_DestroyEnemyHud);
     }
 
     public static bool IsFainted(this Character monster) {
@@ -83,6 +86,17 @@ namespace Pokeheim {
       return null;
     }
 
+    private static void RPC_DestroyEnemyHud(long sender, Character monster) {
+      // Hide the health HUD if it already exists.  A patch will keep a new
+      // one from being created.
+      if (EnemyHud.instance != null) {
+        if (EnemyHud.instance.m_huds.TryGetValue(monster, out var hud)) {
+          UnityEngine.Object.Destroy(hud.m_gui);
+          EnemyHud.instance.m_huds.Remove(monster);
+        }
+      }
+    }
+
     // A fainting effect for things like Skeletons which don't have a Ragdoll
     // implementation.
     private static bool FaintWithoutRagdoll(
@@ -106,13 +120,8 @@ namespace Pokeheim {
 
       // Hide the health HUD if it already exists.  A patch will keep a new
       // one from being created.
-      // TODO: Will this Destroy() work in multiplayer?
-      if (EnemyHud.instance != null) {
-        if (EnemyHud.instance.m_huds.TryGetValue(monster, out var hud)) {
-          UnityEngine.Object.Destroy(hud.m_gui);
-          EnemyHud.instance.m_huds.Remove(monster);
-        }
-      }
+      ZRoutedRpc.instance.InvokeRoutedRPC(
+          ZRoutedRpc.Everybody, "PokeheimDestroyEnemyHud");
 
       // Don't vanish!
       if (monsterAI != null && monsterAI.m_nview != null) {
@@ -178,8 +187,8 @@ namespace Pokeheim {
       }
 
       if (flipAngle != 0f) {
-        monster.gameObject.transform.position += new Vector3(0f, 1f, 0f);
-        monster.gameObject.transform.Rotate(flipAngle, 0f, 0f);
+        monster.transform.position += new Vector3(0f, 1f, 0f);
+        monster.transform.Rotate(flipAngle, 0f, 0f);
       }
     }
 
@@ -228,7 +237,7 @@ namespace Pokeheim {
 
       // Make the ragdoll interact with things (like poke balls).
       foreach (var body in ragdoll.m_bodies) {
-        var collider = body.gameObject.GetComponent<Collider>();
+        var collider = body.GetComponent<Collider>();
         if (collider != null) {
           // Move the body parts into the "character" layer so that we can
           // efficiently find these in the projectil collision code.  This also
@@ -244,8 +253,6 @@ namespace Pokeheim {
       return true;
     }
 
-    // TODO: With multi-player, does this need to be an RPC?
-    // What else might need to be an RPC?  What are the rules for this?
     public static bool Faint(this Character monster, Vector3 hitDirection) {
       if (monster.IsPlayer()) {
         return false;
