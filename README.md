@@ -1,5 +1,7 @@
 ![Pokéheim Logo](https://github.com/joeyparrish/pokeheim/raw/main/Pokeheim/Assets/Logo.png)
 
+> :warning: **_We recommend playing Pokéheim with a fresh character and world!_** :warning:
+
 # Pokéheim - A Valheim Mod by Joey Parrish
 
 Source: https://github.com/joeyparrish/pokeheim
@@ -30,9 +32,9 @@ armor don't matter.  You build Pokéballs from rocks and use them to capture
 monsters.  Your monsters will then fight other monsters for you, until you've
 amassed an army big enough to take on the bosses.
 
-We recommend starting with a fresh character and world.  If you don't, please
-make a backup of anything you care about.  It will probably be fine, but better
-safe than sorry.
+**_We recommend starting with a fresh character and world._**  If you don't,
+please make a backup of anything you care about.  It will probably be fine, but
+better safe than sorry.
 
 
 ### Dependencies
