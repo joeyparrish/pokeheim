@@ -73,7 +73,13 @@ namespace Pokeheim {
     }
 
     private static void NotifyVanillaLocationsAvailable() {
-      ZoneManager.OnVanillaLocationsAvailable -= NotifyVanillaLocationsAvailable;
+      // NOTE: We _do not_ remove the listener from ZoneManager.  If we do,
+      // modifications to vanilla locations fail.  See this note from the
+      // Jotunn docs:
+      //
+      // > Adding custom and cloned locations & vegetation must only be done
+      // > once. Modifications to vanilla locations & vegetation must be
+      // > repeated every time!
 
       foreach (Action callback in OnVanillaLocationsAvailable.GetInvocationList()) {
         try {
