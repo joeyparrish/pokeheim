@@ -1,6 +1,8 @@
 ![Pokéheim Logo](https://github.com/joeyparrish/pokeheim/raw/main/Pokeheim/Assets/Logo.png)
 
-> :warning: **_We recommend playing Pokéheim with a fresh character and world!_** :warning:
+<h3 align="center">
+  :warning: <b><i>We recommend playing Pokéheim with a fresh character and world!</i></b> :warning:
+</h3>
 
 # Pokéheim - A Valheim Mod by Joey Parrish
 
