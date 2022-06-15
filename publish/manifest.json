@@ -6,6 +6,6 @@
     "dependencies": [
         "denikson-BepInExPack_Valheim-5.4.1900",
         "ValheimModding-Jotunn-2.6.9",
-        "Oran1-MountUp-3.2.9"
+        "Oran1-Mountup-3.2.9"
     ]
 }
