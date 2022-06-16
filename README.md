@@ -39,6 +39,15 @@ please make a backup of anything you care about.  It will probably be fine, but
 better safe than sorry.
 
 
+### Preview Videos
+
+We recommend trying the mod and letting yourself be pleasently surprised.  If
+you need to be enticed, though, please check out these preview videos:
+
+ - Main Menu Preview: https://www.youtube.com/watch?v=OZ70PIKUCQc
+ - Early Gameplay Preview: https://www.youtube.com/watch?v=NodOlfTvtKU
+
+
 ### Dependencies
 
  - [MountUp](https://www.nexusmods.com/valheim/mods/1091), v3.2.9 - We borrow
