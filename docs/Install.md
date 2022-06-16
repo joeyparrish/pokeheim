@@ -74,7 +74,8 @@ experienced Linux user).
 5. Move `Jotunn.dll` to the `BepInEx/plugins/` folder inside the Valheim
    install folder.
 6. Unpack the MountUp zip into the `BepInEx/plugins/` folder.
-7. Unpack the Pokéheim zip into the `BepInEx/plugins/` folder.
+7. Unpack the Pokéheim zip and move the contents of the zip's `plugins` folder
+   into the `BepInEx/plugins/` folder.
 8. _(If **not using** Steam)_ Run `start_game_bepinex.sh` to launch Pokéheim.
 9. _(If **using** Steam)_
    See [Steam.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Steam.md)
@@ -84,6 +85,7 @@ experienced Linux user).
 
 1. _(Linux only)_ Remove the mods:
   ```sh
+  rm ~/.local/share/Steam/steamapps/common/Valheim/BepInEx/plugins/Pokeheim.dll
   rm -rf ~/.local/share/Steam/steamapps/common/Valheim/BepInEx/plugins/Pokeheim/
   rm ~/.local/share/Steam/steamapps/common/Valheim/BepInEx/plugins/MountUp.dll
   rm ~/.local/share/Steam/steamapps/common/Valheim/BepInEx/plugins/Jotunn.dll

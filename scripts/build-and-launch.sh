@@ -18,4 +18,6 @@ cd "$(dirname "$0")"/..
 ./scripts/install-mod.sh "$BUILD_TYPE"
 
 cd ~/.local/share/Steam/steamapps/common/Valheim
-./start_game_bepinex.sh ~/.local/share/Steam/steamapps/common/Valheim/valheim.x86_64 -force-glcore -console
+./start_game_bepinex.sh \
+    ~/.local/share/Steam/steamapps/common/Valheim/valheim.x86_64 \
+    -force-glcore -console

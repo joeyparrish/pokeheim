@@ -202,10 +202,8 @@ namespace Pokeheim {
 
     private static Dictionary<string, Metadata> MonsterMap;
 
-    private static readonly string OverlayPath =
-        "Pokeheim/Assets/Inhabited-overlay.png";
-    private static readonly string PremadeIconPrefix =
-        "Pokeheim/Assets/PremadeIcon-";
+    private static readonly string OverlayPath = "Inhabited-overlay.png";
+    private static readonly string PremadeIconPrefix = "PremadeIcon-";
 
     private static Sprite Overlay;
     private const float OverlayAlpha = 0.6f;
@@ -214,7 +212,7 @@ namespace Pokeheim {
 
     [PokeheimInit]
     public static void Init() {
-      Overlay = AssetUtils.LoadSpriteFromFile(OverlayPath, centerPivot);
+      Overlay = Utils.LoadSprite(OverlayPath, centerPivot);
 
 #if DEBUG
       CommandManager.Instance.AddConsoleCommand(new SpawnAll());
@@ -443,11 +441,11 @@ namespace Pokeheim {
         if (this.trophyName == null) {
           // Load a premade icon from disk.
           var path = $"{PremadeIconPrefix}{this.prefabName}.png";
-          this.trophyIcon = AssetUtils.LoadSpriteFromFile(path, centerPivot);
+          this.trophyIcon = Utils.LoadSprite(path, centerPivot);
 
           if (trophyIcon == null) {
             path = $"{PremadeIconPrefix}fallback.png";
-            this.trophyIcon = AssetUtils.LoadSpriteFromFile(path, centerPivot);
+            this.trophyIcon = Utils.LoadSprite(path, centerPivot);
           }
 
           if (this.prefabCharacter != null && this.trophyIcon != null) {

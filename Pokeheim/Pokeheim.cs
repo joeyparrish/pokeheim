@@ -85,8 +85,7 @@ namespace Pokeheim {
         var logo = startup.m_mainMenu.transform.Find("LOGO").gameObject;
         var hh = startup.m_mainMenu.transform.Find("H&H").gameObject;
 
-        logo.GetComponent<Image>().sprite =
-            AssetUtils.LoadSpriteFromFile("Pokeheim/Assets/Logo.png");
+        logo.GetComponent<Image>().sprite = Utils.LoadSprite("Logo.png");
         hh.GetComponent<Image>().enabled = false;
       }
     }
@@ -135,8 +134,7 @@ namespace Pokeheim {
 
         // Update the logo.
         var image = __instance.m_loadingProgress.transform.Find("text_darken/Logotype");
-        image.GetComponent<Image>().sprite =
-            AssetUtils.LoadSpriteFromFile("Pokeheim/Assets/Logo.png");
+        image.GetComponent<Image>().sprite = Utils.LoadSprite("Logo.png");
       }
     }
 

@@ -48,12 +48,12 @@ namespace Pokeheim {
 
     private static Dictionary<string, BallConfig> BallConfigs = new Dictionary<string, BallConfig> {
       { "Pokeball", new BallConfig {
-        TexturePath = "Pokeheim/Assets/Monster ball texture.png",
+        TexturePath = "Monster ball texture.png",
         BallFactor = 1.0f,
         ItemConfig = new ItemConfig {
           Name = "$item_pokeball",
           Description = "$item_pokeball_description",
-          Icons = new []{ AssetUtils.LoadSpriteFromFile("Pokeheim/Assets/Monster ball.png") },
+          Icons = new []{ Utils.LoadSprite("Monster ball.png") },
           Amount = 10,
           Requirements = new[] {
             new RequirementConfig {
@@ -68,12 +68,12 @@ namespace Pokeheim {
         },
       } },
       { "Greatball", new BallConfig {
-        TexturePath = "Pokeheim/Assets/Super monster ball texture.png",
+        TexturePath = "Super monster ball texture.png",
         BallFactor = 1.5f,
         ItemConfig = new ItemConfig {
           Name = "$item_greatball",
           Description = "$item_greatball_description",
-          Icons = new []{ AssetUtils.LoadSpriteFromFile("Pokeheim/Assets/Super monster ball.png") },
+          Icons = new []{ Utils.LoadSprite("Super monster ball.png") },
           Amount = 10,
           Requirements = new[] {
             new RequirementConfig {
@@ -88,12 +88,12 @@ namespace Pokeheim {
         },
       } },
       { "Ultraball", new BallConfig {
-        TexturePath = "Pokeheim/Assets/Ultra monster ball texture.png",
+        TexturePath = "Ultra monster ball texture.png",
         BallFactor = 2.0f,
         ItemConfig = new ItemConfig {
           Name = "$item_ultraball",
           Description = "$item_ultraball_description",
-          Icons = new []{ AssetUtils.LoadSpriteFromFile("Pokeheim/Assets/Ultra monster ball.png") },
+          Icons = new []{ Utils.LoadSprite("Ultra monster ball.png") },
           Amount = 10,
           Requirements = new[] {
             new RequirementConfig {
@@ -156,7 +156,7 @@ namespace Pokeheim {
         Identifier = "training",
         Name = "$skill_monster_training",
         Description = "$skill_monster_training_description",
-        Icon = AssetUtils.LoadSpriteFromFile("Pokeheim/Assets/Skill icon.png"),
+        Icon = Utils.LoadSprite("Skill icon.png"),
         IncreaseStep = 1f,
       });
 
@@ -202,7 +202,7 @@ namespace Pokeheim {
       ReplaceMesh(prefab, BallMesh, scale, rotation, translation);
 
       // Replace the texture, as well.
-      var newTexture = AssetUtils.LoadTexture(texturePath);
+      var newTexture = Utils.LoadTexture(texturePath);
       ReplaceTexture(prefab, newTexture);
     }
 

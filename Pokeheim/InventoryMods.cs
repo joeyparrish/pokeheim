@@ -26,7 +26,7 @@ using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
   public class InventoryMods {
-    private const string SortIconPath = "Pokeheim/Assets/Sort icon.png";
+    private const string SortIconPath = "Sort icon.png";
 
     [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Awake))]
     class LargeInventory_Patch {
@@ -125,7 +125,7 @@ namespace Pokeheim {
         armorText.gameObject.SetActive(false);
 
         // Replace the icon.
-        armorIcon.sprite = AssetUtils.LoadSpriteFromFile(SortIconPath);
+        armorIcon.sprite = Utils.LoadSprite(SortIconPath);
 
         // Center the icon.
         armorIcon.rectTransform.anchoredPosition = new Vector2(0.5f, 0.5f);

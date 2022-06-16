@@ -22,8 +22,14 @@ PLUGINS_PATH=~/.local/share/Steam/steamapps/common/"$GAME_NAME"/BepInEx/plugins
 
 cd "$(dirname "$0")"/..
 
+# Old location (<= v1.0.3)
 rm -rf "$PLUGINS_PATH"/Pokeheim/
-mkdir -p "$PLUGINS_PATH"/Pokeheim/Assets/
+
+# New location (>= v1.0.4), simulates r2modman install pattern
+POKEHEIM_FOLDER="$PLUGINS_PATH"/Pokeheim-Pokeheim
+POKEHEIM_ASSETS="$PLUGINS_PATH"/Pokeheim-Pokeheim/Pokeheim/Assets
+rm -rf "$POKEHEIM_FOLDER"
+mkdir -p "$POKEHEIM_ASSETS"
 
 # NOTE: What nuget downloads is always a Debug build of Jotunn.
 # To install a true Release build, we need to fetch that from some place like
@@ -33,9 +39,10 @@ if [ "$BUILD_TYPE" == "Release" ]; then
 else
   cp Pokeheim/bin/$BUILD_TYPE/Jotunn.dll "$PLUGINS_PATH"/
 fi
-cp Pokeheim/bin/$BUILD_TYPE/Pokeheim.dll "$PLUGINS_PATH"/Pokeheim/
-cp Pokeheim/Assets/*.png "$PLUGINS_PATH"/Pokeheim/Assets/
-cp Pokeheim/Assets/*.mp3 "$PLUGINS_PATH"/Pokeheim/Assets/
-cp -a Pokeheim/Assets/Translations "$PLUGINS_PATH"/Pokeheim/Assets/
+
+cp Pokeheim/bin/$BUILD_TYPE/Pokeheim.dll "$POKEHEIM_FOLDER"/
+cp Pokeheim/Assets/*.png "$POKEHEIM_ASSETS"/
+cp Pokeheim/Assets/*.mp3 "$POKEHEIM_ASSETS"/
+cp -a Pokeheim/Assets/Translations "$POKEHEIM_ASSETS"/
 
 echo "Installed $BUILD_TYPE build."

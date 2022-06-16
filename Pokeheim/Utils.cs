@@ -18,11 +18,14 @@
 
 using HarmonyLib;
 using Jotunn.Managers;
+using Jotunn.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -345,6 +348,34 @@ namespace Pokeheim {
 
       Logger.LogDebug($"Found no existing instances of location {name}.");
       return zoneLocation.m_prefab;
+    }
+
+    private static string cachedAssetRootPath = null;
+
+    private static void FindAssetRootPath() {
+      if (cachedAssetRootPath == null) {
+        string assemblyFolder = System.IO.Path.GetDirectoryName(
+            Assembly.GetExecutingAssembly().Location);
+        cachedAssetRootPath = Path.Combine(
+            assemblyFolder, "Pokeheim", "Assets");
+      }
+    }
+
+    public static string GetAssetPath(string asset) {
+      FindAssetRootPath();
+      return Path.Combine(cachedAssetRootPath, asset);
+    }
+
+    public static Sprite LoadSprite(string asset) {
+      return LoadSprite(asset, Vector2.zero);
+    }
+
+    public static Sprite LoadSprite(string asset, Vector2 pivot) {
+      return AssetUtils.LoadSpriteFromFile(GetAssetPath(asset), pivot);
+    }
+
+    public static Texture2D LoadTexture(string asset) {
+      return AssetUtils.LoadTexture(GetAssetPath(asset));
     }
   }
 }

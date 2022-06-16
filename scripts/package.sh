@@ -21,12 +21,12 @@ rm -rf Pokeheim/bin/
 
 # Make a generic zip.
 rm -rf staging Pokeheim.zip
-mkdir -p staging/Pokeheim/Assets
+mkdir -p staging/plugins/Pokeheim/Assets
 # Stage mod & assets.
-cp Pokeheim/bin/Release/Pokeheim.dll staging/Pokeheim/
-cp Pokeheim/Assets/*.png staging/Pokeheim/Assets/
-cp Pokeheim/Assets/*.mp3 staging/Pokeheim/Assets/
-cp -a Pokeheim/Assets/Translations staging/Pokeheim/Assets/
+cp Pokeheim/bin/Release/Pokeheim.dll staging/plugins/
+cp Pokeheim/Assets/*.png staging/plugins/Pokeheim/Assets/
+cp Pokeheim/Assets/*.mp3 staging/plugins/Pokeheim/Assets/
+cp -a Pokeheim/Assets/Translations staging/plugins/Pokeheim/Assets/
 # Stage mod metadata.
 cp publish/icon.png staging/
 cp README.md staging/
@@ -41,7 +41,7 @@ set +x
 
 # Double-check versioning.
 manifest_version=$(cat staging/manifest.json | jq -r .version_number)
-dll_version=$(monodis --assembly staging/Pokeheim/Pokeheim.dll \
+dll_version=$(monodis --assembly staging/plugins/Pokeheim.dll \
               | grep Version | cut -f 2 -d : | tr -d ' ')
 if [[ "$manifest_version.0" != "$dll_version" ]]; then
   echo "Version mismatch!"

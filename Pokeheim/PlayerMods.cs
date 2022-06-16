@@ -32,7 +32,7 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   public static class PlayerMods {
     private const string PokedexFakeStationPrefix = "com.pokeheim.pokedex.";
-    private const string PokedexIconPath = "Pokeheim/Assets/Pokedex icon.png";
+    private const string PokedexIconPath = "Pokedex icon.png";
 
     [PokeheimInit]
     public static void Init() {
@@ -192,7 +192,7 @@ namespace Pokeheim {
           if (component.name == "Trophies") {
             foreach (var child in component.GetComponentsInChildren<Image>()) {
               if (child.name == "Image") {
-                child.sprite = AssetUtils.LoadSpriteFromFile(PokedexIconPath);
+                child.sprite = Utils.LoadSprite(PokedexIconPath);
               }
             }
           }

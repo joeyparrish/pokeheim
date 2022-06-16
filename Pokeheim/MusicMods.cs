@@ -30,7 +30,7 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   public static class MusicMods {
     private static readonly Dictionary<string, string> OverrideMusic = new Dictionary<string, string> {
-      {"menu", "Pokeheim/Assets/Main-Menu.mp3"},
+      {"menu", "Main-Menu.mp3"},
       // TODO: morning music
       //{"morning", ""},
     };
@@ -43,7 +43,7 @@ namespace Pokeheim {
     }
 
     static AudioClip LoadAudioClip(string relativePath) {
-      var absolutePath = Path.Combine(BepInEx.Paths.PluginPath, relativePath);
+      var absolutePath = Utils.GetAssetPath(relativePath);
       var pathUrl = "file:///" + absolutePath.Replace("\\", "/");
       var request = UnityWebRequestMultimedia.GetAudioClip(
           pathUrl, AudioType.MPEG);
