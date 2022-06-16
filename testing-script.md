@@ -320,3 +320,9 @@
 ## 18. End Game
 
 1. TODO: Test end game
+
+
+## 19. Languages
+
+1. TODO: Make sure translations are loaded for some non-English language
+2. TODO: Make sure untranslated text falls back to English (tips, intro, etc)
