@@ -58,7 +58,7 @@ namespace Pokeheim {
         try {
           callback();
         } catch (Exception e) {
-          Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
+          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
         }
       }
     }
@@ -70,7 +70,7 @@ namespace Pokeheim {
         try {
           callback();
         } catch (Exception e) {
-          Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
+          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
         }
       }
     }
@@ -88,7 +88,7 @@ namespace Pokeheim {
         try {
           callback();
         } catch (Exception e) {
-          Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
+          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
         }
       }
     }
@@ -100,7 +100,7 @@ namespace Pokeheim {
         try {
           callback();
         } catch (Exception e) {
-          Logger.LogWarning($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
+          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
         }
       }
     }
