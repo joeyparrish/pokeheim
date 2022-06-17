@@ -523,7 +523,11 @@ namespace Pokeheim {
       }
     }
 
+#if DEBUG
     // We're just playing dress-up, so DLC items are available.
+    // But only in Debug builds, for the purposes of making sure they work.
+    // In an official release, only those who earned them can have them, out of
+    // respect for the Valheim developers and their early supporters.
     [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem), new Type[] {
       typeof(ItemDrop.ItemData), typeof(bool),
     })]
@@ -532,5 +536,6 @@ namespace Pokeheim {
         item.m_shared.m_dlc = "";
       }
     }
+#endif
   }
 }
