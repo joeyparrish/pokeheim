@@ -123,8 +123,9 @@ namespace Pokeheim {
         // All monsters can be ridden with a universal saddle item.
         tameable.m_saddleItem = UniversalSaddleItem;
 
-        // Monsters always drop their saddle on death/capture.
-        tameable.m_dropSaddleOnDeath = true;
+        // Monsters always drop their saddle on death/capture, but we implement
+        // it ourselves.  See onMountDeathOrCapture patch below.
+        tameable.m_dropSaddleOnDeath = false;
 
         // This will be the parent of the saddle object.
         // It will be attached exactly to the mount point base, and will reset
@@ -362,7 +363,7 @@ namespace Pokeheim {
       [HarmonyPrefix]
       [HarmonyPatch(typeof(Sadle), nameof(Sadle.OnUseStop))]
       static void onDismount(Sadle __instance, Player player) {
-        if (player == Player.m_localPlayer) {
+        if (player == Player.m_localPlayer && !dismounting) {
           Logger.LogDebug($"Dismounting: {__instance.m_character}");
           dismounting = true;
         }
@@ -375,6 +376,16 @@ namespace Pokeheim {
         if (tameable.HaveSaddle() && tameable.m_saddle.IsLocalUser()) {
           Logger.LogDebug($"Dismounting on death: {__instance.m_character}");
           dismounting = true;
+
+          // Force the player off.
+          tameable.m_saddle.OnUseStop(Player.m_localPlayer);
+          // Force the saddle off.  Note that since some monster Characters
+          // don't stop existing when they faint (those without Ragdolls), we
+          // have to implement this ourselves instead of using
+          // m_dropSaddleOnDeath.  The built-in version assumes that the
+          // Character actually dies, which leads to weird, broken behavior.
+          // https://github.com/joeyparrish/pokeheim/issues/7
+          tameable.DropSaddle(Vector3.zero);
         }
       }
 
