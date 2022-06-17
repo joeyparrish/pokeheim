@@ -118,6 +118,14 @@ namespace Pokeheim {
           // version of the CapeLinen model AFAICT.
           return;
         }
+#if !DEBUG
+        var dlc = itemDrop.m_itemData.m_shared.m_dlc;
+        if (dlc != "" && !DLCMan.instance.IsDLCInstalled(dlc)) {
+          // This is DLC the user doesn't have access to.  Hide it from the
+          // list in a Release build.
+          return;
+        }
+#endif
 
         var itemName = itemDrop.m_itemData.m_shared.m_name;
         var itemType = itemDrop.m_itemData.m_shared.m_itemType;
