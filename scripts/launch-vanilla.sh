@@ -6,7 +6,6 @@
 
 set -e
 
-cd "$(dirname "$0")"/..
-
-./scripts/build.sh "Release"
-./scripts/install-mod.sh "Release" "Valheim dedicated server"
+cd ~/.local/share/Steam/steamapps/common/Valheim
+~/.local/share/Steam/steamapps/common/Valheim/valheim.x86_64 \
+    -force-glcore -console

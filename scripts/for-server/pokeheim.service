@@ -1,0 +1,20 @@
+[Unit]
+Description=Pokeheim Server
+After=network-online.target
+
+[Service]
+Type=simple
+
+User=joey
+Group=joey
+UMask=022
+
+WorkingDirectory=/home/joey/pokeheim-server
+ExecStart=/home/joey/pokeheim-server/start_pokeheim_server.sh
+
+Restart=on-failure
+
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target
