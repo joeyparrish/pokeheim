@@ -34,74 +34,104 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   public static class Utils {
     // Other classes can register callbacks here without worrying about
-    // unregistering.  Unlike PrefabManager/ZoneManager's event of the same
-    // name, this will only be invoked once.  Use them to call methods like
-    // StealFromPrefab, to register custom items, or to modify built-in
-    // locations.
-    public static event Action OnVanillaCreaturesAvailable;
-    public static event Action OnVanillaPrefabsAvailable;
-    public static event Action OnVanillaLocationsAvailable;
-    public static event Action OnFirstSceneStart;
+    // unregistering.  Similar events from Jotunn will be invoked many times,
+    // and for most, you must unregister your callbacks after the first time.
+    // Ours are tailored to our needs, and will be invoked once or many times
+    // as appropriate.  Use them to call methods like StealFromPrefab, to
+    // register custom items, or to modify built-in locations.
 
-    [PokeheimInit]
-    public static void Init() {
-      CreatureManager.OnVanillaCreaturesAvailable += NotifyVanillaCreaturesAvailable;
-      PrefabManager.OnVanillaPrefabsAvailable += NotifyVanillaPrefabsAvailable;
-      ZoneManager.OnVanillaLocationsAvailable += NotifyVanillaLocationsAvailable;
-      PrefabManager.OnPrefabsRegistered += NotifyFirstSceneStart;
+    public static Hook OnVanillaPrefabsAvailable =
+        new Hook("OnVanillaPrefabsAvailable");
+    public static Hook OnVanillaLocationsAvailable =
+        new Hook("OnVanillaLocationsAvailable", oneShot: false);
+    public static Hook OnFirstSceneStart =
+        new Hook("OnFirstSceneStart");
+    public static Hook OnDLCManAwake =
+        new Hook("OnDLCManAwake");
+
+    [HarmonyPatch]
+    private static class HookPatches {
+      [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix]
+      private static void VanillaPrefabs() => OnVanillaPrefabsAvailable.Trigger();
+      [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPostfix]
+      private static void VanillaLocations() => OnVanillaLocationsAvailable.Trigger();
+      [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
+      private static void FirstScene() => OnFirstSceneStart.Trigger();
+      [HarmonyPatch(typeof(DLCMan), nameof(DLCMan.Awake)), HarmonyPostfix]
+      private static void DLC() => OnDLCManAwake.Trigger();
     }
 
-    private static void NotifyVanillaCreaturesAvailable() {
-      CreatureManager.OnVanillaCreaturesAvailable -= NotifyVanillaCreaturesAvailable;
+    public class Hook {
+      public bool Triggered => triggered;
+      public string Name => name;
 
-      foreach (Action callback in OnVanillaCreaturesAvailable.GetInvocationList()) {
+      protected string name = "";
+      private bool oneShot = false;
+      private bool triggered = false;
+      private List<Action> callbacks = new List<Action>();
+
+      public Hook(string name, bool oneShot = true) {
+        this.name = name;
+        this.oneShot = oneShot;
+      }
+
+      static public Hook operator +(Hook hook1, Hook hook2) {
+        return new MultiHook(hook1, hook2);
+      }
+
+      static public Hook operator +(Hook hook, Action callback) {
+        hook.callbacks.Add(callback);
+
+        if (hook.triggered) {
+          hook.SafeInvoke(callback);
+        }
+
+        return hook;
+      }
+
+      internal void Trigger() {
+        if (oneShot && triggered) {
+          return;
+        }
+
+        triggered = true;
+        Logger.LogDebug($"Triggering hook {name}");
+
+        foreach (Action callback in callbacks) {
+          SafeInvoke(callback);
+        }
+      }
+
+      private void SafeInvoke(Action callback) {
         try {
           callback();
         } catch (Exception e) {
-          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
+          Logger.LogError($"Exception thrown at event {name} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
         }
       }
     }
 
-    private static void NotifyVanillaPrefabsAvailable() {
-      PrefabManager.OnVanillaPrefabsAvailable -= NotifyVanillaPrefabsAvailable;
+    public class MultiHook : Hook {
+      private List<Hook> hooks = new List<Hook>();
 
-      foreach (Action callback in OnVanillaPrefabsAvailable.GetInvocationList()) {
-        try {
-          callback();
-        } catch (Exception e) {
-          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
-        }
+      public MultiHook(Hook hook1, Hook hook2) : base("", false) {
+        this.name = hook1.Name + ", " + hook2.Name;
+
+        hooks.Add(hook1);
+        hooks.Add(hook2);
+
+        hook1 += () => this.SubHookCallback();
+        hook2 += () => this.SubHookCallback();
       }
-    }
 
-    private static void NotifyVanillaLocationsAvailable() {
-      // NOTE: We _do not_ remove the listener from ZoneManager.  If we do,
-      // modifications to vanilla locations fail.  See this note from the
-      // Jotunn docs:
-      //
-      // > Adding custom and cloned locations & vegetation must only be done
-      // > once. Modifications to vanilla locations & vegetation must be
-      // > repeated every time!
-
-      foreach (Action callback in OnVanillaLocationsAvailable.GetInvocationList()) {
-        try {
-          callback();
-        } catch (Exception e) {
-          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
+      private void SubHookCallback() {
+        foreach (var hook in hooks) {
+          if (!hook.Triggered) {
+            return;
+          }
         }
-      }
-    }
 
-    private static void NotifyFirstSceneStart() {
-      PrefabManager.OnPrefabsRegistered -= NotifyFirstSceneStart;
-
-      foreach (Action callback in OnFirstSceneStart.GetInvocationList()) {
-        try {
-          callback();
-        } catch (Exception e) {
-          Logger.LogError($"Exception thrown at event {(new StackFrame(1).GetMethod().Name)} in {callback.Method.DeclaringType.Name}.{callback.Method.Name}:\n{e}");
-        }
+        Trigger();
       }
     }
 

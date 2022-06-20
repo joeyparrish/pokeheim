@@ -29,7 +29,7 @@ namespace Pokeheim {
     public static void Init() {
       // Spawn serpents closer to shore to make it more reasonable to find and
       // catch them.
-      Utils.OnVanillaCreaturesAvailable += delegate {
+      Utils.OnVanillaPrefabsAvailable += delegate {
         var shorelineSerpentConfig = new CreatureConfig();
         shorelineSerpentConfig.AddSpawnConfig(new SpawnConfig {
           Name = "ShorelineSerpent",

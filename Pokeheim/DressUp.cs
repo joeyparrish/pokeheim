@@ -427,7 +427,8 @@ namespace Pokeheim {
         RegisterWardrobe();
       };
 
-      Utils.OnFirstSceneStart += delegate {
+      var combinedHook = Utils.OnDLCManAwake + Utils.OnFirstSceneStart;
+      combinedHook += delegate {
         DressUpPanel.RegisterAllClothing();
       };
 
