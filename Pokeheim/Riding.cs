@@ -456,7 +456,8 @@ namespace Pokeheim {
           // Note that no monster "weapon" has a "secondary attack" that I've
           // seen.  Instead, we map the secondaryAttack flag to a separate
           // "weapon" (which for monsters, is just a form of attack).
-          bool equipped = monsterWithWeapons.EquipWeapon(secondaryAttack);
+          bool equipped =
+              monsterWithWeapons?.EquipWeapon(secondaryAttack) ?? false;
 
           // If we asked for a secondary attack, but there is no second weapon,
           // it will fail to equip and we will not carry out an attack.
@@ -580,7 +581,7 @@ namespace Pokeheim {
     class TweakMountHud_Patch {
       [HarmonyPostfix]
       [HarmonyPatch(typeof(Sadle), nameof(Sadle.RPC_RequestRespons))]
-      static void Postfix(Sadle __instance, bool granted) {
+      static void tweakMountUI(Sadle __instance, bool granted) {
         var saddle = __instance;
         if (granted && saddle.IsLocalUser()) {
           var steed = saddle.GetCharacter();
@@ -644,6 +645,72 @@ namespace Pokeheim {
         }
 
         return true;
+      }
+    }
+
+    // Drakes are _really_ wiggly in flight.  The camera whips around and makes
+    // the user feel sick to watch it.  It turns out that this is due to a
+    // default setting for "immersive camera".  Rather than ask people to
+    // disable that, disable it in the mod in context of riding, specifically.
+    // The internal is called "m_shipCameraTilt", so we can presume it is a
+    // setting meant for the motion of waves while sailing.  It should be fine
+    // to disable while riding in a saddle, even if the user wants it on for
+    // sailing.
+    [HarmonyPatch]
+    class DontGiveUsMotionSickness_Patch {
+      const float increasedMaxDistance = 12f;
+      // NOTE: Valheim+ will change the camera's m_maxDistance on every update.
+      // So there's way our patch will win if both are installed.  This also
+      // means there's no point in reading the value that V+ writes to try to
+      // avoid messing up their override.  We can't mess it up, and our tweak
+      // to camera distance will be useless with V+.
+      const float defaultMaxDistance = 6f;
+
+      static void OnMount() {
+        // Disable the camera's "ship" setting so we don't get sick.
+        GameCamera.instance.m_shipCameraTilt = false;
+        // Increase maximum camera distance, which is also helpful.
+        GameCamera.instance.m_maxDistance =
+            Mathf.Max(GameCamera.instance.m_maxDistance, increasedMaxDistance);
+      }
+
+      static void OnDismount() {
+        // Recompute the camera's "ship" setting from user prefs.
+        var setting = PlayerPrefs.GetInt("ShipCameraTilt", 1);
+        GameCamera.instance.m_shipCameraTilt = (setting == 1);
+        // Set the maximum camera distance back to normal.
+        GameCamera.instance.m_maxDistance = defaultMaxDistance;
+      }
+
+      [HarmonyPatch(typeof(Sadle), nameof(Sadle.RPC_RequestRespons))]
+      [HarmonyPostfix]
+      static void disableSettingOnMount(Sadle __instance, bool granted) {
+        var saddle = __instance;
+        if (granted && saddle.IsLocalUser()) {
+          // We just mounted up, so apply riding settings.
+          OnMount();
+        }
+      }
+
+      [HarmonyPatch(typeof(GameCamera), nameof(GameCamera.ApplySettings))]
+      [HarmonyPostfix]
+      static void disableSettingAfterSettingsChanged() {
+        var player = Player.m_localPlayer;
+        var saddle = player?.GetDoodadController() as Sadle ?? null;
+        if (saddle != null) {
+          // We are still mounted, so reapply riding settings no matter what
+          // the new settings say.
+          OnMount();
+        }
+      }
+
+      [HarmonyPatch(typeof(Sadle), nameof(Sadle.OnUseStop))]
+      [HarmonyPostfix]
+      static void recomputeSettingOnDismount(Sadle __instance, Player player) {
+        if (player == Player.m_localPlayer) {
+          // We just dismounted, so apply normal settings again.
+          OnDismount();
+        }
       }
     }
 
