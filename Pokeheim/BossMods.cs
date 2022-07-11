@@ -121,7 +121,8 @@ namespace Pokeheim {
         }
 
         foreach (var monster in Character.GetAllCharacters()) {
-          if (monster.GetPrefabName() == altar.m_bossPrefab.name) {
+          if (monster.GetPrefabName() == altar.m_bossPrefab.name &&
+              !monster.IsFainted()) {
             // There is already one in the world.
             return;
           }

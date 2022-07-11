@@ -215,6 +215,10 @@ namespace Pokeheim {
         }
 
         foreach (var monster in Character.GetAllCharacters()) {
+          if (monster.IsFainted()) {
+            continue;
+          }
+
           var distance = Utils.DistanceXZ(
               item.transform.position, monster.transform.position);
           var berryEater = monster.GetComponent<BerryEater>();
