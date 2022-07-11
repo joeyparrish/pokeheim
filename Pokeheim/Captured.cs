@@ -184,14 +184,6 @@ namespace Pokeheim {
       BaseAI baseAI = monster.m_baseAI;
       MonsterAI monsterAI = baseAI as MonsterAI;
 
-      // Stop trying to attack.
-      monster.SetTarget(null);
-      baseAI.SetHuntPlayer(false);
-
-      // Stop getting attacked by other monsters (though they may decide to
-      // attack again later).
-      monster.StopBeingTargetted();
-
       // Fight for us!
       monster.m_faction = Character.Faction.Players;
       monsterAI.m_enableHuntPlayer = false;
@@ -210,7 +202,8 @@ namespace Pokeheim {
       monsterAI.m_fleeIfNotAlerted = false;
 
       // And don't die on a timer.  I'm looking at you, TentaRoot!
-      UnityEngine.Object.Destroy(monster.GetComponent<CharacterTimedDestruction>());
+      UnityEngine.Object.Destroy(
+          monster.GetComponent<CharacterTimedDestruction>());
 
       // Wake up monsters that are initially asleep (StoneGolem, etc.)
       monsterAI.Wakeup();
