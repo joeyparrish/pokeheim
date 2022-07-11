@@ -59,8 +59,8 @@ experienced Linux user).
 
 1. Download:
 
- - BepInEx: https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1900/
- - Jötunn: https://github.com/Valheim-Modding/Jotunn/releases/tag/v2.6.9
+ - BepInEx: https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.1901/
+ - Jötunn: https://github.com/Valheim-Modding/Jotunn/releases/tag/v2.7.2
  - MountUp: https://valheim.thunderstore.io/package/download/Oran1/Mountup/3.2.9/
  - Pokéheim: https://github.com/joeyparrish/pokeheim/releases
 
