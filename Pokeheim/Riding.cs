@@ -648,6 +648,34 @@ namespace Pokeheim {
       }
     }
 
+    // Normally, a saddled monster standing still or without a rider gets to do
+    // whatever it wants.  We'd like them to chill out and not take any
+    // independent actions until given a command.
+    [HarmonyPatch(typeof(Sadle), nameof(Sadle.UpdateRiding))]
+    class SaddledMonstersStopActingAlone_Patch {
+      static void Postfix(Sadle __instance, ref bool __result) {
+        var saddle = __instance;
+        var steed = saddle.m_character;
+        if (__result == false &&
+            saddle.isActiveAndEnabled &&
+            steed != null &&
+            steed.IsCaptured()) {
+          // Inhibit MonsterAI.
+          __result = true;
+
+          // When you stop, normally you return control to MonsterAI, which
+          // implicitly "stops" by deciding to do something on its own.  If
+          // you've returned true here to inhibit MonsterAI, you need to match
+          // a "stop" in riding controls with an explicit "stop" in the AI, or
+          // else the monster will keep walk straight, even after you dismount.
+		      if (saddle.m_speed == Sadle.Speed.Stop ||
+              saddle.m_controlDir.magnitude == 0f) {
+            steed.m_baseAI.StopMoving();
+          }
+        }
+      }
+    }
+
     // Drakes are _really_ wiggly in flight.  The camera whips around and makes
     // the user feel sick to watch it.  It turns out that this is due to a
     // default setting for "immersive camera".  Rather than ask people to
