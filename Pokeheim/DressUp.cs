@@ -311,7 +311,7 @@ namespace Pokeheim {
           Logger.LogDebug($"Equipping {prefabName}");
           player.EquipItem(drop.m_itemData, triggerEquipEffects: false);
 
-          ZNetScene.instance.Destroy(gameObject);
+          gameObject.ZDestroy();
         }
       }
 

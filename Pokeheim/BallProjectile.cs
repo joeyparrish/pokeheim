@@ -144,14 +144,14 @@ namespace Pokeheim {
       // Destroy the original game object.  NOTE: This must come after all
       // other logic.
       if (ragdoll != null) {
-        ZNetScene.instance.Destroy(ragdoll.gameObject);
+        ragdoll.ZDestroy();
       } else {
         var tameable = monster.GetComponent<Tameable>();
         // Make sure the monster drops its saddle, if any.
         if (tameable != null) {
           tameable.OnDeath();
         }
-        ZNetScene.instance.Destroy(monster.gameObject);
+        monster.ZDestroy();
       }
     }
 
@@ -275,7 +275,7 @@ namespace Pokeheim {
         }
 
         if (willNotReturn) {
-          ZNetScene.instance.Destroy(thingGameObject);
+          thingGameObject.ZDestroy();
         } else {
           // Use DoCapture() to bypass the random chance check in Capture().
           DoCapture(ball, monster, withSound: false);
@@ -285,7 +285,7 @@ namespace Pokeheim {
 
       // Destroy the temporary projectile object so that it doesn't collide
       // with the player.
-      ZNetScene.instance.Destroy(gameObject);
+      ball.ZDestroy();
     }
 
     private static IEnumerable<Character> MonstersOwnedBy(Player player) {

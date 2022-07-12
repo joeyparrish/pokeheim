@@ -496,7 +496,7 @@ namespace Pokeheim {
           }
         }
 
-        ZNetScene.instance.Destroy(clone);
+        clone.ZDestroy();
       }
 
       public void SetTrophyPosition(int value) {

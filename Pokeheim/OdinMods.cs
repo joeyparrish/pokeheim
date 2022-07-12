@@ -222,7 +222,7 @@ namespace Pokeheim {
       // Make static Odin impossible to push around by removing his physics.
       var body = odin.GetComponent<Rigidbody>();
       if (body != null) {
-         UnityEngine.Object.Destroy(body);
+        UnityEngine.Object.Destroy(body);
       }
 
       // Make Odin interactable if he's not already.

@@ -261,7 +261,7 @@ namespace Pokeheim {
       }
 
       // Destroy the actual monster object.
-      ZNetScene.instance.Destroy(monster.gameObject);
+      monster.ZDestroy();
 
       return true;
     }

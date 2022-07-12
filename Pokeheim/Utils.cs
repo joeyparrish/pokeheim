@@ -407,5 +407,20 @@ namespace Pokeheim {
     public static Texture2D LoadTexture(string asset) {
       return AssetUtils.LoadTexture(GetAssetPath(asset));
     }
+
+    public static void ZDestroy(this Component thing) {
+      thing.gameObject.ZDestroy();
+    }
+
+    public static void ZDestroy(this GameObject thing) {
+      var netView = thing.GetComponent<ZNetView>();
+      if (netView == null || netView.GetZDO() == null) {
+        UnityEngine.Object.Destroy(thing.gameObject);
+        return;
+      }
+
+      netView.ClaimOwnership();
+      netView.Destroy();
+    }
   }
 }
