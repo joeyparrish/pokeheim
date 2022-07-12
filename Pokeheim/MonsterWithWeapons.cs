@@ -62,6 +62,12 @@ namespace Pokeheim {
         Logger.LogDebug($"No such weapon!");
         return false;
       }
+      // EquipItem will return _false_ if it's already equipped.  That would
+      // suppress our attack in Riding.cs!  So check for that case and return
+      // early with true instead.
+      if (humanoid.IsItemEquiped(weapon)) {
+        return true;
+      }
       return humanoid.EquipItem(weapon);
     }
 
