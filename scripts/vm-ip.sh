@@ -2,7 +2,6 @@
 
 set -e
 
-gcloud config configurations activate pokeheim
-
-gcloud compute ssh instance-1 -- -q curl ifconfig.me
+cd "$(dirname "$0")"/..
+./scripts/vm-ssh.sh -q curl ifconfig.me
 echo
