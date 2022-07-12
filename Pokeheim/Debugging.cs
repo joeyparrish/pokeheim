@@ -26,6 +26,8 @@ using UnityEngine;
 
 using Logger = Jotunn.Logger;
 
+// TODO: Create an annotation for new commands, so I don't forget to register
+// them in Init().
 namespace Pokeheim {
   public static class Debugging {
     private const string IsFrozenKey = "com.pokeheim.IsFrozen";
@@ -36,6 +38,7 @@ namespace Pokeheim {
     public static void Init() {
       CommandManager.Instance.AddConsoleCommand(new Spin());
       CommandManager.Instance.AddConsoleCommand(new Move());
+      CommandManager.Instance.AddConsoleCommand(new Scale());
 
       CommandManager.Instance.AddConsoleCommand(new Freeze());
       CommandManager.Instance.AddConsoleCommand(new Unfreeze());
@@ -99,6 +102,21 @@ namespace Pokeheim {
         } else {
           gameObject.transform.position += new Vector3(
               float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+        }
+      }
+    }
+
+    class Scale : ConsoleCommand {
+      public override string Name => "scale";
+      public override string Help => "[name] [scale] - Scale an object";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var gameObject = Find(args[0]);
+        if (gameObject == null) {
+          Debug.Log($"Unable to find object named {args[0]} to scale");
+        } else {
+          gameObject.transform.localScale *= float.Parse(args[1]);
         }
       }
     }
