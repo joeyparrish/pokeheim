@@ -21,6 +21,8 @@ using Jotunn.Entities;
 using Jotunn.Managers;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 
 using Logger = Jotunn.Logger;
@@ -410,6 +412,109 @@ namespace Pokeheim {
         return true;
       }
     }
+
+    // Many parts of the game query a list of all Characters to iterate through
+    // living creatures. (Ex: spawners) Fainted monsters should not count.
+    [HarmonyPatch]
+    static class ExcludeFainted_Patch {
+      public static List<Character> filterOutFaintedCharacters(List<Character> all) {
+        var filtered = new List<Character>();
+        foreach (var character in all) {
+          if (!character.IsFainted()) {
+            filtered.Add(character);
+          }
+        }
+        return filtered;
+      }
+
+      public static List<BaseAI> filterOutFaintedAIs(List<BaseAI> all) {
+        var filtered = new List<BaseAI>();
+        foreach (var baseAI in all) {
+          var character = baseAI.m_character;
+          if (!character.IsFainted()) {
+            filtered.Add(baseAI);
+          }
+        }
+        return filtered;
+      }
+
+      // Because these methods can be inlined at runtime, we need to patch
+      // their callers.  The lists get long.
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.HaveFriendsInRange))]
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.HaveFriendInRange),
+                    new Type[] { typeof(float) })]
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.HaveHurtFriendInRange),
+                    new Type[] { typeof(float) })]
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.FindEnemy))]
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.HaveEnemyInRange))]
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.FindClosestEnemy))]
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.FindRandomEnemy))]
+      [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.GetNrOfInstances),
+                    new Type[] { typeof(string) })]
+      [HarmonyTranspiler]
+      static IEnumerable<CodeInstruction> Patch1(
+          IEnumerable<CodeInstruction> instructions,
+          ILGenerator generator) {
+        var allMethod = typeof(Character).GetMethod(
+            nameof(Character.GetAllCharacters));
+        var filterMethod = typeof(ExcludeFainted_Patch).GetMethod(
+            nameof(ExcludeFainted_Patch.filterOutFaintedCharacters));
+
+        var phases = new TranspilerSequence.Phase[] {
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Call &&
+                               (code.operand as MethodInfo) == allMethod),
+            replacer = code => new CodeInstruction[] {
+              // Emit the original call.
+              code,
+              // Call our filtering method on the list on the stack.
+              // Only non-fainted monsters will be considered.
+              new CodeInstruction(OpCodes.Call, filterMethod),
+            },
+          },
+        };
+
+        return TranspilerSequence.Execute(
+            "GetAllCharacters", phases, instructions);
+      }  // static IEnumerable<CodeInstruction> Patch1
+
+      // Because these methods can be inlined at runtime, we need to patch
+      // their callers.  The lists get long.
+      [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.InStealthRange))]
+      [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.GetInstances))]
+      [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.HaveInstanceInRange))]
+      [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.GetNrOfInstances),
+                    new Type[] {
+                      typeof(GameObject), typeof(Vector3), typeof(float),
+                      typeof(bool), typeof(bool),
+                    })]
+      [HarmonyTranspiler]
+      static IEnumerable<CodeInstruction> Patch2(
+          IEnumerable<CodeInstruction> instructions,
+          ILGenerator generator) {
+        var allMethod = typeof(BaseAI).GetMethod(
+            nameof(BaseAI.GetAllInstances));
+        var filterMethod = typeof(ExcludeFainted_Patch).GetMethod(
+            nameof(ExcludeFainted_Patch.filterOutFaintedAIs));
+
+        var phases = new TranspilerSequence.Phase[] {
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Call &&
+                               (code.operand as MethodInfo) == allMethod),
+            replacer = code => new CodeInstruction[] {
+              // Emit the original call.
+              code,
+              // Call our filtering method on the list on the stack.
+              // Only non-fainted monsters will be considered.
+              new CodeInstruction(OpCodes.Call, filterMethod),
+            },
+          },
+        };
+
+        return TranspilerSequence.Execute(
+            "GetAllInstances", phases, instructions);
+      }  // static IEnumerable<CodeInstruction> Patch2
+    }  // class ExcludeFainted_Patch
 
     class FaintAll : ConsoleCommand {
       public override string Name => "faintall";
