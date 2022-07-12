@@ -56,7 +56,10 @@ def main():
         "text",
         "i18n_" + srclang + ".json")
 
-    dst = json.load(open(dstpath, "r"))
+    try:
+      dst = json.load(open(dstpath, "r"))
+    except FileNotFoundError:
+      dst = {}
     src = json.load(open(srcpath, "r"))
     src = dict(zip(src["data"][::2], src["data"][1::2]))
 

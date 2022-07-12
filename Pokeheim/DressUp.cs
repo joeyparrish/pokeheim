@@ -30,6 +30,7 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   public static class DressUp {
     private const string WardrobeName = "Wardrobe";
+    private const string StyleIconPath = "Style icon.png";
 
     public class DressUpPanel {
       private static GameObject Panel = null;
@@ -529,6 +530,51 @@ namespace Pokeheim {
 
         // Skip the original method.
         return false;
+      }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
+    class ChangeWeightDisplayToStyleButton_Patch {
+      static void Postfix(InventoryGui __instance) {
+        var gui = __instance;
+
+        // The Text element that shows how much you're carrying.
+        var weightText = gui.m_weight;
+        // The rectangle behind it.
+        var weightRect = weightText.transform.parent;
+
+        foreach (var item in weightRect.GetComponentsInChildren<Component>()) {
+          Logger.LogDebug($"item: {item} name: \"{item.name}\"");
+        }
+
+        // The weight icon above the text.
+        var weightIcon = weightRect.Find("weight_icon").GetComponent<Image>();
+
+        // Disable the original text.
+        weightText.gameObject.SetActive(false);
+
+        // Replace the icon.
+        weightIcon.sprite = Utils.LoadSprite(StyleIconPath);
+
+        // Center the icon.
+        weightIcon.rectTransform.anchoredPosition = new Vector2(0.5f, 0.5f);
+
+        // Make the icon clickable.
+        var styleButton = weightIcon.gameObject.AddComponent<Button>();
+
+        // For some reason, the tooltip prefab on UITooltip isn't static.  So
+        // grab another UITooltip _BEFORE_ adding ours.
+        var otherTip = gui.m_inventoryRoot.GetComponentInChildren<UITooltip>();
+
+        // Add a tooltip, which requires Selectable (Button) be added first.
+        var tooltip = weightIcon.gameObject.AddComponent<UITooltip>();
+        tooltip.m_tooltipPrefab = otherTip.m_tooltipPrefab;
+        tooltip.Set("", "$choose_your_style");
+
+        // On click, launch the dress-up panel.
+        styleButton.onClick.AddListener(delegate {
+          DressUpPanel.Show();
+        });
       }
     }
 

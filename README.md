@@ -112,6 +112,11 @@ made by
 [Roundicons Freebies](https://www.flaticon.com/authors/roundicons-freebies)
 from [FlatIcon](https://www.flaticon.com/)
 
+[Style icon](https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Assets/Style%20icon.png)
+made by
+[Freepik](https://www.flaticon.com/authors/freepik)
+from [FlatIcon](https://www.flaticon.com/)
+
 ### "Borrowed" Translations
 
 Translations of things like "Pokédex" and "Pokéball" were extracted from the

@@ -307,13 +307,14 @@ namespace Pokeheim {
       }
     }
 
-    // Increase base HP in case of a fall, and stamina for fun.
+    // Increase base HP in case of a fall, and stamina and weight for fun.
     [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
     class PlayerHasMoreHPAndStamina_Patch {
       static void Postfix(Player __instance) {
         var player = __instance;
         player.m_baseHP = 50f;
-        player.m_baseStamina = 100f;
+        player.m_baseStamina = 1000f;
+        player.m_maxCarryWeight = 1000f;
       }
     }
 
