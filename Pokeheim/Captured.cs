@@ -183,6 +183,19 @@ namespace Pokeheim {
 
       BaseAI baseAI = monster.m_baseAI;
       MonsterAI monsterAI = baseAI as MonsterAI;
+      Player owner = monster.GetOwnerPlayer();
+
+      // Follow us!
+      monsterAI.ResetPatrolPoint();
+      monsterAI.SetFollowTarget(owner?.gameObject ?? null);
+
+      // Surprising behavior for m_alertRange, so we need to set that, too.
+      // Is your target beyond this distance?  Give up.
+      // Is your owner beyond this distance?  Give up _on the target_ to follow
+      // the owner instead.
+      // This won't give the monster enhanced senses, though.  They still need
+      // to be able to see a target to start attacking it.
+      monsterAI.m_alertRange = 9999f;
 
       // Fight for us!
       monster.m_faction = Character.Faction.Players;
@@ -330,7 +343,8 @@ namespace Pokeheim {
       }
     }
 
-    // Make captured monsters follow their owner.
+    // Make captured monsters follow their owner if they aren't already.
+    // This might occur if the player logs out and back in.
     [HarmonyPatch(typeof(Character), nameof(Character.FixedUpdate))]
     class CapturedMonstersFollow_Patch {
       static void Postfix(Character __instance) {
