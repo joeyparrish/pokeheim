@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using HarmonyLib;
 using Jotunn.Managers;
 using System.Collections.Generic;
 using UnityEngine;
@@ -139,6 +140,20 @@ namespace Pokeheim {
           }
         }
       };
+    }
+
+    [HarmonyPatch(typeof(DungeonDB), nameof(DungeonDB.Start))]
+    class FindDungeonChests_Patch {
+      static void Postfix(DungeonDB __instance) {
+        var rooms = __instance.m_rooms;
+        foreach (var room in rooms) {
+          var containers = room.m_room.GetComponentsInChildren<Container>();
+          foreach (var container in containers) {
+            ReplaceContainerContents(
+                container, $"dungeon room type {room.m_room.m_theme}");
+          }
+        }
+      }
     }
 
     private static void ReplaceContainerContents(
