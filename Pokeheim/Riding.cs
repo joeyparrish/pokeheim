@@ -226,7 +226,7 @@ namespace Pokeheim {
       static bool SaddleUseDistanceOnlyInXZ(Sadle __instance, ref bool __result, Humanoid human) {
         var saddle = __instance;
         var flatDistance = Utils.DistanceXZ(
-		        human.transform.position, saddle.m_attachPoint.position);
+            human.transform.position, saddle.m_attachPoint.position);
         __result = flatDistance < saddle.m_maxUseRange;
         // Suppress the original.
         return false;
@@ -456,8 +456,9 @@ namespace Pokeheim {
         var player = __instance;
         var saddle = player.m_doodadController as Sadle;
         var steed = saddle?.m_character;
-        var canFly = (steed?.m_baseAI.m_randomFly ?? false) ||
-                     (steed?.IsFlying() ?? false);
+        var randomFly = (steed?.m_baseAI.m_randomFly ?? false);
+        var isFlying = (steed?.IsFlying() ?? false);
+        var canFly = randomFly || isFlying;
         var monsterWithWeapons =
             steed?.GetComponent<MonsterWithWeapons>() ?? null;
 
@@ -481,17 +482,40 @@ namespace Pokeheim {
           secondaryAttack = false;
         }
 
+        Vector3 augmentedMoveDir = movedir;
+
         if (canFly) {
           // If the player is riding a flying monster with a saddle, use jump
           // and crouch to direct that monster up or down.  Incorporate that
           // into movedir.
-          Vector3 augmentedMoveDir = movedir;
           if (jump) {
             augmentedMoveDir.y = Vector3.up.y;
+
+            // Some monsters (like Moder) can both walk and fly.
+            // If they aren't flying yet, take off when we jump.
+            if (!isFlying) {
+              isFlying = true;
+              steed.m_flying = true;
+              steed.m_jumpEffects.Create(
+                  steed.transform.position, Quaternion.identity);
+              steed.m_animator.SetTrigger("fly_takeoff");
+            }
           } else if (crouch) {
             augmentedMoveDir.y = Vector3.down.y;
-          }
 
+            // Some monsters (like Moder) can both walk and fly.
+            // If they are flying, it may be time to land.
+            var baseAI = steed.m_baseAI;
+            if (isFlying && randomFly &&
+                baseAI.GetAltitude() < baseAI.m_maxLandAltitude) {
+              isFlying = false;
+              steed.m_flying = false;
+              steed.m_animator.SetTrigger("fly_land");
+            }
+          }
+        }
+
+        if (isFlying) {
           FlySteed(
               saddle,
               player.GetLookDir(),
@@ -679,7 +703,7 @@ namespace Pokeheim {
           // you've returned true here to inhibit MonsterAI, you need to match
           // a "stop" in riding controls with an explicit "stop" in the AI, or
           // else the monster will keep walk straight, even after you dismount.
-		      if (saddle.m_speed == Sadle.Speed.Stop ||
+          if (saddle.m_speed == Sadle.Speed.Stop ||
               saddle.m_controlDir.magnitude == 0f) {
             steed.m_baseAI.StopMoving();
           }
