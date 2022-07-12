@@ -373,19 +373,30 @@ namespace Pokeheim {
       [HarmonyPatch(typeof(Tameable), nameof(Tameable.OnDeath))]
       static void onMountDeathOrCapture(Tameable __instance) {
         var tameable = __instance;
-        if (tameable.HaveSaddle() && tameable.m_saddle.IsLocalUser()) {
-          Logger.LogDebug($"Dismounting on death: {__instance.m_character}");
-          dismounting = true;
+        if (tameable.HaveSaddle()) {
+          if (tameable.m_saddle.IsLocalUser()) {
+            Logger.LogDebug($"Dismounting on death: {__instance.m_character}");
+            dismounting = true;
 
-          // Force the player off.
-          tameable.m_saddle.OnUseStop(Player.m_localPlayer);
-          // Force the saddle off.  Note that since some monster Characters
-          // don't stop existing when they faint (those without Ragdolls), we
-          // have to implement this ourselves instead of using
-          // m_dropSaddleOnDeath.  The built-in version assumes that the
-          // Character actually dies, which leads to weird, broken behavior.
+            // Force the player off.
+            tameable.m_saddle.OnUseStop(Player.m_localPlayer);
+          }
+
           // https://github.com/joeyparrish/pokeheim/issues/7
-          tameable.DropSaddle(Vector3.zero);
+          // =====
+          // Force the saddle off with DropSaddle().  Note that since some
+          // monster Characters don't stop existing when they faint (those
+          // without Ragdolls), we have to implement this ourselves instead of
+          // using m_dropSaddleOnDeath.  The built-in version assumes that the
+          // Character actually dies, which leads to weird, broken behavior.
+          //
+          // https://github.com/joeyparrish/pokeheim/issues/11
+          // =====
+          // The saddle flies in the direction of the supplied vector, from the
+          // tameable monster's position.  You pass a *target*, not a
+          // *direction*, so don't send Vector3.zero, or it will fly toward the
+          // origin.  Also, this must be called even if nobody is in the saddle.
+          tameable.DropSaddle(tameable.transform.position);
         }
       }
 
