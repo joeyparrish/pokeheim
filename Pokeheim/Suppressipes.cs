@@ -32,7 +32,6 @@ namespace Pokeheim {
   // cheaper-to-build versions of certain built-ins.
   public static class Suppressipes {
     private static List<string> AllowedRecipeNames = new List<string> {
-      "Recipe_ArrowFlint",
       "Recipe_ArrowWood",
       "Recipe_AxeStone",
       "Recipe_CheapBow",
@@ -48,6 +47,20 @@ namespace Pokeheim {
       "$piece_firepit",
       "$piece_levelground",
       "$piece_raise",
+    };
+
+    // Allowed pickables.  All food is implicitly allowed, and doesn't need to
+    // be listed here.  Any other pickable item will be disabled.
+    private static List<string> AllowedPickables = new List<string> {
+      "$item_wood",
+      "$item_stone",
+    };
+
+    // Allowed drops.  Allowed pickables are implicitly allowed drops, and
+    // trophies of all kind are also implicitly allowed.  Any other droppable
+    // item will not appear in drops of any kind.
+    private static List<string> AllowedDrops = new List<string> {
+      "$item_leatherscraps",
     };
 
     [PokeheimInit]
@@ -101,6 +114,25 @@ namespace Pokeheim {
       ItemManager.Instance.AddItem(customBow);
     }
 
+    private static bool IsDropAllowed(GameObject gameObject) {
+      if (gameObject == null) {
+        return false;
+      }
+
+      var item = gameObject.GetComponent<ItemDrop>()?.m_itemData;
+      if (item == null) {
+        return false;
+      }
+
+      var itemType = item.m_shared.m_itemType;
+      var isTrophy = itemType == ItemDrop.ItemData.ItemType.Trophie;
+      var name = item.m_shared.m_name;
+
+      return isTrophy ||
+             AllowedPickables.Contains(name) ||
+             AllowedDrops.Contains(name);
+    }
+
     // Hide the recipes and build pieces we don't explicitly allow, and allow
     // the rest to be built without a workbench.
     [HarmonyPatch(typeof(Player), nameof(Player.UpdateKnownRecipesList))]
@@ -140,6 +172,75 @@ namespace Pokeheim {
     class InfinitelyDurable_Patch {
       static void Postfix(ItemDrop.ItemData ___m_itemData) {
         ___m_itemData.m_shared.m_useDurability = false;
+      }
+    }
+
+    [HarmonyPatch(typeof(Pickable), nameof(Pickable.Awake))]
+    class HideUselessPickables_Patch {
+      static void Postfix(Pickable __instance) {
+        var pickable = __instance;
+        var item = pickable.m_itemPrefab.GetComponent<ItemDrop>().m_itemData;
+        var itemType = item.m_shared.m_itemType;
+        var isFood = itemType == ItemDrop.ItemData.ItemType.Consumable;
+        var name = item.m_shared.m_name;
+
+        if (isFood) {
+          // Food is always allowed.
+          return;
+        }
+
+        if (AllowedPickables.Contains(name)) {
+          return;
+        }
+
+        // Every other pickable is disabled.
+        Logger.LogDebug($"Disabling pickable: " +
+            $"{pickable.m_itemPrefab} name: {item.m_shared.m_name}");
+        pickable.gameObject.SetActive(false);
+      }
+    }
+
+    // These stands (like the ones that hold Surtling cores in the forest
+    // caves) never having anything relevant Pokeheim.  Disable them.
+    [HarmonyPatch(typeof(PickableItem), nameof(PickableItem.Awake))]
+    class HideAllPickableStands_Patch {
+      static void Postfix(PickableItem __instance) {
+        __instance.SetupItem(enabled: false);
+      }
+    }
+
+    // Remove useless item drops from all non-characters.
+    [HarmonyPatch(typeof(DropTable), nameof(DropTable.GetDropList),
+                  new Type[] {})]
+    class FilterUselessDrops_Patch {
+      static void Postfix(List<GameObject> __result) {
+        var originalList = new List<GameObject>(__result);
+        __result.Clear();
+
+        foreach (var gameObject in originalList) {
+          if (IsDropAllowed(gameObject)) {
+            __result.Add(gameObject);
+          } else {
+            Logger.LogDebug($"Suppressing drop: {gameObject}");
+          }
+        }
+      }
+    }
+
+    // Remove useless item drops from all characters.
+    [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.Start))]
+    class FilterUselessCharacterDrops_Patch {
+      static void Postfix(CharacterDrop __instance) {
+        var originalList = new List<CharacterDrop.Drop>(__instance.m_drops);
+        __instance.m_drops.Clear();
+
+        foreach (var drop in originalList) {
+          if (IsDropAllowed(drop.m_prefab)) {
+            __instance.m_drops.Add(drop);
+          } else {
+            Logger.LogDebug($"Suppressing character drop: {drop.m_prefab}");
+          }
+        }
       }
     }
   }
