@@ -234,6 +234,10 @@ namespace Pokeheim {
       // to throw.
       sharedData.m_weight = 0.1f;
       sharedData.m_attack.m_attackStamina = 1;
+      // Lower numbers mean more accurate.
+      // The default from the ooze bomb was a range from 20f -> 5f.
+      sharedData.m_attack.m_projectileAccuracyMin = 1f;
+      sharedData.m_attack.m_projectileAccuracy = 1f;
 
       // It should put down a deer or boar easily.
       sharedData.m_damages.Modify(0);
