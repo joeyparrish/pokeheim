@@ -400,6 +400,21 @@ namespace Pokeheim {
       return null;
     }
 
+    // A very cheap check (an int lookup into a dictionary) that mirrors what
+    // ZNetScene is about to do anyway.  Helps avoid more expensive checks for
+    // our own data and calls to our generation methods if they are not
+    // necessary.
+    public static bool IsUnknownZDO(this ZNetScene scene, ZDO zdo) {
+      int hash = zdo.GetPrefab();
+      if (scene.m_namedPrefabs.TryGetValue(hash, out var value)) {
+        // Found it.  Not unknown.
+        return false;
+      }
+      // Not found.  Now we can run more expensive checks and generate items as
+      // needed.
+      return true;
+    }
+
     [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.GetItemPrefab), new Type[]{ typeof(string) })]
     class GenerateInhabitedBalls_Patch {
       static void Postfix(string name, ObjectDB __instance, ref GameObject __result) {
@@ -431,9 +446,13 @@ namespace Pokeheim {
     // the CustomItem.
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.IsPrefabZDOValid))]
     class GenerateInhabitedBalls_Patch2 {
-      static bool Prefix(ref bool __result, ZDO zdo) {
+      static bool Prefix(ZNetScene __instance, ref bool __result, ZDO zdo) {
+        if (!__instance.IsUnknownZDO(zdo)) {
+          return true;  // Run the original.
+        }
+
         string ballId = zdo.GetString(GeneratedBallIdKey);
-        if (ballId == "") {
+        if (ballId == "" || !ballId.StartsWith(InhabitedBallIdPrefix)) {
           return true;  // Run the original.
         }
 
@@ -445,7 +464,11 @@ namespace Pokeheim {
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.CreateObject))]
     class GenerateInhabitedBalls_Patch3 {
-      static void Prefix(ZDO zdo) {
+      static void Prefix(ZNetScene __instance, ZDO zdo) {
+        if (!__instance.IsUnknownZDO(zdo)) {
+          return;
+        }
+
         // The original method will eventually call GetPrefab(int), which will
         // look up the hash in m_namedPrefabs.  If we can add things to
         // m_namedPrefabs first, we don't have to mess with the contents of the
