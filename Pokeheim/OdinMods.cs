@@ -252,18 +252,21 @@ namespace Pokeheim {
       var totalWeightedPosition = Vector3.zero;
 
       foreach (var player in allPlayers) {
-        var distance = Vector3.Distance(
-            odin.transform.position,
-            player.transform.position);
+        var relativePosition =
+            player.transform.position - odin.transform.position;
+        var distance = relativePosition.magnitude;
 
-        var weight = 1f / distance;
+        // Dividing by the distance would make every vector into a unit vector,
+        // at which point their average is not right.  Divide by distance
+        // squared, which makes far away players fade from consideration as
+        // they leave.
+        var weight = 1f / (distance * distance);
         totalWeight += weight;
-        totalWeightedPosition += player.transform.position * weight;
+        totalWeightedPosition += relativePosition * weight;
       }
 
       var averagePosition = totalWeightedPosition / totalWeight;
-
-      var forward = averagePosition - odin.transform.position;
+      var forward = averagePosition;
       forward.y = 0f;
       forward.Normalize();
 
