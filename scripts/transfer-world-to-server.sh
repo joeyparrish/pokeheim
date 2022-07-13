@@ -5,7 +5,7 @@ set -x
 
 INSTANCE_NAME="instance-1"
 WORLD="$1"
-WORLD_PATH=".config/unity3d/IronGate/Valheim/worlds"
+WORLD_PATH=".config/unity3d/IronGate/Valheim/worlds_local"
 
 if [ -z "$WORLD" ]; then
   echo "Specify the name of a world." 1>&2
