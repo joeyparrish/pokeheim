@@ -46,6 +46,10 @@ namespace Pokeheim {
 
     private const string InhabitedBallIdPrefix = "pokeheim.inhabited";
 
+    // Generated ball IDs need to be stored in the ball's ZDO, to sync view of
+    // these items to other clients.
+    private const string GeneratedBallIdKey = "com.pokeheim.GeneratedBallId";
+
     private static Dictionary<string, BallConfig> BallConfigs = new Dictionary<string, BallConfig> {
       { "Pokeball", new BallConfig {
         TexturePath = "Monster ball texture.png",
@@ -355,6 +359,7 @@ namespace Pokeheim {
       var config = BallConfigs[originalItemId];
       inhabitedItem = CreateBall(
           ballId, originalItemId + "_projectile", config);
+
       // This can't be crafted.
       inhabitedItem.Recipe = null;
 
@@ -366,21 +371,33 @@ namespace Pokeheim {
       sharedData.m_description = inhabitant.GetDescription();
       sharedData.m_icons = inhabitant.GetIcons();
 
-      ItemManager.Instance.AddItem(inhabitedItem);
-      InhabitedBalls[ballId] = inhabitedItem;
-
       // Set the prefab so we can instantiate it as a drop right away.
       var prefab = inhabitedItem.ItemPrefab;
       itemData.m_dropPrefab = prefab;
-      if (ObjectDB.instance != null) {
-        var hash = prefab.name.GetStableHashCode();
-        if (ObjectDB.instance.GetItemPrefab(hash) == null) {
-          ObjectDB.instance.m_itemByHash.Add(hash, prefab);
-          ObjectDB.instance.m_items.Add(prefab);
-        }
-      }
+
+      // AddItem called long after ZNetScene startup doesn't register anything
+      // to ObjectDB or ZNetScene.  Calling RegisterItemInObjectDB explicitly
+      // will register both to ObjectDB and ZNetScene, even late.
+      ItemManager.Instance.AddItem(inhabitedItem);
+      ItemManager.Instance.RegisterItemInObjectDB(prefab);
+      InhabitedBalls[ballId] = inhabitedItem;
 
       return itemData;
+    }
+
+    private static ItemDrop.ItemData GetInhabitedBall(string ballId) {
+      if (ParseInhabitedBallId(
+          ballId, out var originalItemId, out var inhabitantString)) {
+        try {
+          var inhabitant = new Inhabitant(inhabitantString);
+          return GetInhabitedBall(originalItemId, inhabitant);
+        } catch (Exception ex) {
+          Logger.LogError($"Failed to recreate {originalItemId} w/ {inhabitantString}: {ex}");
+        }
+      } else {
+        Logger.LogError($"Failed to parse ball ID \"{ballId}\"");
+      }
+      return null;
     }
 
     [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.GetItemPrefab), new Type[]{ typeof(string) })]
@@ -398,16 +415,62 @@ namespace Pokeheim {
           // This is an inhabited ball which was not hard-coded and registered
           // to ObjectDB in advance.  Recreate it on-the-fly.  All the data we
           // need is in the name.
-          if (ParseInhabitedBallId(
-              name, out var originalItemId, out var inhabitantString)) {
-            try {
-              Inhabitant inhabitant = new Inhabitant(inhabitantString);
-              var itemData = GetInhabitedBall(originalItemId, inhabitant);
-              __result = itemData.m_dropPrefab;
-            } catch (Exception ex) {
-              Logger.LogError($"Failed to recreate {originalItemId} w/ {inhabitantString}: {ex}");
-            }
+          var itemData = GetInhabitedBall(name);
+          if (itemData != null) {
+            __result = itemData.m_dropPrefab;
           }
+        }
+      }
+    }
+
+    // When transmitting an object over the wire, it turns into a ZDO,
+    // which stores a prefab as an integer hash of the prefab name string.
+    // But we need strings to recreate these ball items on-the-fly.
+    // So we hook into these methods that utilize integer prefab hashes, we
+    // extract a string ID from the ZDO, and we use that instead to generate
+    // the CustomItem.
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.IsPrefabZDOValid))]
+    class GenerateInhabitedBalls_Patch2 {
+      static bool Prefix(ref bool __result, ZDO zdo) {
+        string ballId = zdo.GetString(GeneratedBallIdKey);
+        if (ballId == "") {
+          return true;  // Run the original.
+        }
+
+        // This is a unique ball item we can regenerate in CreateObject below.
+        __result = true;
+        return false;  // Suppress the original.
+      }
+    }
+
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.CreateObject))]
+    class GenerateInhabitedBalls_Patch3 {
+      static void Prefix(ZDO zdo) {
+        // The original method will eventually call GetPrefab(int), which will
+        // look up the hash in m_namedPrefabs.  If we can add things to
+        // m_namedPrefabs first, we don't have to mess with the contents of the
+        // method.
+        string ballId = zdo.GetString(GeneratedBallIdKey);
+        if (ballId == "" || !ballId.StartsWith(InhabitedBallIdPrefix)) {
+          return;
+        }
+
+        // This is a unique ball item.  It may already be registered, but
+        // GetInhabitedBall will handle that.
+        //Logger.LogDebug($"Loading ZDO ball ID {ballId}");
+        GetInhabitedBall(ballId);
+      }
+    }
+
+    [HarmonyPatch(typeof(ItemDrop), nameof(ItemDrop.Awake))]
+    class GenerateInhabitedBalls_Patch4 {
+      static void Postfix(ItemDrop __instance) {
+        // Other clients can extract this ID field from a ZDO and generate an
+        // equivalent CustomItem.  But we can't set it until the item is awake.
+        var name = __instance.m_itemData.m_dropPrefab.name;
+        if (name.StartsWith(InhabitedBallIdPrefix)) {
+          //Logger.LogDebug($"Storing ZDO ball ID {name}");
+          __instance.SetExtraData(GeneratedBallIdKey, name);
         }
       }
     }
