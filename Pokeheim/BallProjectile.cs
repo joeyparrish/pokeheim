@@ -349,6 +349,10 @@ namespace Pokeheim {
     class ListenForReturnButton_Patch {
       static void Prefix(Player __instance) {
         var player = __instance;
+        if (player != Player.m_localPlayer) {
+          return;
+        }
+
         if (player.TakeInput()) {
           // Hijack the "hide" button (R by default).  By resetting the status,
           // the original method will never see that button active, so it will

@@ -787,7 +787,11 @@ namespace Pokeheim {
     // Left-Command/Left-Windows means to make the change small (20% normal).
     [HarmonyPatch(typeof(Player), nameof(Player.Update))]
     class AdjustMount_Patch {
-      static void Postfix() {
+      static void Postfix(Player __instance) {
+        if (__instance != Player.m_localPlayer) {
+          return;
+        }
+
         var hit = false;
         var posAdjustment = Vector3.zero;
         var rotAdjustment = Vector3.zero;
