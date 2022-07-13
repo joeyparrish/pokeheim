@@ -1,6 +1,5 @@
 {
   "item_wardrobe": "Wardrobe",
-  "wardrobe_dialog_title": "Choose your outfit",
   "wardrobe_category_helmet": "Helmet",
   "wardrobe_helmet_none": "None",
   "wardrobe_category_cape": "Cape",
@@ -11,5 +10,5 @@
   "wardrobe_pants_none": "None",
   "wardrobe_category_belt": "Belt",
   "wardrobe_belt_none": "None",
-  "choose_your_style": "Choose your style"
+  "wardrobe_dialog_title": "Choose your style"
 }

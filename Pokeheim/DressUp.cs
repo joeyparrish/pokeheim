@@ -569,7 +569,7 @@ namespace Pokeheim {
         // Add a tooltip, which requires Selectable (Button) be added first.
         var tooltip = weightIcon.gameObject.AddComponent<UITooltip>();
         tooltip.m_tooltipPrefab = otherTip.m_tooltipPrefab;
-        tooltip.Set("", "$choose_your_style");
+        tooltip.Set("", "$wardrobe_dialog_title");
 
         // On click, launch the dress-up panel.
         styleButton.onClick.AddListener(delegate {

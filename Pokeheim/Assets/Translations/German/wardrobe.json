@@ -1,6 +1,5 @@
 {
   "item_wardrobe": "Kleiderschrank",
-  "wardrobe_dialog_title": "Kleidung auswählen",
   "wardrobe_category_helmet": "Helm",
   "wardrobe_helmet_none": "Kein",
   "wardrobe_category_cape": "Umhang",
@@ -11,5 +10,5 @@
   "wardrobe_pants_none": "Keine",
   "wardrobe_category_belt": "Gürtel",
   "wardrobe_belt_none": "Kein",
-  "choose_your_style": "Wähle deinen Look aus."
+  "wardrobe_dialog_title": "Wähle deinen Look aus."
 }
