@@ -321,8 +321,12 @@ namespace Pokeheim {
     // The player shouldn't have to think about stamina in Pokeheim.
     [HarmonyPatch(typeof(Player), nameof(Player.UseStamina))]
     class PlayerAlwaysHasStamina_Patch {
-      static void Prefix(ref float v) {
-        v = 0f;  // No stamina used.
+      static void Prefix(Player __instance, ref float v) {
+        // Except while swimming.  You can't swim across the ocean.
+        // That's what saddles are for.
+        if (!__instance.IsSwiming()) {
+          v = 0f;  // No stamina used.
+        }
       }
     }
 
