@@ -600,5 +600,14 @@ namespace Pokeheim {
       };
       return TranspilerSequence.Execute("SpawnAbility", phases, instructions);
     }
+
+    // Don't make noise about your arrival.  I'm looking at you, bosses!
+    [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.Awake))]
+    class MonstersDoNotAnnounceThemselves_Patch {
+      static void Prefix(BaseAI __instance) {
+        __instance.m_spawnMessage = "";
+        __instance.m_deathMessage = "";
+      }
+    }
   }
 }
