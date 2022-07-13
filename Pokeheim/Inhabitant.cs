@@ -86,7 +86,7 @@ namespace Pokeheim {
       monster.SetLevel(level);
       monster.ObeyMe(player);
       monster.SetPetName(petName);  // After ObeyMe, so it can be named!
-      Sounds.Poof.PlayAt(position);
+      Sounds.SoundType.Poof.PlayAt(position);
     }
 
     public string GetFullName() {

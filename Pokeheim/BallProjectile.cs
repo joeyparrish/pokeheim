@@ -112,7 +112,7 @@ namespace Pokeheim {
       Quaternion rotation = Quaternion.identity;
       var drop = ItemDrop.DropItem(inhabitedBall, 1, position, rotation);
       if (withSound) {
-        Sounds.Poof.PlayAt(position);
+        Sounds.SoundType.Poof.PlayAt(position);
       }
       Logger.LogDebug($"Inhabited ball spawned: {drop}");
 
@@ -340,7 +340,7 @@ namespace Pokeheim {
       static void Postfix(Projectile __instance) {
         var ball = __instance;
         if (ball.IsBall()) {
-          Sounds.Hit.PlayAt(ball.transform.position);
+          Sounds.SoundType.Hit.PlayAt(ball.transform.position);
         }
       }
     }
@@ -374,7 +374,7 @@ namespace Pokeheim {
                     "$monster_return_all");
               }
 
-              Sounds.Poof.PlayAt(player.transform.position);
+              Sounds.SoundType.Poof.PlayAt(player.transform.position);
             }
           }
         }
@@ -404,7 +404,7 @@ namespace Pokeheim {
         var player = Player.m_localPlayer;
         DoReturn(player, AllMonsters());
         DoReturn(player, AllRagdolls());
-        Sounds.Poof.PlayAt(player.transform.position);
+        Sounds.SoundType.Poof.PlayAt(player.transform.position);
       }
 
       private IEnumerable<Character> AllMonsters() {

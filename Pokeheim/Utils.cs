@@ -46,6 +46,8 @@ namespace Pokeheim {
         new Hook("OnVanillaLocationsAvailable", oneShot: false);
     public static Hook OnFirstSceneStart =
         new Hook("OnFirstSceneStart");
+    public static Hook OnRPCsReady =
+        new Hook("OnRPCsReady", oneShot: false);
     public static Hook OnDLCManAwake =
         new Hook("OnDLCManAwake");
 
@@ -53,10 +55,16 @@ namespace Pokeheim {
     private static class HookPatches {
       [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix]
       private static void VanillaPrefabs() => OnVanillaPrefabsAvailable.Trigger();
+
       [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPostfix]
       private static void VanillaLocations() => OnVanillaLocationsAvailable.Trigger();
+
       [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
       private static void FirstScene() => OnFirstSceneStart.Trigger();
+
+      [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake)), HarmonyPostfix]
+      private static void RPCsReady() => OnRPCsReady.Trigger();
+
       [HarmonyPatch(typeof(DLCMan), nameof(DLCMan.Awake)), HarmonyPostfix]
       private static void DLC() => OnDLCManAwake.Trigger();
     }

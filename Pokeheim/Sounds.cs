@@ -17,27 +17,44 @@
  */
 
 using Jotunn.Managers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Pokeheim {
   public static class Sounds {
-    private static AudioClip hit = null;
-    private static AudioClip poof = null;
+    public enum SoundType {
+      Hit = 0,
+      Poof = 1,
+    }
 
-    public static AudioClip Hit => hit;
-    public static AudioClip Poof => poof;
+    private static Dictionary<SoundType, AudioClip> clips =
+        new Dictionary<SoundType, AudioClip>();
 
     [PokeheimInit]
     public static void Init() {
       Utils.OnVanillaPrefabsAvailable += delegate {
-        hit = Utils.StealFromPrefab<ZSFX, AudioClip>(
+        clips[SoundType.Hit] = Utils.StealFromPrefab<ZSFX, AudioClip>(
             "sfx_greydwarf_stone_hit", sfx => sfx.m_audioClips[0]);
-        poof = Utils.StealFromPrefab<ZSFX, AudioClip>(
+        clips[SoundType.Poof] = Utils.StealFromPrefab<ZSFX, AudioClip>(
             "sfx_raven_teleport", sfx => sfx.m_audioClips[0]);
+      };
+      Utils.OnRPCsReady += delegate {
+        ZRoutedRpc.instance.Register<int, Vector3>(
+            "PokeheimSoundsPlayAt", RPC_PlayAt);
       };
     }
 
-    public static void PlayAt(this AudioClip clip, Vector3 position) {
+    public static void PlayAt(this SoundType type, Vector3 position) {
+      ZRoutedRpc.instance.InvokeRoutedRPC(
+          ZRoutedRpc.Everybody,
+          "PokeheimSoundsPlayAt",
+          (int)type, position);
+    }
+
+    private static void RPC_PlayAt(long sender, int typeInt, Vector3 position) {
+      SoundType type = (SoundType)typeInt;
+      AudioClip clip = clips[type];
+
       GameObject gameObject = new GameObject("TempAudio");
       gameObject.transform.position = position;
 
