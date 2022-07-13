@@ -17,7 +17,7 @@ if [ ! -e ~/"$WORLD_PATH"/"$WORLD".db ]; then
   exit 1
 fi
 
-cd "$(dirname "$0")"/..
+cd "$(dirname "$0")"/../..
 
 gcloud config configurations activate pokeheim
 

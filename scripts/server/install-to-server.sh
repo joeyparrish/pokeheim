@@ -10,7 +10,7 @@ fi
 
 INSTANCE_NAME="instance-1"
 
-cd "$(dirname "$0")"/..
+cd "$(dirname "$0")"/../..
 
 gcloud config configurations activate pokeheim
 
