@@ -291,9 +291,9 @@ namespace Pokeheim {
           var collider = body.GetComponent<Collider>();
           if (collider != null) {
             // Move the body parts into the "character" layer so that we can
-            // efficiently find these in the projectil collision code.  This also
-            // has the nice side-effect of making it possible to push around the
-            // ragdolls.
+            // efficiently find these in the projectile collision code.  This
+            // also has the nice side-effect of making it possible to push
+            // around the ragdolls.
             collider.gameObject.layer = LayerMask.NameToLayer("character");
           }
         }
