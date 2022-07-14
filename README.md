@@ -4,6 +4,9 @@
   :warning: <b><i>We recommend playing Pokéheim with a fresh character and world!</i></b> :warning:
 </h3>
 
+Played before? See [changes in v2](https://github.com/joeyparrish/pokeheim/#v2-changes).
+
+
 # Pokéheim - A Valheim Mod by Joey Parrish
 
 Source: https://github.com/joeyparrish/pokeheim
@@ -46,6 +49,26 @@ you need to be enticed, though, please check out these preview videos:
 
  - Main Menu Preview: https://www.youtube.com/watch?v=OZ70PIKUCQc
  - Early Gameplay Preview: https://www.youtube.com/watch?v=NodOlfTvtKU
+ - Play-through by YouTuber "itsSpicy": https://www.youtube.com/watch?v=CMBfmaKfHw4
+ - Play-through by YouTuber "Shieda": https://www.youtube.com/watch?v=4Eygu8owr5s
+
+
+### V2 Changes
+
+ - Numerous multiplayer sync issues fixed, including "return" button, cloned monsters, missing sounds, missing balls, and bogus messages
+ - Fixed various issues with Odin in the multiplayer ending, including an infinite "Odin loop"
+ - Monster AI will now prioritize attacking enemies over following you
+ - Pokeballs are now more accurate
+ - Increased zoom out distance while riding
+ - While riding Moder, she can now be commanded to both walk and fly
+ - Saddled monsters wait for commands instead of acting on their own
+ - Fixed attacking while riding
+ - Fixed vanishing saddles when calling monsters to return
+ - Fixed getting stuck riding a deathsquito when it faints
+ - Useless (for Pokeheim) items are now suppressed in pickables, drops and dungeons
+ - You can change clothes with a "style" button in the inventory, without visiting the Wardrobe
+ - Fainted skeletons no longer count against spawners
+ - Wardrobe now respects DLC restrictions
 
 
 ### Dependencies
@@ -73,7 +96,10 @@ same version of the mod.
 
 ## Installation
 
-See [docs/Install.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Install.md)
+Just use your favorite mod manager and search for Pokeheim.  If you have never
+installed a mod before, please check out
+[docs/Install.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Install.md)
+or this [video by YouTuber "donutsorelse"](https://www.youtube.com/watch?v=7AVNrFWVE_Q).
 
 
 ## Translate
