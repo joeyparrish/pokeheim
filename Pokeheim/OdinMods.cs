@@ -49,15 +49,15 @@ namespace Pokeheim {
       private void Awake() {
         staticOdin = GetComponent<Odin>();
 
-        ZRoutedRpc.instance.Register<string, string>(
+        staticOdin.m_nview.Register<string, string>(
             "PokeheimOdinMessage", RPC_OdinMessage);
-        ZRoutedRpc.instance.Register(
+        staticOdin.m_nview.Register(
             "PokeheimOdinMurders", RPC_OdinMurders);
       }
 
       private void SayToAll(string topic, string text) {
-        ZRoutedRpc.instance.InvokeRoutedRPC(
-            ZRoutedRpc.Everybody, "PokeheimOdinMessage", topic, text);
+        staticOdin.m_nview.InvokeRPC(
+            ZNetView.Everybody, "PokeheimOdinMessage", topic, text);
       }
 
       private void RPC_OdinMessage(long sender, string topic, string text) {
@@ -140,16 +140,18 @@ namespace Pokeheim {
       }
 
       private void DoMurders() {
-        ZRoutedRpc.instance.InvokeRoutedRPC(
-            ZRoutedRpc.Everybody, "PokeheimOdinMurders");
+        staticOdin.m_nview.InvokeRPC(
+            ZNetView.Everybody, "PokeheimOdinMurders");
       }
 
       private void RPC_OdinMurders(long sender) {
+        readyToMurder = false;
         Chat.instance.ClearNpcText(gameObject);
 
         var player = Player.m_localPlayer;
 
         if (player != null) {
+          Logger.LogDebug($"Odin murdering player {player.GetPlayerName()}");
           // Kill the player, but suppress the "death" tutorial if it hasn't
           // been seen before.
           overrideRespawnDelay = true;
@@ -164,15 +166,19 @@ namespace Pokeheim {
         // Wait for dramatic effect...
         this.DelayCall(dramaticEffectTime, delegate {
           if (player != null) {
+            Logger.LogDebug($"Rolling credits for player {player.GetPlayerName()}");
             Credits.Roll(withOutro: true);
           }
 
-          // This is true on single player games and on the server when there
-          // is one.
-          if (ZNet.instance.IsServer()) {
+          // This is true on single player games and on whichever instance
+          // should be responsible for destruction in multiplayer.
+          if (staticOdin.m_nview.IsOwner()) {
+            Logger.LogDebug($"Despawning Odin on owner");
             // Despawn Odin.  Since this delayed call is attached to him, this
             // step must come last.
             Despawn();
+          } else {
+            Logger.LogDebug($"Not owner, not despawning Odin");
           }
         });
       }
