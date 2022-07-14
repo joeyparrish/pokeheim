@@ -107,7 +107,7 @@ namespace Pokeheim {
 
     private static void DestroyEnemyHud(this Character monster) {
       // Send an RPC, because the Enemy HUD is per-player and not synced.
-      monster.m_nview.InvokeRPC("PokeheimDestroyEnemyHud");
+      monster.m_nview.InvokeRPC(ZNetView.Everybody, "PokeheimDestroyEnemyHud");
     }
 
     // A fainting effect for things like Skeletons which don't have a Ragdoll
