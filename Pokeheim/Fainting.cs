@@ -103,6 +103,9 @@ namespace Pokeheim {
       monster.m_nview.Register(
           "PokeheimDestroyEnemyHud",
           sender => monster.RPC_DestroyEnemyHud(sender));
+      monster.m_nview.Register(
+          "PokeheimStopAnimation",
+          sender => monster.RPC_StopAnimation(sender));
     }
 
     private static void DestroyEnemyHud(this Character monster) {
@@ -205,6 +208,10 @@ namespace Pokeheim {
     }
 
     public static void StopAnimation(this Character monster) {
+      monster.m_nview.InvokeRPC(ZNetView.Everybody, "PokeheimStopAnimation");
+    }
+
+    public static void RPC_StopAnimation(this Character monster, long sender) {
       // This stops the monster from animating or moving.
       monster.m_animator.enabled = false;
       // This stops the monster from oozing, flaming, or fuming.
