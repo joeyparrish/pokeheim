@@ -252,21 +252,6 @@ namespace Pokeheim {
       ragdoll.SetOwner(monster.GetOwnerName());
       ragdoll.SetNoReturn(monster.WillNotReturn());
 
-      // Make the ragdoll durable by canceling its destruction call.
-      ragdoll.CancelInvoke();
-
-      // Make the ragdoll interact with things (like poke balls).
-      foreach (var body in ragdoll.m_bodies) {
-        var collider = body.GetComponent<Collider>();
-        if (collider != null) {
-          // Move the body parts into the "character" layer so that we can
-          // efficiently find these in the projectil collision code.  This also
-          // has the nice side-effect of making it possible to push around the
-          // ragdolls.
-          collider.gameObject.layer = LayerMask.NameToLayer("character");
-        }
-      }
-
       // Destroy the actual monster object.
       monster.ZDestroy();
 
@@ -289,6 +274,32 @@ namespace Pokeheim {
         return monster.FaintWithoutRagdoll(hitDirection);
       } else {
         return monster.FaintWithRagdoll(ragdollEffect);
+      }
+    }
+
+    // Make ragdolls interactable.  Way more fun.  Needs to happen on Awake
+    // instead of FaintWithRagdoll for reloading a game with a ragdoll already
+    // in it, and to sync this interactable state across clients.
+    [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Awake))]
+    class AllRagdollsAreInteractable_Patch {
+      static void Postfix(Ragdoll __instance) {
+        var ragdoll = __instance;
+
+        // Make the ragdoll interact with things.  Pokeballs can now hit it
+        // directly, and the player can push it around, which is fun.
+        foreach (var body in ragdoll.m_bodies) {
+          var collider = body.GetComponent<Collider>();
+          if (collider != null) {
+            // Move the body parts into the "character" layer so that we can
+            // efficiently find these in the projectil collision code.  This also
+            // has the nice side-effect of making it possible to push around the
+            // ragdolls.
+            collider.gameObject.layer = LayerMask.NameToLayer("character");
+          }
+        }
+
+        // Make the ragdoll durable by canceling its destruction call.
+        ragdoll.CancelInvoke();
       }
     }
 
