@@ -16,6 +16,10 @@
   "pokeheim_tutorial_temple1_topic": "Welcome to Pokéheim, Trainer!",
   "pokeheim_tutorial_temple1_text": "I am <color=yellow>Professor Raven</color>, sent here to guide you in your journey.\n\nEventually, Odin wants you to hunt down and capture at least $1 giant badass monsters.  He may add more later, but for now, it's just $1.\n\nAnd no screwing around building houses here!  Odin says you need to focus.",
 
+  "pokeheim_tutorial_inventory_screen_label": "Prof. Raven: Inventory",
+  "pokeheim_tutorial_inventory_screen_topic": "Pokéheim Inventory",
+  "pokeheim_tutorial_inventory_screen_text": "I almost forgot to tell you about the inventory screen!  In Pokéheim, you have three buttons you might not be familiar with.  Next to the grid, you'll find a \"sort\" button to sort your inventory to help you find things, and a \"style\" button you can use to change your outfit.  And in the top-right, you'll find a \"Pokédex\" button you can use to track your progress in catching 'em all.  Check 'em out!",
+
   "pokeheim_tutorial_temple2_label": "Prof. Raven: Catching Monsters",
   "pokeheim_tutorial_temple2_topic": "Catching Monsters",
   "pokeheim_tutorial_temple2_text": "To catch the big monsters, you'll have to learn to construct Pokéballs and capture lesser monsters to do the fighting for you.  After all, having lesser beings do the dangerous work is what Odin is all about.\n\n<color=yellow>Check out this weird stone</color> to learn where the first big monster is.  It's some kind of deer, but it's way worse than it sounds.",

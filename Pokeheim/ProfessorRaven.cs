@@ -49,6 +49,7 @@ namespace Pokeheim {
       "caught_em_all",
       "catch_raven",
       "swimming",
+      "inventory_screen",
     };
 
     private static HashSet<string> SkippedTutorials = new HashSet<string> {
@@ -336,6 +337,9 @@ namespace Pokeheim {
         if (player.m_isLoading) {
           return;
         }
+        if (player != Player.m_localPlayer) {
+          return;
+        }
 
         foreach (var item in player.m_inventory.GetAllItems()) {
           if (item.GetInhabitant()?.Faction == Character.Faction.Boss) {
@@ -349,7 +353,7 @@ namespace Pokeheim {
           } else if (item.IsBall()) {
             player.PokeheimTutorial("pokeball");
           } else if (item.m_shared.m_name == Riding.SaddleName) {
-            if (!Player.m_localPlayer.HaveSeenTutorial("swimming")) {
+            if (!player.HaveSeenTutorial("swimming")) {
               Logger.LogDebug("Suppressing swimming tutorial.");
               // Once the player makes a saddle, don't bother with a the
               // "swimming" tutorial, which gives hints about building a saddle.
@@ -399,6 +403,16 @@ namespace Pokeheim {
           position.MoveToFloor(offset: 0.1f);
           var rotation = Quaternion.identity;
           UnityEngine.Object.Instantiate(feathersPrefab, position, rotation);
+        }
+      }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Show))]
+    class ShowTutorialOnInventoryScreen_Patch {
+      static void Postfix() {
+        var player = Player.m_localPlayer;
+        if (player != null) {
+          player.PokeheimTutorial("inventory_screen");
         }
       }
     }
