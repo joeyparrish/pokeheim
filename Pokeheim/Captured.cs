@@ -456,7 +456,11 @@ namespace Pokeheim {
 
         if (monster.IsCaptured()) {
           var owner = monster.GetOwnerName();
-          var text = $"{monster.m_name} ( Owner: {owner} )";
+          var name = monster.GetPetName();
+          if (name == "") {
+            name = monster.m_name;
+          }
+          var text = $"{name} ( $piece_guardstone_owner: {owner} )";
 
           // In PVP, monster can only be petted or renamed by their owner.
           // In non-PVP, any player can pet or rename a monster.
