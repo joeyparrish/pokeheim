@@ -697,6 +697,9 @@ namespace Pokeheim {
             steed.IsCaptured()) {
           // Inhibit MonsterAI.
           __result = true;
+          // Prevent Moder from deciding randomly to take off or land without a
+          // command from a rider.
+          steed.m_baseAI.m_randomFlyTimer = 0f;
 
           // When you stop, normally you return control to MonsterAI, which
           // implicitly "stops" by deciding to do something on its own.  If
