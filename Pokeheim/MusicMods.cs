@@ -31,8 +31,7 @@ namespace Pokeheim {
   public static class MusicMods {
     private static readonly Dictionary<string, string> OverrideMusic = new Dictionary<string, string> {
       {"menu", "Main-Menu.mp3"},
-      // TODO: morning music
-      //{"morning", ""},
+      {"morning", "Dawn-short-version.mp3"},
     };
 
     [PokeheimInit]

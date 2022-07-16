@@ -154,6 +154,7 @@ Translations of things like "Pokédex" and "Pokéball" were extracted from the
 Custom music for Pokéheim was arranged by
 [Joey Parrish](https://joeyparrish.github.io/), to parody the work of
 [Jarlestam](https://www.patrikjarlestam.se/),
+[Masuda](https://en.wikipedia.org/wiki/Junichi_Masuda),
 [Siegler, and Loeffler](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Theme).
 
 The music was scored in

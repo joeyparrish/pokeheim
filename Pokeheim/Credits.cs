@@ -40,11 +40,13 @@ namespace Pokeheim {
       Contributor.Spacer(),
       new Contributor {
         name = "Custom music arranged by Joey Parrish\n" +
-               "Parodying the work of Jarlestam, Siegler, and Loeffler",
+               "Parodying the work of Jarlestam, Masuda, Siegler, and Loeffler",
       },
+
       Contributor.Spacer(),
       new Contributor {
-        name = "Special thanks to TheSlowPianist",
+        name = "Special thanks to TheSlowPianist\n" +
+               "for their arrangement of Valheim's main menu music",
         link = "https://www.patreon.com/theslowpianist/",
       },
 
