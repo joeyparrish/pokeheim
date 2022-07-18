@@ -34,13 +34,6 @@ namespace Pokeheim {
       {"morning", "Dawn-short-version.mp3"},
     };
 
-    [PokeheimInit]
-    public static void Init() {
-#if DEBUG
-      CommandManager.Instance.AddConsoleCommand(new PlayMusic());
-#endif
-    }
-
     static AudioClip LoadAudioClip(string relativePath) {
       var absolutePath = Utils.GetAssetPath(relativePath);
       var pathUrl = "file:///" + absolutePath.Replace("\\", "/");
@@ -81,6 +74,7 @@ namespace Pokeheim {
     }
 
 #if DEBUG
+    [RegisterCommand]
     class PlayMusic : ConsoleCommand {
       public override string Name => "playmusic";
       public override string Help => "[key] Play a specific piece of music by its key.";

@@ -84,15 +84,6 @@ namespace Pokeheim {
       "$item_trophy_goblinking",
     };
 
-    [PokeheimInit]
-    public static void Init() {
-#if DEBUG
-      CommandManager.Instance.AddConsoleCommand(new ActivateTutorial());
-      CommandManager.Instance.AddConsoleCommand(new ResetLogBook());
-      CommandManager.Instance.AddConsoleCommand(new ResetTutorial());
-#endif
-    }
-
     // Rather than injecting all our custom tutorials into Tutorials, do what
     // Tutorial.ShowText does after a lookup, but with data constructed
     // on-the-fly according to our convention.  This inlines Raven.AddTempText
@@ -418,6 +409,7 @@ namespace Pokeheim {
     }
 
 #if DEBUG
+    [RegisterCommand]
     class ActivateTutorial : ConsoleCommand {
       public override string Name => "tutorial";
       public override string Help => "[key] Activates a specific tutorial by its key.";
@@ -463,6 +455,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class ResetLogBook : ConsoleCommand {
       public override string Name => "resetlogbook";
       public override string Help => "Resets all the entries in the player's log book.";
@@ -473,6 +466,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class ResetTutorial : ConsoleCommand {
       public override string Name => "resettutorial";
       public override string Help => "[key] Resets a single tutorial.";

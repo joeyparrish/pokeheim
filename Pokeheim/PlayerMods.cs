@@ -34,11 +34,6 @@ namespace Pokeheim {
     private const string PokedexFakeStationPrefix = "com.pokeheim.pokedex.";
     private const string PokedexIconPath = "Pokedex icon.png";
 
-    [PokeheimInit]
-    public static void Init() {
-      CommandManager.Instance.AddConsoleCommand(new ResetPokedex());
-    }
-
     public static void LogCapture(this Player player, string prefabName) {
       // Abuse m_knownStations (maps string to int) to keep track of monsters
       // caught for the Pokedex.
@@ -128,6 +123,7 @@ namespace Pokeheim {
       return lore;
     }
 
+    [RegisterCommand]
     class ResetPokedex : ConsoleCommand {
       public override string Name => "resetpokedex";
       public override string Help => "Clear the pokedex";

@@ -201,11 +201,6 @@ namespace Pokeheim {
       }
     }
 
-    [PokeheimInit]
-    public static void Init() {
-      CommandManager.Instance.AddConsoleCommand(new CreditsCommand());
-    }
-
     private static float GetTextHeight(
         Text template, string newText, int newFontSize = 0) {
       TextGenerationSettings generationSettings =
@@ -306,6 +301,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class CreditsCommand : ConsoleCommand {
       public override string Name => "credits";
       public override string Help => "Rolls the credits for Pokeheim.";

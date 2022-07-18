@@ -49,11 +49,6 @@ namespace Pokeheim {
       {"Dragon", 0f},
     };
 
-    [PokeheimInit]
-    public static void Init() {
-      CommandManager.Instance.AddConsoleCommand(new FaintAll());
-    }
-
     public static bool IsFainted(this Character monster) {
       return monster.GetExtraData(IsFaintedKey, false);
     }
@@ -534,6 +529,7 @@ namespace Pokeheim {
       }  // static IEnumerable<CodeInstruction> Patch2
     }  // class ExcludeFainted_Patch
 
+    [RegisterCommand]
     class FaintAll : ConsoleCommand {
       public override string Name => "faintall";
       public override string Help => "Faint all nearby monsters.";

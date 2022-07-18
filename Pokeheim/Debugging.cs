@@ -26,44 +26,11 @@ using UnityEngine;
 
 using Logger = Jotunn.Logger;
 
-// TODO: Create an annotation for new commands, so I don't forget to register
-// them in Init().
 namespace Pokeheim {
   public static class Debugging {
     private const string IsFrozenKey = "com.pokeheim.IsFrozen";
 
     private static bool PrintSoundNames = false;
-
-    [PokeheimInit]
-    public static void Init() {
-      CommandManager.Instance.AddConsoleCommand(new Spin());
-      CommandManager.Instance.AddConsoleCommand(new Move());
-      CommandManager.Instance.AddConsoleCommand(new Scale());
-
-      CommandManager.Instance.AddConsoleCommand(new Freeze());
-      CommandManager.Instance.AddConsoleCommand(new Unfreeze());
-
-      CommandManager.Instance.AddConsoleCommand(new GetGravity());
-      CommandManager.Instance.AddConsoleCommand(new SetGravity());
-      CommandManager.Instance.AddConsoleCommand(new GetMass());
-      CommandManager.Instance.AddConsoleCommand(new SetMass());
-
-      CommandManager.Instance.AddConsoleCommand(new RenderAndDump());
-      CommandManager.Instance.AddConsoleCommand(new DumpComponents());
-      CommandManager.Instance.AddConsoleCommand(new DumpBodyParts());
-      CommandManager.Instance.AddConsoleCommand(new DumpAnimations());
-      CommandManager.Instance.AddConsoleCommand(new Animate());
-      CommandManager.Instance.AddConsoleCommand(new Destroy());
-
-      CommandManager.Instance.AddConsoleCommand(new SpyOnSounds());
-
-      CommandManager.Instance.AddConsoleCommand(new StaggerAll());
-
-      CommandManager.Instance.AddConsoleCommand(new Saddle());
-      CommandManager.Instance.AddConsoleCommand(new Mount());
-
-      CommandManager.Instance.AddConsoleCommand(new NoSpawns());
-    }
 
     private static GameObject Find(string name) {
       return GameObject.Find(name + "(Clone)");
@@ -74,6 +41,7 @@ namespace Pokeheim {
       return gameObject?.GetComponent<Character>();
     }
 
+    [RegisterCommand]
     class Spin : ConsoleCommand {
       public override string Name => "spin";
       public override string Help => "[name] [x] [y] [z] - Spin an object in 3 dimensions";
@@ -90,6 +58,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Move : ConsoleCommand {
       public override string Name => "move";
       public override string Help => "[name] [x] [y] [z] - Move an object in 3 dimensions";
@@ -106,6 +75,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Scale : ConsoleCommand {
       public override string Name => "scale";
       public override string Help => "[name] [scale] - Scale an object";
@@ -121,6 +91,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Freeze : ConsoleCommand {
       public override string Name => "freeze";
       public override string Help => "[name] - Stop a character from moving";
@@ -137,6 +108,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Unfreeze : ConsoleCommand {
       public override string Name => "unfreeze";
       public override string Help => "[name] - Let a character move again";
@@ -164,6 +136,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class GetGravity : ConsoleCommand {
       public override string Name => "getgravity";
       public override string Help => "[name] - Get gravity setting for a character";
@@ -180,6 +153,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class SetGravity : ConsoleCommand {
       public override string Name => "setgravity";
       public override string Help => "[name] [true/false] - Change gravity setting for a character";
@@ -202,6 +176,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class GetMass : ConsoleCommand {
       public override string Name => "getmass";
       public override string Help => "[name] - Get mass setting for a character";
@@ -218,6 +193,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class SetMass : ConsoleCommand {
       public override string Name => "setmass";
       public override string Help => "[name] [true/false] - Change mass setting for a character";
@@ -234,6 +210,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class RenderAndDump : ConsoleCommand {
       public override string Name => "renderanddump";
       public override string Help => "[name] [size=128] - Instantiate a prefab, render it, and dump it to disk";
@@ -274,6 +251,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class DumpComponents : ConsoleCommand {
       public override string Name => "dumpcomponents";
       public override string Help => "[name] - Dump a list of components in an object";
@@ -296,6 +274,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class DumpBodyParts : ConsoleCommand {
       public override string Name => "dumpbodyparts";
       public override string Help => "[name] - Dump a list of body parts in a character";
@@ -329,6 +308,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class DumpAnimations : ConsoleCommand {
       public override string Name => "dumpanimations";
       public override string Help => "[name] - Dump animation triggers for a specific character";
@@ -346,6 +326,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Animate : ConsoleCommand {
       public override string Name => "animate";
       public override string Help => "[name] [triggername] - Force a character to use a specific animation";
@@ -375,6 +356,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Destroy : ConsoleCommand {
       public override string Name => "destroy";
       public override string Help => "[name] - Destroy an object";
@@ -391,6 +373,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class SpyOnSounds : ConsoleCommand {
       public override string Name => "spyonsounds";
       public override string Help => "Prints the names of sounds as the game plays them.";
@@ -402,6 +385,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class StaggerAll : ConsoleCommand {
       public override string Name => "staggerall";
       public override string Help => "Stagger all nearby monsters.";
@@ -422,6 +406,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Saddle : ConsoleCommand {
       public override string Name => "saddle";
       public override string Help => "Saddle a nearby tame creature.";
@@ -442,6 +427,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class Mount : ConsoleCommand {
       public override string Name => "mount";
       public override string Help => "Mount a nearby saddled creature.";
@@ -468,6 +454,7 @@ namespace Pokeheim {
 
     private static bool SpawnsEnabled = true;
 
+    [RegisterCommand]
     class NoSpawns : ConsoleCommand {
       public override string Name => "nospawns";
       public override string Help => "Disable or re-enable random spawns.";

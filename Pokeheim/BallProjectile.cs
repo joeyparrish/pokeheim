@@ -34,11 +34,6 @@ namespace Pokeheim {
     // We hijack the "Hide" button ("R" by default) to cause monsters to return.
     private const string HideButtonName = "Hide";
 
-    [PokeheimInit]
-    public static void Init() {
-      CommandManager.Instance.AddConsoleCommand(new CatchEmAll());
-    }
-
     public static bool IsBall(this Projectile ball) {
       return ball.m_skill == BallItem.Skill;
     }
@@ -395,6 +390,7 @@ namespace Pokeheim {
       }
     }
 
+    [RegisterCommand]
     class CatchEmAll : ConsoleCommand {
       public override string Name => "catchemall";
       public override string Help => "Does the thing you gotta do.";

@@ -18,6 +18,8 @@
 
 using BepInEx;
 using HarmonyLib;
+using Jotunn.Entities;
+using Jotunn.Managers;
 using Jotunn.Utils;
 using System;
 using System.Collections.Generic;
@@ -66,16 +68,8 @@ namespace Pokeheim {
         Logger.LogError($"Exception installing patches for {PluginName}: {ex}");
       }
 
-      // Initialize every part of the mod.
-      foreach (var method in PokeheimInit.GetMethods()) {
-        try {
-          method.Invoke(obj: null, parameters: null);
-        } catch (Exception ex) {
-          var name = $"{method.DeclaringType?.Name}.{method.Name}";
-          Logger.LogError(
-              $"Exception initializing {name} for {PluginName}: {ex}");
-        }
-      }
+      PokeheimInit.InitAll();
+      RegisterCommand.RegisterAll();
     }
 
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
@@ -144,7 +138,7 @@ namespace Pokeheim {
   [AttributeUsage(AttributeTargets.Method)]
   public class PokeheimInit : Attribute {
     // Find all methods marked with this attribute.
-    public static List<MethodInfo> GetMethods() {
+    private static List<MethodInfo> GetMethods() {
       var assembly = Assembly.GetExecutingAssembly();
       var allTypes = assembly.GetTypes();
 
@@ -163,5 +157,58 @@ namespace Pokeheim {
       }
       return initMethods;
     }
+
+    // Initialize every part of the mod.
+    public static void InitAll() {
+      foreach (var method in GetMethods()) {
+        try {
+          method.Invoke(obj: null, parameters: null);
+        } catch (Exception ex) {
+          var name = $"{method.DeclaringType?.Name}.{method.Name}";
+          Logger.LogError($"Exception initializing {name}: {ex}");
+        }
+      }
+    }
   }
+
+  // Attach this attribute to ConsoleCommand subclasses to register them
+  // automatically from the plugin's Awake() method.
+  [AttributeUsage(AttributeTargets.Class)]
+  public class RegisterCommand : Attribute {
+    // Find constructors of all types marked with this attribute.
+    private static List<ConstructorInfo> GetConstructors() {
+      var assembly = Assembly.GetExecutingAssembly();
+      var allTypes = assembly.GetTypes();
+
+      var constructors = new List<ConstructorInfo>();
+      foreach (var type in allTypes) {
+        var registerAttributes =
+            type.GetCustomAttributes(typeof(RegisterCommand), false);
+        if (registerAttributes.Length > 0) {
+          // Get the zero-argument constructor for this type.
+          var constructorInfo = type.GetConstructor(new Type[]{});
+          if (constructorInfo == null) {
+            Logger.LogError($"Can't find constructor for command {type.Name}");
+          } else {
+            constructors.Add(constructorInfo);
+          }
+        }
+      }
+      return constructors;
+    }
+
+    // Register all commands marked with this attribute.
+    public static void RegisterAll() {
+      foreach (var constructor in GetConstructors()) {
+        try {
+          var constructedObject = constructor.Invoke(parameters: null);
+          ConsoleCommand commandObject = (ConsoleCommand)constructedObject;
+          CommandManager.Instance.AddConsoleCommand(commandObject);
+        } catch (Exception ex) {
+          var name = constructor.DeclaringType?.Name;
+          Logger.LogError($"Exception registering command {name}: {ex}");
+        }
+      }
+    }
+  }  // public class RegisterCommand()
 }

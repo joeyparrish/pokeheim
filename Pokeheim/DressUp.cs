@@ -455,8 +455,6 @@ namespace Pokeheim {
         // Spin it to face the center of the circle.
         wardrobe.transform.rotation = Quaternion.Euler(0f, -135f, 0f);
       };
-
-      CommandManager.Instance.AddConsoleCommand(new DressUpCommand());
     }
 
     private static void RegisterWardrobe() {
@@ -494,6 +492,7 @@ namespace Pokeheim {
       PrefabManager.Instance.RegisterToZNetScene(prefab);
     }
 
+    [RegisterCommand]
     class DressUpCommand : ConsoleCommand {
       public override string Name => "dressup";
       public override string Help => " - Open the dress-up dialog";
