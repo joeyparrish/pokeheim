@@ -3,43 +3,55 @@
 ## 1. Intro
 
 1. Confirm Pokeheim logo on main menu
-2. Enter world with new character
-3. Confirm that Pokeheim tips are shown on loading screen
-4. Check that custom Pokeheim intro plays
-5. After intro, check that no Valkyrie animation plays
-6. Character should have a torch and rag clothing
+1. Confirm custom menu music
+1. Enter world with new character
+1. Confirm that Pokeheim tips are shown on loading screen
+1. Check that custom Pokeheim intro plays
+1. After intro, check that no Valkyrie animation plays
+1. Character should have a torch and rag clothing
 
 
 ## 2. Wardrobe
 
+1. Install CustomWigs mod
 1. Enter world with new character
-2. Check that wardrobe exists at starting location
-3. Check wardrobe height
-4. Check that wardrobe faces the center of the circle
-5. Go to wardrobe
-6. Check hover message says "Wardrobe" and "Open"
-7. Press "E" to open
-8. Check that player faces camera
-9. Check that outfit dialog has correct defaults (current clothing)
-10. Change each piece to something non-empty
-11. Check that changes take effect immediately
-12. Check that no "new item" popup occurs for these changes
-13. Click "x" to close dialog
-14. Check that old clothing was removed from inventory
-15. Press "E" to open again
-16. Check that the dialog defaults to current clothing still
-17. Press escape to close the dialog
-18. Check that game menu does not show
-19. Press F5 to open console
-20. Type "dressup"
-21. Check that wardrobe dialog appears
-22. Press F5 to close console
-23. Press escape to close dialog
-24. Press F5 to open console
-25. Type "devcommands" to enable dev commands if not enabled
-26. Type "tod 0" to force night time
-27. Type "dressup"
-28. Check that player now wields a torch for visibility
+1. Check that wardrobe exists at starting location
+1. Check wardrobe height
+1. Check that wardrobe faces the center of the circle
+1. Go to wardrobe
+1. Check hover message says "Wardrobe" and "Open"
+1. Press "E" to open
+1. Check that player faces camera
+1. Check that outfit dialog has correct defaults (current clothing)
+1. Check that CustomWigs items appear in helmets list
+1. Check that "CAPE TEST" doesn't appear in the capes list
+1. Check that DLC doesn't appear in the list (helmets, capes) in a release build
+1. Change each piece to something non-empty
+1. Check that changes take effect immediately
+1. Check that no "new item" popup occurs for these changes
+1. Click "x" to close dialog
+1. Check that old clothing was removed from inventory
+1. Press "E" to open again
+1. Check that the dialog defaults to current clothing still
+1. Press escape to close the dialog
+1. Check that game menu does not show
+1. Press F5 to open console
+1. Type "dressup"
+1. Check that wardrobe dialog appears
+1. Press F5 to close console
+1. Press escape to close dialog
+1. Press F5 to open console
+1. Type "devcommands" to enable dev commands if not enabled
+1. Type "tod 0" to force night time
+1. Type "dressup"
+1. Check that player now wields a torch for visibility
+1. Press escape to close dialog
+1. Press "TAB" to open inventory
+1. Check that style icon appears next to inventory grid
+1. Check style icon mouseover text
+1. Click style icon
+1. Check that wardrobe dialog appears
+1. Press escape to close dialog
 
 
 ## 3. Capturing
