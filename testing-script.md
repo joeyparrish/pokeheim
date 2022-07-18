@@ -9,6 +9,10 @@
 1. Check that custom Pokeheim intro plays
 1. After intro, check that no Valkyrie animation plays
 1. Character should have a torch and rag clothing
+1. Confirm that Professor Raven has appropriate name, hover text, and alert
+   messages
+1. Confirm that Professor Raven appears with tutorials on welcome, catching,
+   and crafting
 
 
 ## 2. Wardrobe
@@ -343,6 +347,9 @@
 1. Punch Eikthyr to death
 1. Grab boss trophy
 1. Verify that Prof. Raven tutorial shows to shame you for it
+1. Spawn Eikthyr
+1. Spawn "SwordBlackmetal"
+1. Verify that sword does no damage to Eikthyr
 
 
 ## 12. Inventory
@@ -366,23 +373,50 @@
 
 ## 13. Player
 
+1. Confirm base HP of 50
+1. Spawn 500 rocks (10 stacks), confirm you can carry up to 1000 weight
+1. Throw away rocks
 1. Spawn troll
-2. Get hit by troll
-3. Confirm that no damage was taken
-4. Remove all armor
-5. Fly to the mountains
-6. Confirm that the player is not freezing
-7. Fly to the swamps
-8. Find a sunken crypt
-9. Confirm that the player does not need a key to enter
-10. Fly into the sky
-11. Stop flying and fall to your death
-12. Confirm that all items are kept in inventory when respawning
+1. Get hit by troll
+1. Confirm that no damage was taken
+1. Spawn "SwordBlackmetal"
+1. Hit troll with blackmetal sword
+1. Verify that very little damage is done
+1. Remove all armor
+1. Fly to the mountains
+1. Confirm that the player is not freezing
+1. Fly to the swamps
+1. Find a sunken crypt
+1. Confirm that the player does not need a key to enter
+1. Fly into the sky
+1. Stop flying and fall to your death
+1. Confirm that no tombstone is created
+1. Check that all items are kept in inventory when respawning
+1. Run and confirm that you don't get tired
+1. Swim and confirm that you _do_ get tired swimming
+1. Drown and confirm death
 
 
 ## 14. Pokedex
 
-1. TODO: Pokedex testing
+1. Run debug command "resetpokedex"
+1. Spawn neck
+1. Catch neck
+1. Confirm that Professor Raven appears with first catch tutorial
+1. Open inventory
+1. Check that Pokedex icon appears
+1. Check that hovertext for Pokedex says "Pokédex"
+1. Check that Pokedex completion and Trainer skill updated and are matched
+1. Spawn 50 pokeballs
+1. Spawn Eikthyr
+1. Throw tons of pokeballs at Eikthyr
+1. Confirm that Trainer skill does not increase
+1. Open Pokedex
+1. Confirm that only neck is filled in
+1. Confirm that neck stats are shown
+1. Confirm that other entries are silhouetted
+1. Go to shoreline
+1. Search up shore for accessible, non-deep-sea Serpent
 
 
 ## 15. Riding
