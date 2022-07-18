@@ -20,6 +20,7 @@
 using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -471,6 +472,49 @@ namespace Pokeheim {
       static bool Prefix() {
         // If enabled, let them happen.  Otherwise, inhibit the original method.
         return SpawnsEnabled;
+      }
+    }
+
+    [RegisterCommand]
+    class FindBoss : ConsoleCommand {
+      public override string Name => "findboss";
+      public override string Help => "[name or index] - Find all altars for a given boss.";
+      public override bool IsCheat => true;
+
+      private string[] bossLocationNames = new string[] {
+        "Eikthyrnir",
+        "GDKing",
+        "Bonemass",
+        "Dragonqueen",
+        "GoblinKing",
+      };
+
+      public override void Run(string[] args) {
+        string name = args[0];
+        try {
+          var index = int.Parse(args[1]);
+          if (index < 0 || index >= bossLocationNames.Length) {
+            Debug.Log($"Bad index: {index}");
+            return;
+          }
+
+          name = bossLocationNames[index];
+        } catch (Exception) {}
+
+        // Arbitrary pin type, not boss pin, easily differentiable from what
+        // Vegvisir adds.
+        var pinType = Minimap.PinType.Icon0;
+        var pinName = $"Boss: {name}";
+        var showMap = false;
+
+        foreach (var location in ZoneSystem.instance.m_locationInstances.Values) {
+          var position = location.m_position;
+          if (location.m_location.m_prefabName == name) {
+            Minimap.instance.DiscoverLocation(
+                position, pinType, pinName, showMap);
+          }
+        }
+        Debug.Log($"Added pins for all {name} locations.");
       }
     }
   }

@@ -322,16 +322,27 @@
 ## 11. Bosses
 
 1. Enter game at starting location
-2. Confirm that the chains on boss stones are not interactable
-3. Read Vegvisir
-4. Check that next boss is on the map
-5. Fly to next boss
-6. Confirm no runestone or item stands
-7. Start raid at altar
-8. Type "catchemall" in dev console
-9. Try to start raid again
-10. Confirm that raid does not start (already caught)
-11. Go to step 3
+1. Confirm that the chains on boss stones are not interactable
+1. Remove any boss locations from map
+1. Loop over all Vegvisir:
+  1. Read Vegvisir
+  1. Check that next boss is on the map
+  1. Use debug command "findboss NAME_OR_INDEX"
+  1. Check that other locations for this boss are all farther from the start
+  1. Fly to next boss (any location)
+  1. Confirm no runestone or item stands
+  1. Confirm alter hovertext says "start encounter"
+  1. Start raid at altar
+  1. Confirm "go!" message shown
+  1. Type "catchemall" in dev console
+  1. Try to start raid again
+  1. Confirm that raid does not start (already caught)
+  1. Loop if Vegvisir present (all but last boss)
+1. Use debug command "tutorialreset"
+1. Release Eikthyr
+1. Punch Eikthyr to death
+1. Grab boss trophy
+1. Verify that Prof. Raven tutorial shows to shame you for it
 
 
 ## 12. Inventory
