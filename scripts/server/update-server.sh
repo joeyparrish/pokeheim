@@ -32,7 +32,7 @@ via_ssh sudo systemctl stop pokeheim
 
 via_scp -r "$LOCAL_PATH"/* "$SERVER_PATH"/
 
-via_ssh wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/$(scripts/get-bepinex-version.sh)/"
+via_ssh wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/$(scripts/get-dep-version.sh denikson-BepInExPack_Valheim)/"
 
 via_ssh unzip -d bepinex bepinex.zip
 

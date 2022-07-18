@@ -23,7 +23,7 @@ jobs:
 
       - name: Get BepInEx version
         id: bepinexversion
-        run: echo "::set-output name=bepinexversion::$(./scripts/get-bepinex-version.sh)"
+        run: echo "::set-output name=bepinexversion::$(./scripts/get-de-version.sh denikson-BepInExPack_Valheim)"
 
       - name: Get build commands
         run: scripts/install-linux-tools.sh
