@@ -82,11 +82,27 @@ you need to be enticed, though, please check out these preview videos:
      v5.4+ - The framework on which Jötunn is built.
 
 
-### Incompatibilities
+### Compatibility
 
- - [AllTameable](https://www.nexusmods.com/valheim/mods/478)
-   - Pokéheim has its own way of making monsters Tameable (by capturing them),
-     so you should not use it with the AllTameable mod.
+ - Any mod adding monsters to Valheim should work just fine with Pokéheim.
+   Pokéheim discovers all monster at runtime.  New monsters will be capturable,
+   will be listed in the Pokédex, and will count toward completion of the game,
+   but will not be rideable.
+
+ - Any mod adding armor to Valheim should also work with Pokéheim.  Pokéheim
+   discovers all armor at runtime.  New armor will show up in the style dialog
+   and in the wardrobe.
+
+ - Any mod that adds new resources or recipes to Valheim will be non-functional
+   with Pokéheim, but Pokéheim is unlikely to be harmed by it.
+
+ - Pokéheim is **NOT** compatible with [AllTameable](https://www.nexusmods.com/valheim/mods/478).
+   Pokéheim has its own way of making monsters Tameable (by capturing them), so
+   you should not use it with AllTameable.
+
+ - The [Pacifist](https://www.nexusmods.com/valheim/mods/1479) mod interferes
+   with the "fainting" system in Pokéheim by disabling Ragdolls.
+
 
 ### Multiplayer
 
@@ -118,11 +134,12 @@ See [docs/Building.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Bu
 
 Pokéheim was created by [Joey Parrish](https://joeyparrish.github.io/).
 
-All contributors any many others deserving thanks are listed in
+All contributors and many others deserving thanks are listed in
 [Pokeheim/Credits.cs](https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Credits.cs)
 
 The authors and contributors of Pokéheim have no affiliation with the Pokémon
 Company or Niantic.  This is both a parody and tribute.
+
 
 ### Jötunn
 
@@ -130,6 +147,7 @@ Pokéheim is made possible by
 [Jötunn: The Valheim Library](https://valheim-modding.github.io/Jotunn/).
 Many thanks to the authors of Jötunn for their wonderful library and their
 support on Discord!
+
 
 ### Icons
 
@@ -146,11 +164,13 @@ made by
 [Freepik](https://www.flaticon.com/authors/freepik)
 from [FlatIcon](https://www.flaticon.com/)
 
+
 ### "Borrowed" Translations
 
 Translations of things like "Pokédex" and "Pokéball" were extracted from the
 [Pokémon Go](https://pokemongolive.com/)
 [APK](https://www.apkmirror.com/apk/niantic-inc/pokemon-go/).
+
 
 ### Music
 
