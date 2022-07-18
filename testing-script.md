@@ -530,12 +530,25 @@
 1. Verify that only useful stuff appears in it
 
 
-## 18. End Game
+## 18. Music
+
+1. Ensure music volume is on
+1. Use debug command "skiptime" to fast-forward to night
+1. Use debug command "sleep" to fast-forward to morning
+1. Confirm that custom "dawn" music plays
+
+
+## 19. End Game
 
 1. TODO: Test end game
 
 
-## 19. Languages
+## 20. Languages
 
 1. TODO: Make sure translations are loaded for some non-English language
 2. TODO: Make sure untranslated text falls back to English (tips, intro, etc)
+
+
+## 21. Multiplayer
+
+1. TODO: Multiplayer testing script
