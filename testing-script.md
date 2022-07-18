@@ -318,9 +318,10 @@
 1. Find a pine tree
 1. Knock down pine tree
 1. Verify that only regular wood spawns
-1. Spawn greydwarf
-1. Kill greydwarf
+1. Spawn, catch, release, and kill greydwarf
 1. Verify that only wood and stone spawn
+1. Spawn, catch, release, and kill boar
+1. Verify that only leather spawns
 
 
 ## 11. Bosses
@@ -421,9 +422,81 @@
 
 ## 15. Riding
 
-1. TODO: Test riding and saddles
-1. TODO: Test riding flying things
-1. TODO: Test attacking while riding, with example of secondary attack
+1. Spawn "SaddleUniversal"
+1. Spawn Lox
+1. Freeze Lox
+1. Check that you can't saddle the Lox
+1. Catch Lox
+1. Release Lox
+1. Check that you can saddle and ride Lox
+1. Test various monsters
+  1. For each of these:
+    - boar
+    - wolf
+    - greyling
+    - greydwarf
+    - fuling shaman (GoblinShaman)
+    - greydwarf brute (Greydwarf_Elite)
+    - drake (Hatchling)
+    - deathsquito
+    - bat
+    - wraith
+  1. Spawn, catch, release, saddle
+  1. Spawn wild greyling
+  1. Verify that tamed monster does not react
+  1. Ride
+  1. Run
+  1. Primary attack (if supported)
+  1. Secondary attack (if supported)
+  1. Back stops
+  1. Block stops and changes direction
+  1. Check that we can zoom way out
+  1. Check that the camera is relatively stable
+  1. Check that the riding HUD shows the correct monster icon and name
+  1. If flying monster:
+    1. Test flying up (jump) and down (crouch)
+  1. If Moder:
+    1. Test landing (crouch near ground) and taking off (jump while walking)
+1. Mount a deathsquito
+1. Fly up a bit
+1. Run debug command "faintall"
+1. Verify that you are not trapped on the monster
+1. Verify that the saddle came off
+1. Catch the deathsquito
+1. Verify no additional saddle dropped
+1. Test saddle targeting:
+  1. For each of these tall monsters:
+    - troll
+    - The Elder (GD_King)
+    - Moder (Dragon)
+  1. Saddle the monster
+  1. Verify that the saddle can be reached
+  1. Fly up if applicable
+  1. Dismount
+  1. Verify that you don't die on impact on the ground
+  1. Mount again
+  1. Fly up again if applicable
+  1. Call "return"
+  1. Verify that you don't die on impact
+1. Release two greydwarves
+1. Saddle one greydwarf
+1. Log out
+1. Log back in with another character
+1. Spawn SaddleUniversal
+1. Enable PVP
+1. Check that you can't mount the saddled greydwarf
+1. Check that you can't saddle the unsaddled greydwarf
+1. Disable PVP
+1. Check that you _can_ mount the saddled greydwarf
+1. Check that you _can_ saddle the unsaddled greydwarf
+1. Use debug command "tutorialreset"
+1. Saddle something
+1. Jump in the water (yourself)
+1. Check that no swimming tutorial is given
+1. Get back to land
+1. Use debug command "tutorialreset"
+1. Jump in the water again
+1. Check that a swimming tutorial is given
 
 
 ## 16. Giovanni
