@@ -387,7 +387,7 @@
 1. Fly to the mountains
 1. Confirm that the player is not freezing
 1. Fly to the swamps
-1. Find a sunken crypt
+1. Run "findlocation SunkenCrypt4"
 1. Confirm that the player does not need a key to enter
 1. Fly into the sky
 1. Stop flying and fall to your death
@@ -501,12 +501,33 @@
 
 ## 16. Giovanni
 
-1. TODO: Test Giovanni
+1. Run "findlocation Vendor_BlackForest" if Giovanni location unknown
+1. Go to Giovanni
+1. Verify that his name says "Giovanni"
+1. Verify that his Lox is named "Persian"
+1. Verify that Giovanni text has been overridden
+1. Verify that Giovanni cannot be interacted with, no interact hovertext
 
 
 ## 17. Chests
 
-1. TODO: Test chests
+1. Spawn `TreasureChest_meadows`
+1. Open the chest, verify that only useful stuff appears in it
+1. Run "findlocation WoodHouse1", "findlocation WoodHouse2", etc.
+1. Find a chest in a house
+1. Verify that only useful stuff appears in it
+1. Run "findlocation Crypt2", "findlocation Crypt3", "findlocation Crypt4"
+1. Find a chest in a skeleton crypt
+1. Verify that only useful stuff appears in it
+1. Run "findlocation SunkenCrypt4"
+1. Find a chest in a swamp crypt
+1. Verify that only useful stuff appears in it
+1. Run "findlocation MountainCave02"
+1. Find a chest in a mountain cave
+1. Verify that only useful stuff appears in it
+1. Run "findlocation GoblinCamp2"
+1. Find a chest in a fuling village
+1. Verify that only useful stuff appears in it
 
 
 ## 18. End Game

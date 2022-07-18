@@ -63,7 +63,7 @@ namespace Pokeheim {
         Weight = 1f,
       },
       new Contents {
-        PrefabName = "ArrowFlint",
+        PrefabName = "ArrowWood",
         Min = 10,
         Max = 50,
         Weight = 2f,

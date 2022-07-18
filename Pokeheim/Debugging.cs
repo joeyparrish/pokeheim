@@ -476,7 +476,33 @@ namespace Pokeheim {
     }
 
     [RegisterCommand]
-    class FindBoss : ConsoleCommand {
+    class FindLocation : ConsoleCommand {
+      public override string Name => "findlocation";
+      public override string Help => "[name] - Find all instances of a certain location.";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        string name = args[0];
+
+        // Arbitrary pin type, not boss pin, easily differentiable from what
+        // Vegvisir adds.
+        var pinType = Minimap.PinType.Icon0;
+        var pinName = $"Found: {name}";
+        var showMap = false;
+
+        foreach (var location in ZoneSystem.instance.m_locationInstances.Values) {
+          var position = location.m_position;
+          if (location.m_location.m_prefabName == name) {
+            Minimap.instance.DiscoverLocation(
+                position, pinType, pinName, showMap);
+          }
+        }
+        Debug.Log($"Added pins for all {name} locations.");
+      }
+    }
+
+    [RegisterCommand]
+    class FindBoss : FindLocation {
       public override string Name => "findboss";
       public override string Help => "[name or index] - Find all altars for a given boss.";
       public override bool IsCheat => true;
@@ -501,20 +527,7 @@ namespace Pokeheim {
           name = bossLocationNames[index];
         } catch (Exception) {}
 
-        // Arbitrary pin type, not boss pin, easily differentiable from what
-        // Vegvisir adds.
-        var pinType = Minimap.PinType.Icon0;
-        var pinName = $"Boss: {name}";
-        var showMap = false;
-
-        foreach (var location in ZoneSystem.instance.m_locationInstances.Values) {
-          var position = location.m_position;
-          if (location.m_location.m_prefabName == name) {
-            Minimap.instance.DiscoverLocation(
-                position, pinType, pinName, showMap);
-          }
-        }
-        Debug.Log($"Added pins for all {name} locations.");
+        base.Run(new string[] {name});
       }
     }
   }
