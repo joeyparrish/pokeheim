@@ -262,41 +262,40 @@
 ## 9. Berries
 
 1. Spawn greyling
-2. Spawn "raspberry"
-3. Check that the greyling goes for the berry and eats it
-4. Repeat with "blueberries" and "cloudberry"
-5. Remove greyling
-6. Spawn boar
-7. Tame boar
-8. Spawn "carrot"
-9. Check that the boar does not eat the carrot
-10. Spawn "raspberry"
-11. Check that the boar eats the raspberry
-12. Spawn 50 "raspberry" and pick them up
-14. Spawn greyling
-15. Throw full stack of 50 "raspberry"
-16. Check that greyling sits to eat for a long time and ignores you
+1. Spawn "raspberry"
+1. Check that the greyling goes for the berry and eats it (within 10s interval)
+1. Repeat with "blueberries" and "cloudberry"
+1. Remove greyling
+1. Spawn boar
+1. Tame boar
+1. Spawn "carrot"
+1. Check that the boar does not eat the carrot
+1. Spawn "raspberry"
+1. Check that the boar does not eat the raspberry
+1. Remove boar
+1. Spawn 50 "raspberry" and pick them up
+1. Spawn greyling
+1. Throw full stack of 50 "raspberry"
+1. Check that greyling sits to eat for a long time and ignores you
 
 
 ## 10. Crafting
 
 1. Use debug command "tutorialreset"
-2. Spawn:
+1. Spawn:
   - "stone" x50
   - "wood" x50
-  - "flint" x50
   - "feathers" x50
   - "LeatherScraps" x50
   - "TrophyDeer"
   - "raspberry"
   - "blueberries"
   - "mushroomyellow"
-3. Craft:
+1. Craft:
   - pokeball
   - greatball
   - ultraball
   - wood arrows
-  - flint arrows
   - stone axe
   - club
   - hammer
@@ -305,11 +304,19 @@
   - torch
   - bow
   - saddle
-4. Verify that you see tutorials for:
+1. Verify that you see tutorials for:
   - berries
   - pokeballs
   - hammer
   - pickaxe
+1. Verify that you can build camp fire with hammer
+1. Verify that you can raise and level ground with hoe
+1. Find a pine tree
+1. Knock down pine tree
+1. Verify that only regular wood spawns
+1. Spawn greydwarf
+1. Kill greydwarf
+1. Verify that only wood and stone spawn
 
 
 ## 11. Bosses
