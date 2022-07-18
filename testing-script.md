@@ -56,135 +56,210 @@
 
 ## 3. Capturing
 
-1. Spawn pokeballs
-2. Spawn greyling
-3. Catch greyling
-4. Release greyling
-5. Check mouseover text, should show you as the owner, can pet
-6. Log out & back in
-7. Check the greyling is still owned by you, can still pet
-8. Recall greyling
-9. Release greyling
-10. Check the greyling is still owned by you, can still pet
-11. Recall greyling
-12. Check stats in ball description
-13. Spawn and catch a level 2 greydwarf
-14. Release level 2 greydwarf, confirm correct coloring
-15. Spawn a "pickaxeiron"
-16. Dig a small pit (2-3m deep, 2m x 4m wide) to force monsters together
-17. Spawn a greydwarf in the pit and faint it
-18. Release a greyling in the pit, rename it to "Fainted" and faint it
-19. Spawn another greydwarf in the pit
-20. Release a greyling in the pit and rename it "Awake"
-21. Confirm that ball catches wild fainted greydwarf first ("Gotcha!")
-22. Confirm that ball catches tame fainted greyling next ("Fainted, return!")
-23. Confirm that ball catches wild awake greyling next ("Gotcha!")
-24. Confirm that ball catches tame awake greyling next ("Awake, return!")
-25. Open settings
-26. Confirm that "Recall Monsters" appears in key settings (default "R")
+1. Have at least 2 greylings, The Elder, plus several pokeballs
+1. Release a greyling
+1. Check mouseover text, should show you as the owner, can pet
+1. Log out & back in
+1. Check the greyling is still owned by you, can still pet
+1. Recall greyling
+1. Release greyling
+1. Check the greyling is still owned by you, can still pet
+1. Equip a torch
+1. Check that the greyling is not afraid of fire
+1. Recall greyling
+1. Check stats in ball description
+1. Spawn and catch a level 2 greydwarf
+1. Release level 2 greydwarf, confirm correct coloring
+1. Spawn "pickaxeiron"
+1. Dig a small pit (2-3m deep, 2m x 4m wide) to force monsters together
+1. Spawn a greydwarf in the pit and faint it
+1. Release a greyling in the pit, rename it to "Fainted"
+1. Spawn another greydwarf in the pit and wait for it to faint the greyling
+1. Release a greyling in the pit and rename it "Awake"
+1. Confirm that ball catches wild fainted greydwarf first ("Gotcha!")
+1. Confirm that ball catches tame fainted greyling next ("Fainted, return!")
+1. Confirm that ball catches wild awake greyling next ("Gotcha!")
+1. Confirm that ball catches tame awake greyling next ("Awake, return!")
+1. Open settings
+1. Confirm that "Recall Monsters" appears in key settings (default "R")
+1. Release The Elder
+1. Check how many "root" balls you have
+1. Spawn Eikthyr
+1. Wait for The Elder to spawn roots
+1. Recall The Elder
+1. Check that the roots disappear without being captured/recalled
+1. Log out and log back in
+1. Check that all ball items were correctly generated and placed in inventory
 
 
 ## 4. Loyalty
 
+1. Have at least one greyling, one deer, and four trolls captured
 1. Release greyling
-2. Run away
-3. Check that greyling follows you
-4. Log out & back in
-5. Run away
-6. Check that greyling follows you
-7. Spawn wild greyling
-8. Check the they fight each other
-9. Get rid of wild greyling
-10. Release captured greyling
-11. Spawn Eikthyr
-12. Freeze Eikthyr to ensure it doesn't kill the greyling too quickly
-13. Check that greyling fights Eikthyr (no monster natively fights a boss)
-14. Unfreeze Eikthyr
-15. Check that Eikthyr fights greyling
+1. Run away
+1. Check that greyling follows you
+1. Log out & back in
+1. Run away
+1. Check that greyling follows you
+1. Spawn wild greyling
+1. Check that they fight each other
+1. Get rid of wild greyling
+1. Release captured greyling
+1. Spawn Eikthyr
+1. Freeze Eikthyr to ensure it doesn't kill the greyling too quickly
+1. Check that greyling fights Eikthyr (no monster natively fights a boss)
+1. Unfreeze Eikthyr
+1. Check that Eikthyr fights greyling
+1. Remove Eikthyr
+1. Release deer
+1. Check that deer follows you
+1. Release troll x4
+1. Check that the trolls don't crowd you so closely that they push you around
+1. Spawn Eikthyr
+1. Run far away quickly
+1. Check that trolls stay behind to fight, don't follow until Eikthyr fainted
 
 
 ## 5. Renaming
 
 1. Have at least two greylings
-2. Release greyling
-3. Check mouseover text, should allow petting and renaming
-4. Rename greyling to "Foo"
-5. Recall greyling
-6. Check that the ball is separate name shows "Foo"
-7. Check stats in ball description, should show "Name: Foo"
-8. Release Foo
-9. Check mouseover text, should show "Foo"
-10. Pet Foo, message should be "Foo loves you"
-11. Log out & back in
-12. Check mouseover text, should show "Foo"
-13. Rename to "greyling" (all lowercase)
-14. Check mouseover text, should show "Greyling" (capital)
-15. Recall greyling
-16. Check that the ball stacked with the other greylings
-17. Change language to German
-18. Quit & restart
-19. Release greyling
-20. Check mouseover text, should show "Gräuling"
-21. Rename greyling to "Foo"
-22. Change language to English
-23. Quit & restart
-24. Check mouseover text, should show "Foo"
-25. Rename to ""
-26. Check mouseover text, should show "Greyling"
+1. Check greyling stats in ball description, should show "Name: (none)"
+1. Release greyling
+1. Check mouseover text, should allow petting and renaming
+1. Rename greyling to "Foo"
+1. Recall greyling
+1. Check that the ball is separate name shows "Foo"
+1. Check stats in ball description, should show "Name: Foo"
+1. Release Foo
+1. Check mouseover text, should show "Foo"
+1. Pet Foo, message should be "Foo loves you"
+1. Log out & back in
+1. Check mouseover text, should show "Foo"
+1. Rename to "greyling" (all lowercase)
+1. Check mouseover text, should show "Greyling" (capital)
+1. Recall greyling
+1. Check that the ball stacked with the other greylings
+1. Change language to German
+1. Quit & restart
+1. Release greyling
+1. Check mouseover text, should show "Gräuling"
+1. Rename greyling to "Foo"
+1. Change language to English
+1. Quit & restart
+1. Check mouseover text, should show "Foo"
+1. Rename to ""
+1. Check mouseover text, should show "Greyling"
+1. Rename to something long, confirm that 20 characters are allowed
 
 
 ## 6. PVP
 
-1. Release greyling at starting temple
-2. Check that PVP is off
-3. Hit greyling with torch, should not hit
-4. Punch greyling, should still hit because fists are special
-5. Punch greyling to death, should actually die
-6. Wait for cooldown, enable PVP
-7. Hit greyling with torch, should hit this time
-8. Release another two greylings
-9. Log out
-10. Change players and log back in
-11. Check that PVP is off
-12. Check that new player can pet/rename greyling
-13. Run away
-14. Check that greyling does not follow, even with PVP off
-15. Enable PVP
-16. Check that greyling attacks
-17. Disable PVP
-18. Check that greyling stops attacking
-19. Enable PVP
-20. Release own greyling
-21. Check that greylings attack each other
-22. Disable PVP
-23. Check that greylings stop attacking each other
-24. Enable PVP
-25. Try to catch one of the other player's greylings, should not be trivial
-26. Check that capture message was "Gotcha!" and not "return!"
-27. Disable PVP
-28. Recall all, check that only your own greyling was recalled, with the
-    message "Greyling, return!" and not "Everyone, return!"
-29. Try to catch the other player's remaining greyling, should work right away
-30. Check that capture message was "Gotcha!" and not "return!"
+1. Have at least 3 captured greylings
+1. Release greyling
+1. Check that PVP is off
+1. Hit greyling with torch, should not hit
+1. Punch greyling, should still hit because fists are special
+1. Punch greyling to death, should actually die
+1. Wait for cooldown, enable PVP
+1. Release greyling
+1. Hit greyling with torch, should hit this time
+1. Release another two greylings
+1. Log out
+1. Change players and log back in
+1. Check that PVP is off
+1. Check that new player can pet/rename greyling
+1. Run away
+1. Check that greyling does not follow, even with PVP off
+1. Enable PVP
+1. Check that greyling attacks
+1. Disable PVP
+1. Check that greyling stops attacking
+1. Enable PVP
+1. Release own greyling
+1. Check that greylings attack each other
+1. Disable PVP
+1. Check that greylings stop attacking each other
+1. Enable PVP
+1. Try to catch one of the other player's greylings, should not be trivial
+1. Check that capture message was "Gotcha!" and not "return!"
+1. Disable PVP
+1. Recall all, check that only your own greyling was recalled, with the
+   message "Greyling, return!" and not "Everyone, return!"
+1. Try to catch the other player's remaining greyling, should work right away
+1. Check that capture message was "Gotcha!" and not "return!"
 
 
-## 7. Projectiles
+## 7. Fainting
+
+1. Spawn greyling
+1. Spawn weapon ("club" or "SwordIronFire")
+1. Hit greyling with weapon until it faints
+1. Check that it doesn't die
+1. Check that its mouseover text is gone
+1. Wait and check that the ragdoll doesn't explode
+1. Check that the ragdoll can be pushed around
+1. Catch it (should always work)
+1. Spawn greyling
+1. Type "killall" in dev console
+1. Confirm that greyling dies
+1. Release greyling
+1. Faint it
+1. Recall all, check that your fainted greyling does not come back
+1. Spawn deathsquito
+1. Attack it until it faints (or use "faintall" in dev console)
+1. Check that it falls from the sky and lands upside down
+1. Spawn skeleton and faint it
+1. Check that it stops making noise
+1. Spawn blob, wraith, and bonemass and faint them
+1. Check that they stop fuming
+1. Spawn serpent and faint it
+1. Check that its tail stops moving
+1. Spawn "dragon" (Moder) and faint it
+1. Check that it falls from the sky (no ragdoll)
+1. Log out and back in
+1. Check that the dragon is still affected by gravity, even when pushed
+1. Spawn "hatchling" (Drake) and faint it
+1. Check that it falls from the sky (ragdoll)
+1. Spawn The Elder (wild)
+1. Wait for The Elder to spawn roots
+1. Wait for the roots to faint (timed destruction)
+1. Capture roots
+1. Capture The Elder
+1. Release roots
+1. Check that the roots don't faint (timed destruction)
+1. Recall roots
+1. Release The Elder
+1. Spawn Eikthyr (wild)
+1. Wait for The Elder to spawn roots
+1. Check that the roots don't faint (timed destruction)
+1. Spawn BonePileSpawner
+1. Faint skeletons as they spawn
+1. Check that the spawner keeps spawning instead of stopping at 2 skeletons
+
+
+## 8. Projectiles
 
 1. Spawn pokeballs, confirm coloring
-2. Spawn greatballs, confirm coloring
-3. Spawn ultraballs, confirm coloring
-4. Throw each, confirm coloring and rotation of projectiles
-5. Confirm that there's no ooze effect from the ooze bomb they are based on
-6. Confirm the "hit" sound plays on impact
-7. Spawn greyling
-8. Confirm that a direct hit is not needed to capture (2m radius OK)
-9. Spawn troll
-10. Try to catch troll with pokeball, greatball, and ultraball
-11. Read catch rate in debug logs, confirm that ball type has an effect
-12. Kill or capture troll because it will be a pain in the ass now
+1. Spawn greatballs, confirm coloring
+1. Spawn ultraballs, confirm coloring
+1. Throw each, confirm coloring and that projectiles rotate
+1. Confirm that there's no ooze effect from the ooze bomb they are based on
+1. Confirm the "hit" sound plays on impact
+1. Confirm consistent accuracy
+1. Spawn greyling
+1. Confirm that a direct hit is not needed to capture (2m radius OK)
+1. Spawn troll
+1. Try to catch troll with pokeball, greatball, and ultraball
+1. Read catch rate in debug logs, confirm that ball type has an effect
+1. Kill or capture troll because it will be a pain in the ass now
+1. Fly so deer won't see/hear you
+1. Spawn a deer
+1. Fly far enough away to be out of its sensory range
+1. Throw a rock nearby the deer
+1. Check that the deer is startled and runs away
 
 
-## 8. Berries
+## 9. Berries
 
 1. Spawn greyling
 2. Spawn "raspberry"
@@ -203,7 +278,7 @@
 16. Check that greyling sits to eat for a long time and ignores you
 
 
-## 9. Crafting
+## 10. Crafting
 
 1. Use debug command "tutorialreset"
 2. Spawn:
@@ -237,7 +312,7 @@
   - pickaxe
 
 
-## 10. Bosses
+## 11. Bosses
 
 1. Enter game at starting location
 2. Confirm that the chains on boss stones are not interactable
@@ -250,36 +325,6 @@
 9. Try to start raid again
 10. Confirm that raid does not start (already caught)
 11. Go to step 3
-
-
-## 11. Fainting
-
-1. Spawn greyling
-2. Spawn weapon ("club" or "SwordIronFire")
-3. Hit greyling with weapon until it faints
-4. Check that it doesn't die
-5. Catch it (should always work)
-6. Spawn greyling
-7. Type "killall" in dev console
-8. Confirm that greyling dies
-9. Release greyling
-10. Faint it
-11. Recall all, check that your fainted greyling does not come back
-12. Spawn deathsquito
-13. Attack it until it faints (or use "faintall" in dev console)
-14. Check that it falls from the sky and lands upside down
-15. Spawn blob, wraith, and bonemass
-16. Faint them
-17. Check that they stop fuming
-18. Spawn serpent
-19. Faint it
-20. Check that its tail stops moving
-21. Spawn "dragon" (Moder)
-22. Faint it
-23. Check that it falls from the sky (no ragdoll)
-24. Spawn "hatchling" (Drake)
-25. Faint it
-26. Check that it falls from the sky (ragdoll)
 
 
 ## 12. Inventory
