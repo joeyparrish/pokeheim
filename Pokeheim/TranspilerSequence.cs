@@ -23,6 +23,7 @@ using System.Reflection;
 
 using Logger = Jotunn.Logger;
 
+// TODO: Replace with https://github.com/BepInEx/HarmonyX/wiki/Transpiler-helpers
 namespace Pokeheim {
   // Transpilers often need to look for a specific sequence of instructions, in
   // order, to replace.  They also need to log errors if the unpatched code
