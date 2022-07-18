@@ -91,7 +91,7 @@ you need to be enticed, though, please check out these preview videos:
 
  - Any mod adding armor to Valheim should also work with Pokéheim.  Pokéheim
    discovers all armor at runtime.  New armor will show up in the style dialog
-   and in the wardrobe.
+   and in the wardrobe.  Might we recommend [CustomWigs](https://www.nexusmods.com/valheim/mods/1236)?
 
  - Any mod that adds new resources or recipes to Valheim will be non-functional
    with Pokéheim, but Pokéheim is unlikely to be harmed by it.
