@@ -347,11 +347,21 @@
 
 ## 12. Inventory
 
+1. Use debug command "tutorialreset"
 1. Open inventory
-2. Check that it's twice as large as usual (8x8)
-3. Spawn `TreasureChest_meadows`
-4. Open it
-5. Check that the chest inventory GUI is positioned below the player inventory
+1. Check that it's twice as large as usual (8x8)
+1. Check that Professor Raven comes to tell you about sorting and style
+1. Spawn `TreasureChest_meadows`
+1. Open the chest
+1. Check that the chest inventory GUI is positioned below the player inventory
+1. Check that the sort button appears next to inventory grid
+1. Check that the mouseover text says "sort"
+1. Click sort and verify that it reorders your things, except the first row
+  1. Uninhabited balls, getting stronger
+  1. Inhabited balls, going up in Pokedex order
+  1. Non-equippable items
+  1. Equippable, unequipped
+  1. Equippable, equipped
 
 
 ## 13. Player
