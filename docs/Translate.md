@@ -23,7 +23,8 @@ These instructions assume you are least familiar with `git`.
    ```
 4. Edit/add JSON files in your folder using the English version as a template:
    https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Assets/Translations/English/
-5. Add yourself to the list of Translators in `Pokeheim/Credits.cs`
+5. Add yourself to the list of Translators in `Pokeheim/Credits.cs`:
+   https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Credits.cs
 6. Commit those changes and send a pull request:
    https://github.com/joeyparrish/pokeheim/compare
 

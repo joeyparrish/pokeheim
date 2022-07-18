@@ -118,6 +118,9 @@ See [docs/Building.md](https://github.com/joeyparrish/pokeheim/blob/main/docs/Bu
 
 Pokéheim was created by [Joey Parrish](https://joeyparrish.github.io/).
 
+All contributors any many others deserving thanks are listed in
+[Pokeheim/Credits.cs](https://github.com/joeyparrish/pokeheim/blob/main/Pokeheim/Credits.cs)
+
 The authors and contributors of Pokéheim have no affiliation with the Pokémon
 Company or Niantic.  This is both a parody and tribute.
 

@@ -28,52 +28,60 @@ using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
   public static class Credits {
-    private static List<Contributor> contributors = new List<Contributor> {
-      new Contributor {
-        name = "Joey Parrish",
-        link = "https://github.com/joeyparrish",
-      },
+    private static Dictionary<string, List<Contributor>> contributors = new Dictionary<string, List<Contributor>> {
+      {"Code", new List<Contributor> {
+        new Contributor {
+          name = "Joey Parrish",
+          link = "https://joeyparrish.github.io/",
+        },
+      }},
 
-      // Add new entries above this line.
+      {"Custom Music", new List<Contributor> {
+        new Contributor {
+          name = "Arranged by Joey Parrish",
+        },
+      }},
 
-      // These come last.
-      Contributor.Spacer(),
-      new Contributor {
-        name = "Custom music arranged by Joey Parrish\n" +
-               "Parodying the work of Jarlestam, Masuda, Siegler, and Loeffler",
-      },
+      {"Beta Testing", new List<Contributor> {
+        new Contributor {
+          name = "Andrew",
+        },
+        new Contributor {
+          name = "Timberjaw",
+          link = "https://github.com/Timberjaw",
+        },
+      }},
 
-      Contributor.Spacer(),
-      new Contributor {
-        name = "Special thanks to TheSlowPianist\n" +
-               "for their arrangement of Valheim's main menu music",
-        link = "https://www.patreon.com/theslowpianist/",
-      },
-
-      Contributor.Spacer(),
-      new Contributor {
-        name = "Built with Jötunn: The Valheim Library",
-        link = "https://valheim-modding.github.io/Jotunn/",
-      },
+      {"Special Thanks", new List<Contributor> {
+        new Contributor {
+          name = "TheSlowPianist, for their Valheim arrangements",
+          link = "https://www.patreon.com/theslowpianist/",
+        },
+        new Contributor {
+          name = "Jules, Redseiko, and A Sharp Pen, for help via discord",
+          link = "https://discord.gg/DdUt6g7gyA",
+        },
+        new Contributor {
+          name = "Jötunn: The Valheim Library",
+          link = "https://valheim-modding.github.io/Jotunn/",
+        },
+      }},
     };
 
     private static Dictionary<string, List<Contributor>> translators = new Dictionary<string, List<Contributor>> {
       { "Original English text", new List<Contributor> {
         new Contributor {
           name = "Joey Parrish",
-          link = "https://github.com/joeyparrish",
         },
       }},
 
       { "Deutsche Übersetzung", new List<Contributor> {
         new Contributor {
           name = "Joey Parrish",
-          link = "https://github.com/joeyparrish",
         },
       }},
 
       // Add new entries above this line.
-
       // These come last.
       { "\"Borrowed\" translations", new List<Contributor> {
         new Contributor {
@@ -91,20 +99,18 @@ namespace Pokeheim {
     // Let the outro play for this long before replacing it with credits.
     private const float outroTime = 40f;  // seconds
 
+    private static bool rollingCreditsText = false;
+
     private class Contributor {
       public string name;
       public string link = "";  // Optional
 
-      public string Format() {
-        if (link != "") {
+      public string Format(bool brief) {
+        if (!brief && link != "") {
           return name + "\n" + link;
         } else {
           return name;
         }
-      }
-
-      public static Contributor Spacer() {
-        return new Contributor{ name = "" };
       }
     }
 
@@ -121,62 +127,55 @@ namespace Pokeheim {
     // Roll credits, with or without the outro text.
     public static void Roll(bool withOutro) {
       if (withOutro) {
-        RollText(GetOutro(), outroTime, () => RollCreditsOnly());
+        RollText("$pokeheim_outro", outroTime, () => RollCreditsOnly());
       } else {
         RollCreditsOnly();
       }
     }
 
+    private static string CreditsHeader(string headerText) {
+      return $"<size=40><color=orange>{headerText}</color></size>";
+    }
+
     private static void RollCreditsOnly() {
-      RollText(GetContributors(), contributorsTime, () => {
-        RollText(GetTranslators(), translatorsTime, () => {
+      var contributorsText = CreditsHeader("$pokeheim_contributors") + "\n\n" +
+          GetContributorsText(contributors, brief: true);
+      var translatorsText = CreditsHeader("$pokeheim_translators") + "\n\n" +
+          GetContributorsText(translators, brief: true);
+
+      rollingCreditsText = true;
+
+      RollText(contributorsText, contributorsTime, () => {
+        if (!rollingCreditsText) {
+          // Cancelled by the user.
+          return;
+        }
+
+        RollText(translatorsText, translatorsTime, () => {
           StopText();
+          rollingCreditsText = false;
         });
       });
     }
 
-    private static string GetOutro() {
-      return "$pokeheim_outro";
-    }
-
-    private static string GetContributors(int headingSize=0) {
+    private static string GetContributorsText(
+        Dictionary<string, List<Contributor>> list, bool brief) {
       string text = "";
-      if (headingSize != 0) {
-        text += $"<size={headingSize}>";
-      }
-      text += "<color=orange>$pokeheim_contributors</color>";
-      if (headingSize != 0) {
-        text += "</size>";
-      }
-      text += "\n";
 
-      foreach (var contributor in contributors) {
-        text += contributor.Format() + "\n";
-      }
-      return text;
-    }
+      foreach (var entry in list) {
+        var subHeading = entry.Key;
+        var subList = entry.Value;
+        text += $"<color=orange>{subHeading}</color>\n";
 
-    private static string GetTranslators(int headingSize=0) {
-      string text = "";
-      if (headingSize != 0) {
-        text += $"<size={headingSize}>";
-      }
-      text += "<color=orange>$pokeheim_translators</color>";
-      if (headingSize != 0) {
-        text += "</size>";
-      }
-      text += "\n\n";
-
-      foreach (var entry in translators) {
-        var language = entry.Key;
-        var translators = entry.Value;
-        text += $"<color=orange>{language}</color>\n";
-
-        foreach (var translator in translators) {
-          text += translator.Format() + "\n";
+        foreach (var contributor in subList) {
+          text += contributor.Format(brief) + "\n";
+          if (!brief) {
+            text += "\n";
+          }
         }
-        text += "\n\n";
+        text += "\n";
       }
+
       return text;
     }
 
@@ -218,6 +217,17 @@ namespace Pokeheim {
       return textGen.GetPreferredHeight(newText, generationSettings);
     }
 
+    [HarmonyPatch(typeof(TextViewer), nameof(TextViewer.LateUpdate))]
+    class CancelCreditsWithEscape_Patch {
+      static void Postfix() {
+        if (TextViewer.IsShowingIntro() && rollingCreditsText &&
+            Input.GetKeyDown(KeyCode.Escape)) {
+          rollingCreditsText = false;
+          StopText();
+        }
+      }
+    }
+
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     class HookIntoMainMenuCredits_Patch {
       static void Postfix(FejdStartup __instance) {
@@ -247,16 +257,13 @@ namespace Pokeheim {
         }
 
         var headingText = "Pokéheim";
-        //var headingHeight = GetTextHeight(heading, headingText);
         var headingHeight = heading.rectTransform.sizeDelta.y;
 
         // Use a smaller font size
-        var originalFontSize = text.fontSize;
-        var textFontSize = (int)((float)text.fontSize * 0.8f);
-        var textText = GetContributors(headingSize: originalFontSize) +
-                       "\n\n" +
-                       GetTranslators(headingSize: originalFontSize);
-        var textHeight = GetTextHeight(text, textText, textFontSize);
+        var textText = "\n" +
+                       GetContributorsText(contributors, brief: false) +
+                       GetContributorsText(translators, brief: false);
+        var textHeight = GetTextHeight(text, textText, text.fontSize);
 
         var paddingHeight = headingHeight * 2f;
         var totalHeight = headingHeight + textHeight + paddingHeight;
@@ -268,7 +275,6 @@ namespace Pokeheim {
 
         heading.text = headingText;
         text.text = textText;
-        text.fontSize = textFontSize;
 
         // Grow the text area to fit the new text.  Make it 1.5x as wide as it
         // used to be.
