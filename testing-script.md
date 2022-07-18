@@ -540,7 +540,49 @@
 
 ## 19. End Game
 
-1. TODO: Test end game
+1. Go to starting location
+1. Throw away all boss balls
+1. Run debug command "removedrops"
+1. Run debug command "resetpokedex"
+1. Run debug command "tutorialreset"
+1. Spawn Eikthyr
+1. Run debug command "catchemall"
+1. Check that the "caught a boss" tutorial runs
+1. Spawn GD_King, Bonemass, Dragon, and GoblinKing
+1. Run debug command "catchemall"
+1. Check that the "caught all bosses" tutorial runs
+1. Run debug command "spawnall"
+1. Run debug command "catchemall"
+1. Check that the Pokedex is complete
+1. Check that Odin is _not_ at the starting location
+1. Check that the "caught em all" tutorial runs
+1. Check that Odin spawns after you talk to Professor Raven
+1. Check that Odin rotates to face you no matter where you go
+1. Talk to Odin
+1. Dismiss his message
+1. Verify that you die
+1. Verify that outro and credits roll
+1. Watch full credits, check formatting
+1. Verify that Odin is gone when you respawn
+1. Run debug command "tutorial caught_em_all"
+1. Talk to Raven
+1. Verify that Odin reappears
+1. Log out
+1. Click credits in menu
+1. Verify that Pokeheim credits run first
+1. Watch Pokeheim part of credits, check formatting
+1. Log back in
+1. Verify that Odin is still there
+1. Verify that Odin still follows you
+1. Talk to Odin, don't dismiss text
+1. Run away
+1. Verify that you die
+1. During outro, hit escape
+1. Outro should not be dismissed
+1. Let credits begin, then hit escape again
+1. The credits should be dismissed
+1. The player should respawn _right away_ and not after the time credits would
+   take
 
 
 ## 20. Languages
