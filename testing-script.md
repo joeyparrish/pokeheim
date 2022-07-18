@@ -587,8 +587,12 @@
 
 ## 20. Languages
 
-1. TODO: Make sure translations are loaded for some non-English language
-2. TODO: Make sure untranslated text falls back to English (tips, intro, etc)
+1. Choose poorly-translated language, quit, and restart game
+1. Ensure that untranslated "loading" tips fallback to English
+1. Run debug command "tutorial temple1"
+1. Ensure that tutorial falls back to English
+1. Ensure that universally-translated text like Pokeball names, Pokedex name,
+   style dialog heading show in the target language
 
 
 ## 21. Multiplayer
