@@ -272,7 +272,7 @@ namespace Pokeheim {
         return false;
       }
 
-      var tameable = monster.GetComponent<Tameable>();
+      var tameable = monster.GetTameable();
       // Make sure the monster drops its saddle, if any.
       if (tameable != null) {
         tameable.OnDeath();

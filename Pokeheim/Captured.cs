@@ -66,6 +66,10 @@ namespace Pokeheim {
       }
     }
 
+    public static Tameable GetTameable(this Character monster) {
+      return monster.m_baseAI.m_tamable /* [sic] */;
+    }
+
     public static bool IsCaptured(this Character monster) {
       return monster.GetExtraData(IsCapturedKey, false);
     }
@@ -138,12 +142,12 @@ namespace Pokeheim {
     }
 
     public static string GetPetName(this Character monster) {
-      var tameable = monster.GetComponent<Tameable>();
+      var tameable = monster.GetTameable();
       return tameable?.GetText() ?? "";
     }
 
     public static void SetPetName(this Character monster, string value) {
-      var tameable = monster.GetComponent<Tameable>();
+      var tameable = monster.GetTameable();
       if (tameable == null) {
         Logger.LogError($"Unable to set pet name {value} on {monster}.  Not tameable!");
       } else {
@@ -311,7 +315,7 @@ namespace Pokeheim {
           }
         }
 
-        var tameable = monster.GetComponent<Tameable>();
+        var tameable = monster.GetTameable();
         if (tameable == null) {
           // If we have to add Tameable, add a pet effect, too.
           tameable = monster.gameObject.AddComponent<Tameable>();

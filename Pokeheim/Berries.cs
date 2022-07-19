@@ -151,7 +151,7 @@ namespace Pokeheim {
           }
 
           ItemDrop item = collider.attachedRigidbody.GetComponent<ItemDrop>();
-          if (!item.GetComponent<ZNetView>().IsValid() ||
+          if (!item.m_nview.IsValid() ||
               !item.IsBerry() ||
               !CanReach(item)) {
             continue;
@@ -183,6 +183,7 @@ namespace Pokeheim {
     class WildMonstersWantToEatBerries_Patch {
       static bool Prefix(BaseAI __instance) {
         var monster = __instance.m_character;
+        // TODO: GetComponent on FixedUpdate... how to avoid?
         var berryEater = monster.GetComponent<BerryEater>();
 
         if (!monster.IsCaptured() &&
@@ -218,12 +219,15 @@ namespace Pokeheim {
           if (monster.IsFainted()) {
             continue;
           }
+          var berryEater = monster.GetComponent<BerryEater>();
+          if (berryEater == null) {
+            continue;
+          }
 
           var distance = Utils.DistanceXZ(
               item.transform.position, monster.transform.position);
-          var berryEater = monster.GetComponent<BerryEater>();
           if (distance < BerryEater.BerrySearchRadius) {
-            berryEater?.NoticeBerries(item);
+            berryEater.NoticeBerries(item);
           }
         }
       }

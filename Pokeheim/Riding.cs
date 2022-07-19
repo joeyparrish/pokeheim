@@ -459,8 +459,6 @@ namespace Pokeheim {
         var randomFly = (steed?.m_baseAI.m_randomFly ?? false);
         var isFlying = (steed?.IsFlying() ?? false);
         var canFly = randomFly || isFlying;
-        var monsterWithWeapons =
-            steed?.GetComponent<MonsterWithWeapons>() ?? null;
 
         if (steed != null && (attack || secondaryAttack)) {
           // Make the steed attack for us.
@@ -468,6 +466,8 @@ namespace Pokeheim {
           // Note that no monster "weapon" has a "secondary attack" that I've
           // seen.  Instead, we map the secondaryAttack flag to a separate
           // "weapon" (which for monsters, is just a form of attack).
+          var monsterWithWeapons =
+              steed?.GetComponent<MonsterWithWeapons>() ?? null;
           bool equipped =
               monsterWithWeapons?.EquipWeapon(secondaryAttack) ?? false;
 

@@ -302,7 +302,7 @@ namespace Pokeheim {
           Logger.LogInfo($"  Body part: {path} - position {position} rotation {rotation} local rotation {localRotation}");
         }
 
-        var tameable = monster.GetComponent<Tameable>();
+        var tameable = monster.GetTameable();
         if (tameable != null && tameable.m_saddle != null) {
           Logger.LogInfo($"  Saddle: {tameable.m_saddle}");
         }
@@ -416,7 +416,7 @@ namespace Pokeheim {
       public override void Run(string[] args) {
         var allCharacters = Character.GetAllCharacters();
         foreach (var monster in allCharacters) {
-          var tameable = monster.GetComponent<Tameable>();
+          var tameable = monster.GetTameable();
           if (monster.IsTamed() && !tameable.HaveSaddle()) {
             Logger.LogInfo($"Saddling {monster}");
             tameable.RPC_AddSaddle(0L);
@@ -437,7 +437,7 @@ namespace Pokeheim {
       public override void Run(string[] args) {
         var allCharacters = Character.GetAllCharacters();
         foreach (var monster in allCharacters) {
-          var tameable = monster.GetComponent<Tameable>();
+          var tameable = monster.GetTameable();
           if (tameable?.HaveSaddle() ?? false) {
             Logger.LogInfo($"Mounting {monster}");
             var saddle = tameable.m_saddle;
