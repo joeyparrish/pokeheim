@@ -493,8 +493,18 @@ namespace Pokeheim {
         foreach (var location in ZoneSystem.instance.m_locationInstances.Values) {
           var position = location.m_position;
           if (location.m_location.m_prefabName == name) {
-            Minimap.instance.DiscoverLocation(
-                position, pinType, pinName, showMap);
+            var found = false;
+
+            foreach (var pin in Minimap.instance.m_pins) {
+			        if (Utils.DistanceXZ(position, pin.m_pos) < 1f) {
+                found = true;
+              }
+            }
+
+            if (!found) {
+              Minimap.instance.DiscoverLocation(
+                  position, pinType, pinName, showMap);
+            }
           }
         }
         Debug.Log($"Added pins for all {name} locations.");
@@ -518,7 +528,7 @@ namespace Pokeheim {
       public override void Run(string[] args) {
         string name = args[0];
         try {
-          var index = int.Parse(args[1]);
+          var index = int.Parse(args[0]);
           if (index < 0 || index >= bossLocationNames.Length) {
             Debug.Log($"Bad index: {index}");
             return;
