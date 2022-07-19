@@ -28,9 +28,9 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   public static class Captured {
     // These are keys which will be used to store additional fields in ZDO.
-    private const string IsCapturedKey = "com.pokeheim.IsCaptured";
-    private const string OwnerKey = "com.pokeheim.Owner";
-    private const string NoReturnKey = "com.pokeheim.NoReturn";
+    private static readonly int IsCapturedKey = "com.pokeheim.IsCaptured".GetStableHashCode();
+    private static readonly int OwnerKey = "com.pokeheim.Owner".GetStableHashCode();
+    private static readonly int NoReturnKey = "com.pokeheim.NoReturn".GetStableHashCode();
 
     private const int MaxPetNameLength = 20;
     private static EffectList PetEffect = null;
@@ -71,44 +71,44 @@ namespace Pokeheim {
     }
 
     public static bool IsCaptured(this Character monster) {
-      return monster.GetExtraData(IsCapturedKey, false);
+      return monster.m_nview.GetExtraData(IsCapturedKey, false);
     }
 
     public static bool IsCaptured(this Ragdoll ragdoll) {
-      return ragdoll.GetExtraData(IsCapturedKey, false);
+      return ragdoll.m_nview.GetExtraData(IsCapturedKey, false);
     }
 
     public static bool WillNotReturn(this Character monster) {
-      return monster.GetExtraData(NoReturnKey, false);
+      return monster.m_nview.GetExtraData(NoReturnKey, false);
     }
 
     public static bool WillNotReturn(this Ragdoll ragdoll) {
-      return ragdoll.GetExtraData(NoReturnKey, false);
+      return ragdoll.m_nview.GetExtraData(NoReturnKey, false);
     }
 
     public static void SetCaptured(this Character monster, bool value) {
-      monster.SetExtraData(IsCapturedKey, value);
+      monster.m_nview.SetExtraData(IsCapturedKey, value);
     }
 
     public static void SetCaptured(this Ragdoll ragdoll, bool value) {
-      ragdoll.SetExtraData(IsCapturedKey, value);
+      ragdoll.m_nview.SetExtraData(IsCapturedKey, value);
     }
 
     public static void SetNoReturn(this Character monster, bool value) {
-      monster.SetExtraData(NoReturnKey, value);
+      monster.m_nview.SetExtraData(NoReturnKey, value);
     }
 
     public static void SetNoReturn(this Ragdoll ragdoll, bool value) {
-      ragdoll.SetExtraData(NoReturnKey, value);
+      ragdoll.m_nview.SetExtraData(NoReturnKey, value);
     }
 
     // NOTE: Character has a GetOwner already, which returns a ZDO ID as a long
     public static string GetOwnerName(this Character monster) {
-      return monster.GetExtraData(OwnerKey, "");
+      return monster.m_nview.GetExtraData(OwnerKey, "");
     }
 
     public static string GetOwnerName(this Ragdoll ragdoll) {
-      return ragdoll.GetExtraData(OwnerKey, "");
+      return ragdoll.m_nview.GetExtraData(OwnerKey, "");
     }
 
     public static Player GetOwnerPlayer(this Character monster) {
@@ -120,11 +120,11 @@ namespace Pokeheim {
     }
 
     public static void SetOwner(this Character monster, string value) {
-      monster.SetExtraData(OwnerKey, value);
+      monster.m_nview.SetExtraData(OwnerKey, value);
     }
 
     public static void SetOwner(this Ragdoll ragdoll, string value) {
-      ragdoll.SetExtraData(OwnerKey, value);
+      ragdoll.m_nview.SetExtraData(OwnerKey, value);
     }
 
     public static void SetOwner(this Character monster, Player player) {

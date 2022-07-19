@@ -48,7 +48,7 @@ namespace Pokeheim {
 
     // Generated ball IDs need to be stored in the ball's ZDO, to sync view of
     // these items to other clients.
-    private const string GeneratedBallIdKey = "com.pokeheim.GeneratedBallId";
+    private static readonly int GeneratedBallIdKey = "com.pokeheim.GeneratedBallId".GetStableHashCode();
 
     private static Dictionary<string, BallConfig> BallConfigs = new Dictionary<string, BallConfig> {
       { "Pokeball", new BallConfig {
@@ -493,7 +493,7 @@ namespace Pokeheim {
         var name = __instance.m_itemData.m_dropPrefab.name;
         if (name.StartsWith(InhabitedBallIdPrefix)) {
           //Logger.LogDebug($"Storing ZDO ball ID {name}");
-          __instance.SetExtraData(GeneratedBallIdKey, name);
+          __instance.m_nview.SetExtraData(GeneratedBallIdKey, name);
         }
       }
     }

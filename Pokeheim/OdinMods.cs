@@ -28,7 +28,7 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   public static class OdinMods {
     // These are keys which will be used to store additional fields in ZDO.
-    private const string IsStaticKey = "com.pokeheim.IsStatic";
+    private static readonly int IsStaticKey = "com.pokeheim.IsStatic".GetStableHashCode();
 
     private static Odin staticOdin = null;
 
@@ -219,7 +219,7 @@ namespace Pokeheim {
 
     public static void SetStatic(this Odin odin) {
       // Set the static flag.
-      odin.SetExtraData(IsStaticKey, true);
+      odin.m_nview.SetExtraData(IsStaticKey, true);
 
       // Make other mods for static Odin.  These may need to be reapplied on
       // reload, so take care to make this method work when called more than
@@ -238,7 +238,7 @@ namespace Pokeheim {
     }
 
     public static bool IsStatic(this Odin odin) {
-      return odin.GetExtraData(IsStaticKey, false);
+      return odin.m_nview.GetExtraData(IsStaticKey, false);
     }
 
     // This is a fork of Odin's Update() method.  Static Odin won't disappear,

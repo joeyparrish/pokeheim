@@ -30,8 +30,8 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   public static class Fainting {
     // These are keys which will be used to store additional fields in ZDO.
-    private const string IsFaintedKey = "com.pokeheim.IsFainted";
-    private const string RagdollMonsterDataKey = "com.pokeheim.RagdollMonsterData";
+    private static readonly int IsFaintedKey = "com.pokeheim.IsFainted".GetStableHashCode();
+    private static readonly int RagdollMonsterDataKey = "com.pokeheim.RagdollMonsterData".GetStableHashCode();
 
     private const float DefaultFlipAngle = -90f;
 
@@ -50,19 +50,19 @@ namespace Pokeheim {
     };
 
     public static bool IsFainted(this Character monster) {
-      return monster.GetExtraData(IsFaintedKey, false);
+      return monster.m_nview.GetExtraData(IsFaintedKey, false);
     }
 
     public static void SetFainted(this Character monster, bool value) {
-      monster.SetExtraData(IsFaintedKey, value);
+      monster.m_nview.SetExtraData(IsFaintedKey, value);
     }
 
     public static string GetMonsterData(this Ragdoll ragdoll) {
-      return ragdoll.GetExtraData(RagdollMonsterDataKey, "");
+      return ragdoll.m_nview.GetExtraData(RagdollMonsterDataKey, "");
     }
 
     public static void SetMonsterData(this Ragdoll ragdoll, string data) {
-      ragdoll.SetExtraData(RagdollMonsterDataKey, data);
+      ragdoll.m_nview.SetExtraData(RagdollMonsterDataKey, data);
     }
 
     private static EffectList GetRagdollEffect(this Character monster) {

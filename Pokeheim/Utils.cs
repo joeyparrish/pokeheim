@@ -143,91 +143,30 @@ namespace Pokeheim {
       }
     }
 
-    private static ZDO GetZDO(Component thing) {
-      var view = thing.GetComponent<ZNetView>();
-      return view?.GetZDO();
+    public static bool GetExtraData(this ZNetView netView, int key, bool defaultValue) {
+      return netView?.GetZDO()?.GetBool(key, defaultValue) ?? defaultValue;
     }
 
-    public static bool GetExtraData(this Component thing, string key, bool defaultValue) {
-      var zdo = GetZDO(thing);
-      return zdo != null ? zdo.GetBool(key, defaultValue) : defaultValue;
+    public static string GetExtraData(this ZNetView netView, int key, string defaultValue) {
+      return netView?.GetZDO()?.GetString(key, defaultValue) ?? defaultValue;
     }
 
-    public static string GetExtraData(this Component thing, string key, string defaultValue) {
-      var zdo = GetZDO(thing);
-      return zdo != null ? zdo.GetString(key, defaultValue) : defaultValue;
-    }
-
-    public static float GetExtraData(this Component thing, string key, float defaultValue) {
-      var zdo = GetZDO(thing);
-      return zdo != null ? zdo.GetFloat(key, defaultValue) : defaultValue;
-    }
-
-    public static long GetExtraData(this Component thing, string key, long defaultValue) {
-      var zdo = GetZDO(thing);
-      return zdo != null ? zdo.GetLong(key, defaultValue) : defaultValue;
-    }
-
-    public static void SetExtraData(this Component thing, string key, bool newValue) {
-      var zdo = GetZDO(thing);
+    public static void SetExtraData(this ZNetView netView, int key, bool newValue) {
+      var zdo = netView.GetZDO();
       if (zdo == null) {
-        Logger.LogError($"Unable to set {key} on {thing}!");
+        Logger.LogError($"Unable to set {key} on {netView}!");
         return;
       }
       zdo.Set(key, newValue);
     }
 
-    public static void SetExtraData(this Component thing, string key, string newValue) {
-      var zdo = GetZDO(thing);
+    public static void SetExtraData(this ZNetView netView, int key, string newValue) {
+      var zdo = netView.GetZDO();
       if (zdo == null) {
-        Logger.LogError($"Unable to set {key} on {thing}!");
+        Logger.LogError($"Unable to set {key} on {netView}!");
         return;
       }
       zdo.Set(key, newValue);
-    }
-
-    public static void SetExtraData(this Component thing, string key, float newValue) {
-      var zdo = GetZDO(thing);
-      if (zdo == null) {
-        Logger.LogError($"Unable to set {key} on {thing}!");
-        return;
-      }
-      zdo.Set(key, newValue);
-    }
-
-    public static void SetExtraData(this Component thing, string key, long newValue) {
-      var zdo = GetZDO(thing);
-      if (zdo == null) {
-        Logger.LogError($"Unable to set {key} on {thing}!");
-        return;
-      }
-      zdo.Set(key, newValue);
-    }
-
-    public static TextReceiver GetTextReceiver(this Component thing, string storageKey) {
-      return new ComponentTextReceiver(thing, storageKey);
-    }
-
-    // A TextReceiver implementation (used to receive text from an input
-    // dialog) that stores data in a component's ZDO.
-    private class ComponentTextReceiver : TextReceiver {
-      private ZDO zdo;
-      private string key;
-
-      // SetText is called asynchronously.  (Surprise!)  So we store
-      // a ZDO and a key, and store the eventual text under that key.
-      public ComponentTextReceiver(Component thing, string storageKey) {
-        zdo = GetZDO(thing);
-        key = storageKey;
-      }
-
-      public string GetText() {
-        return zdo.GetString(key, "");
-      }
-
-      public void SetText(string text) {
-        zdo.Set(key, text);
-      }
     }
 
     public static string GetPrefabName(this Component thing) {

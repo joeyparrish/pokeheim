@@ -29,7 +29,7 @@ using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
   public static class Debugging {
-    private const string IsFrozenKey = "com.pokeheim.IsFrozen";
+    private static readonly int IsFrozenKey = "com.pokeheim.IsFrozen".GetStableHashCode();
 
     private static bool PrintSoundNames = false;
 
@@ -105,7 +105,7 @@ namespace Pokeheim {
           return;
         }
 
-        character.SetExtraData(IsFrozenKey, true);
+        character.m_nview.SetExtraData(IsFrozenKey, true);
       }
     }
 
@@ -122,7 +122,7 @@ namespace Pokeheim {
           return;
         }
 
-        character.SetExtraData(IsFrozenKey, false);
+        character.m_nview.SetExtraData(IsFrozenKey, false);
       }
     }
 
@@ -130,7 +130,7 @@ namespace Pokeheim {
     class FreezeCharacter_Patch {
       static bool Prefix(Character __instance) {
         var character = __instance;
-        if (character.GetExtraData(IsFrozenKey, false)) {
+        if (character.m_nview.GetExtraData(IsFrozenKey, false)) {
           return false;
         }
         return true;
