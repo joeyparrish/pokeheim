@@ -142,25 +142,8 @@ namespace Pokeheim {
       // Stop moving.
       monster.SetMoveDir(Vector3.zero);
 
-      // Stop making noise.
-      if (monsterAI != null) {
-        monsterAI.m_idleSoundChance = 0f;
-      }
-
-      if (monster.m_flying) {
-        // Stop flying and start falling.
-        // UpdateMotion() will make these take effect.
-        monster.m_flying = false;
-        monster.m_zanim.SetBool(ZSyncAnimation.GetHash("flying"), value: false);
-
-        // m_body.useGravity is cached and synced with ZSyncTransform, so be
-        // sure to set both.
-        monster.m_body.useGravity = true;
-        var transform = monster.GetComponent<ZSyncTransform>();
-        if (transform != null) {
-          transform.m_useGravity = true;
-        }
-
+      var wasFlying = monster.ApplyFaintedState();
+      if (wasFlying) {
         // Not every monster has this trigger, but it helps with Moder.
         monster.m_zanim.SetTrigger("fly_land");
         monster.DelayCall(0.7f, delegate {
@@ -186,6 +169,37 @@ namespace Pokeheim {
       monster.SetFainted(true);
 
       return true;
+    }
+
+    // Apply fainted state pieces that may not be saved and reloaded.
+    // Called both during fainting and loading a fainted monster.
+    public static bool ApplyFaintedState(this Character monster) {
+      var baseAI = monster.m_baseAI;
+      var monsterAI = baseAI as MonsterAI;
+
+      // Stop making noise.
+      if (monsterAI != null) {
+        monsterAI.m_idleSoundChance = 0f;
+      }
+
+      // m_body.useGravity is cached and synced with ZSyncTransform, so be
+      // sure to set both.
+      monster.m_body.useGravity = true;
+      var transform = monster.GetComponent<ZSyncTransform>();
+      if (transform != null) {
+        transform.m_useGravity = true;
+      }
+
+      var wasFlying = monster.m_flying;
+
+      if (wasFlying) {
+        // Stop flying and start falling.
+        // UpdateMotion() will make these take effect.
+        monster.m_flying = false;
+        monster.m_zanim.SetBool(ZSyncAnimation.GetHash("flying"), value: false);
+      }
+
+      return wasFlying;
     }
 
     public static void FallDown(this Character monster) {
@@ -299,13 +313,18 @@ namespace Pokeheim {
     }
 
     [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
-    class RegisterMonsterRPCs_Patch {
+    class SetupFaintedMonsters_Patch {
       static void Postfix(Character __instance) {
         var monster = __instance;
 
-        // Only patch non-players.
+        // Register monster RPCs on non-players.
         if (!monster.IsPlayer()) {
           monster.RegisterCustomRPCs();
+        }
+
+        // Reapply fainted states to fainted monsters being reloaded.
+        if (monster.IsFainted()) {
+          monster.ApplyFaintedState();
         }
       }
     }
