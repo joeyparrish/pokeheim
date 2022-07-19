@@ -219,6 +219,12 @@ namespace Pokeheim {
             Input.GetKeyDown(KeyCode.Escape)) {
           rollingCreditsText = false;
           StopText();
+
+          // This will cancel any existing timer for respawning the player and
+          // respawn them right away.
+          if (!Game.instance.WaitingForRespawn()) {
+            Game.instance.RequestRespawn(0f);
+          }
         }
       }
     }
