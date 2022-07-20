@@ -268,10 +268,6 @@ namespace Pokeheim {
           if (monster.IsCaptured() && !monster.IsFainted()) {
             var owner = monster.GetOwnerName();
             monster.ObeyMe(owner);
-          } else if (monster.IsFainted()) {
-            // Other aspects of fainting behavior remain after reloading, but
-            // this must be re-applied.
-            monster.StopAnimation();
           }
         } catch (Exception ex) {
           // We can't afford to throw from Character.Awake().  It will break

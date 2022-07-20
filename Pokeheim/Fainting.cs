@@ -325,6 +325,7 @@ namespace Pokeheim {
         // Reapply fainted states to fainted monsters being reloaded.
         if (monster.IsFainted()) {
           monster.ApplyFaintedState();
+          monster.StopAnimation();
         }
       }
     }
