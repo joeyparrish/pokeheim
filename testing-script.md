@@ -139,6 +139,7 @@
 1. Pet Foo, message should be "Foo loves you"
 1. Log out & back in
 1. Check mouseover text, should show "Foo"
+1. Rename to something long, confirm that 20 characters are allowed
 1. Rename to "greyling" (all lowercase)
 1. Check mouseover text, should show "Greyling" (capital)
 1. Recall greyling
@@ -153,7 +154,16 @@
 1. Check mouseover text, should show "Foo"
 1. Rename to ""
 1. Check mouseover text, should show "Greyling"
-1. Rename to something long, confirm that 20 characters are allowed
+1. Release boar and rename to "Francis Bacon"
+1. Release Moder and rename to "Freddie Mercury"
+1. Run debug command "faintall"
+1. Catch Francis and Freddie
+1. Confirm that their names are still correct
+1. Release Francis and Freddie
+1. Run debug command "faintall"
+1. Log out and back in
+1. Catch Francis and Freddie
+1. Confirm that their names are still correct
 
 
 ## 6. PVP

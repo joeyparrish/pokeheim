@@ -265,7 +265,10 @@ namespace Pokeheim {
         var monster = __instance;
 
         try {
-          if (monster.IsCaptured() && !monster.IsFainted()) {
+          // NOTE: ObeyMe should be called on load even for fainted monsters.
+          // Otherwise, they aren't Tameable and they lose their pet names on
+          // capture.
+          if (monster.IsCaptured()) {
             var owner = monster.GetOwnerName();
             monster.ObeyMe(owner);
           }
