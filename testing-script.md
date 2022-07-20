@@ -345,6 +345,7 @@
   1. Loop if Vegvisir present (all but last boss)
 1. Use debug command "tutorialreset"
 1. Release Eikthyr
+1. Confirm that Eikthyr does not attack
 1. Punch Eikthyr to death
 1. Grab boss trophy
 1. Verify that Prof. Raven tutorial shows to shame you for it

@@ -189,6 +189,9 @@ namespace Pokeheim {
       MonsterAI monsterAI = baseAI as MonsterAI;
       Player owner = monster.GetOwnerPlayer();
 
+      // Bosses, don't hunt the player.
+      baseAI.SetHuntPlayer(false);
+
       // Follow us!
       monsterAI.ResetPatrolPoint();
       monsterAI.SetFollowTarget(owner?.gameObject ?? null);
