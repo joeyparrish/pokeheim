@@ -541,7 +541,24 @@
 1. Verify that only useful stuff appears in it
 
 
-## 18. Music
+## 18. Shiny
+
+1. Throw away all greydwarf balls
+1. Run "removedrops"
+1. Run "spawn greydwarf 1 1"
+1. Run "catchemall"
+1. Check that the greydwarf _is not_ marked as shiny in inventory (icon,
+   description)
+1. Run "spawn greydwarf 1 2"
+1. Run "catchemall"
+1. Check that the greydwarf _is_ marked as shiny in inventory (icon,
+   description)
+1. Release shiny greydwarf
+1. Confirm that coloring is correct
+1. Confirm that HUD shows shiny icon instead of Valheim yellow star icons
+
+
+## 19. Music
 
 1. Ensure music volume is on
 1. Use debug command "skiptime" to fast-forward to night
@@ -549,7 +566,7 @@
 1. Confirm that custom "dawn" music plays
 
 
-## 19. End Game
+## 20. End Game
 
 1. Go to starting location
 1. Throw away all boss balls
@@ -596,7 +613,7 @@
    take
 
 
-## 20. Languages
+## 21. Languages
 
 1. Choose poorly-translated language, quit, and restart game
 1. Ensure that untranslated "loading" tips fallback to English
@@ -606,6 +623,6 @@
    style dialog heading show in the target language
 
 
-## 21. Multiplayer
+## 22. Multiplayer
 
 1. TODO: Multiplayer testing script

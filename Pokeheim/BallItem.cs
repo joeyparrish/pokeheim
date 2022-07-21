@@ -128,6 +128,11 @@ namespace Pokeheim {
       return item.m_shared.m_skillType == Skill;
     }
 
+    public static bool IsInhabitedBall(this ItemDrop.ItemData item) {
+      var name = item.m_dropPrefab.name;
+      return name.StartsWith(InhabitedBallIdPrefix);
+    }
+
     public static float BallFactor(this ItemDrop.ItemData item) {
       if (!item.IsBall()) {
         return 0f;
@@ -398,6 +403,35 @@ namespace Pokeheim {
         Logger.LogError($"Failed to parse ball ID \"{ballId}\"");
       }
       return null;
+    }
+
+    // Used by migration code in ShinyMods.cs to upgrade Pokeheim v1
+    // inhabitants to Pokeheim v2 inhabitants.
+    public static ItemDrop.ItemData UpgradeInhabitant(
+        ItemDrop.ItemData item, int level) {
+      var ballId = item.m_dropPrefab.name;
+      if (ballId.StartsWith(InhabitedBallIdPrefix) == false) {
+        Logger.LogError($"Upgrade request on invalid item ID: {ballId}");
+        return item;
+      }
+
+      if (ParseInhabitedBallId(
+          ballId, out var originalItemId, out var inhabitantString)) {
+        try {
+          var inhabitant = new Inhabitant(inhabitantString);
+          inhabitant.UpgradeLevel(level);
+
+          var upgrade = GetInhabitedBall(originalItemId, inhabitant);
+          upgrade.m_stack = item.m_stack;
+
+          return upgrade;
+        } catch (Exception ex) {
+          Logger.LogError($"Failed to upgrade {originalItemId} w/ {inhabitantString}: {ex}");
+        }
+      } else {
+        Logger.LogError($"Failed to parse ball ID \"{ballId}\"");
+      }
+      return item;
     }
 
     // A very cheap check (an int lookup into a dictionary) that mirrors what

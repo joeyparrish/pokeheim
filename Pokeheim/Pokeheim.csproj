@@ -108,6 +108,7 @@
     <Compile Include="ProfessorRaven.cs" />
     <Compile Include="Riding.cs" />
     <Compile Include="SerpentMods.cs" />
+    <Compile Include="ShinyMods.cs" />
     <Compile Include="Sounds.cs" />
     <Compile Include="Suppressipes.cs" />
     <Compile Include="TranspilerSequence.cs" />

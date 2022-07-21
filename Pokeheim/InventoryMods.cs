@@ -80,7 +80,7 @@ namespace Pokeheim {
         }
 
         // Sort inhabited balls by monster inside.
-        // This is Pokedex order.
+        // This is Pokedex order, shiny after normal.
         return aInhabitant.CompareTo(bInhabitant);
       }
 

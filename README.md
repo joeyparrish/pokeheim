@@ -63,6 +63,7 @@ you need to be enticed, though, please check out these preview videos:
  - While riding Moder, she can now be commanded to both walk and fly
  - Saddled monsters wait for commands instead of acting on their own
  - Fixed attacking while riding
+ - Replaced "level" system (1-star, 2-star) with "shiny" monsters
  - Fixed vanishing saddles when calling monsters to return
  - Fixed getting stuck riding a deathsquito when it faints
  - Useless (for Pokeheim) items are now suppressed in pickables, drops and dungeons

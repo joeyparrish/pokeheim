@@ -202,17 +202,20 @@ namespace Pokeheim {
 
     private static Dictionary<string, Metadata> MonsterMap;
 
-    private static readonly string OverlayPath = "Inhabited-overlay.png";
+    private static readonly string InhabitedOverlayPath = "Inhabited-overlay.png";
+    private static readonly string ShinyOverlayPath = "Shiny-overlay.png";
     private static readonly string PremadeIconPrefix = "PremadeIcon-";
 
-    private static Sprite Overlay;
+    private static Sprite InhabitedOverlay;
+    private static Sprite ShinyOverlay;
     private const float OverlayAlpha = 0.6f;
 
     private const int TrophyPanelWidth = 7;
 
     [PokeheimInit]
     public static void Init() {
-      Overlay = Utils.LoadSprite(OverlayPath, centerPivot);
+      InhabitedOverlay = Utils.LoadSprite(InhabitedOverlayPath, centerPivot);
+      ShinyOverlay = Utils.LoadSprite(ShinyOverlayPath, centerPivot);
 
       // If this runs OnVanillaPrefabsAvailable, some (Deer, Neck, Skeleton)
       // will be missing Character components.  Waiting until the scene starts
@@ -344,9 +347,11 @@ namespace Pokeheim {
       private Sprite trophyIcon = null;
       private Sprite trophyShadowIcon = null;
       private Sprite capturedIcon = null;
+      private Sprite capturedShinyIcon = null;
       private float totalDamage = 0f;
       private double baseCatchRate = 0.0;
       private bool subordinate = false;
+      private int levels = 0;
 
       public string PrefabName => prefabName;
       public string TrophyName => trophyName;
@@ -356,7 +361,9 @@ namespace Pokeheim {
       public Sprite TrophyIcon => trophyIcon;
       public Sprite TrophyShadowIcon => trophyShadowIcon;
       public Sprite CapturedIcon => capturedIcon;
+      public Sprite CapturedShinyIcon => capturedShinyIcon;
       public float TotalDamage => totalDamage;
+      public int Levels => levels;
 
       public string GenericName => prefabCharacter.m_name;
       public string LocalizedGenericName => Localization.instance.Localize(GenericName);
@@ -428,6 +435,15 @@ namespace Pokeheim {
           this.prefabCharacter = prefab?.GetComponent<Character>();
           ComputeBaseCatchRate();
 
+          var levelEffectsList =
+              prefabCharacter?.GetComponentsInChildren<LevelEffects>() ??
+              new LevelEffects[] {};
+          var levels = 0;
+          foreach (var levelEffects in levelEffectsList) {
+            levels = Math.Max(levels, levelEffects.m_levelSetups.Count + 1);
+          }
+          Logger.LogDebug($"{levels} levels: {prefabCharacter}");
+
           if (this.prefabCharacter == null) {
             Logger.LogError($"Failed to load prefab {prefabName}");
           }
@@ -457,8 +473,9 @@ namespace Pokeheim {
           this.trophyIcon = MonsterMap["fallback"].trophyIcon;
           this.trophyShadowIcon = MonsterMap["fallback"].trophyShadowIcon;
           this.capturedIcon = MonsterMap["fallback"].capturedIcon;
+          this.capturedShinyIcon = MonsterMap["fallback"].capturedShinyIcon;
         } else {
-          CreateCapturedIcon();
+          CreateCapturedIcons();
           CreateShadowIcon();
         }
       }
@@ -553,13 +570,23 @@ namespace Pokeheim {
         ItemManager.Instance.AddItem(customItem);
       }
 
-      private void CreateCapturedIcon() {
+      private void CreateCapturedIcons() {
+        this.capturedIcon = ApplyOverlays(
+            this.trophyIcon,
+            new Sprite[] { InhabitedOverlay });
+
+        this.capturedShinyIcon = ApplyOverlays(
+            this.trophyIcon,
+            new Sprite[] { InhabitedOverlay, ShinyOverlay });
+      }
+
+      private Sprite ApplyOverlays(Sprite bgSprite, Sprite[] fgSprites) {
         var parentObject = new GameObject("Icon parent");
 
         var bgObject = new GameObject("Icon bg");
         bgObject.transform.SetParent(parentObject.transform);
         var bgRenderer = bgObject.AddComponent<SpriteRenderer>();
-        bgRenderer.sprite = this.trophyIcon;
+        bgRenderer.sprite = bgSprite;
 
         // Scale the icon.  Most icons are the same size, but some (Eikthyr,
         // Bonemass) are much larger.  I don't understand the exact value here,
@@ -569,22 +596,27 @@ namespace Pokeheim {
           bgRenderer.transform.localScale *= 0.6f / bgRenderer.bounds.size.x;
         }
 
-        // I wouldn't have noticed that this needed flipping were it not for
+        // I wouldn't have noticed that these needed flipping were it not for
         // the fallback icon, which is a question mark.
         bgRenderer.flipX = true;
 
-        var fgObject = new GameObject("Icon fg");
-        fgObject.transform.SetParent(parentObject.transform);
-        var fgRenderer = fgObject.AddComponent<SpriteRenderer>();
-        fgRenderer.sprite = Overlay;
-        fgRenderer.flipX = true;
+        var nextSortingOrder = bgRenderer.sortingOrder + 1;
 
-        // Set the alpha of the foreground overlay.
-        fgRenderer.color = new Color(1f, 1f, 1f, OverlayAlpha);
-        // Make sure it appears on top of the background.
-        fgRenderer.sortingOrder = bgRenderer.sortingOrder + 1;
+        foreach (var fgSprite in fgSprites) {
+          var fgObject = new GameObject("Icon fg");
+          fgObject.transform.SetParent(parentObject.transform);
+          var fgRenderer = fgObject.AddComponent<SpriteRenderer>();
+          fgRenderer.sprite = fgSprite;
+          fgRenderer.flipX = true;
 
-        this.capturedIcon = RenderManager.Instance.Render(parentObject);
+          // Set the alpha of the foreground overlay.
+          fgRenderer.color = new Color(1f, 1f, 1f, OverlayAlpha);
+          // Make sure it appears on top of the previous layer.
+          fgRenderer.sortingOrder = nextSortingOrder;
+          nextSortingOrder++;
+        }
+
+        return RenderManager.Instance.Render(parentObject);
       }
 
       private void CreateShadowIcon() {

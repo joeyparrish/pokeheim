@@ -17,5 +17,6 @@
   "faction_ocean": "Ocean",
   "faction_plains": "Plains",
   "faction_boss": "Boss",
-  "faction_unknown": "???"
+  "faction_unknown": "???",
+  "stats_shiny": "Shiny"
 }

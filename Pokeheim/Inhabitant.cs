@@ -72,7 +72,23 @@ namespace Pokeheim {
     }
 
     public int CompareTo(Inhabitant other) {
-      return metadata.CompareTo(other.metadata);
+      // Essentially, Pokedex order.
+      var comparison = metadata.CompareTo(other.metadata);
+      // Same monster?  Compare levels.
+      if (comparison == 0) {
+        comparison = level.CompareTo(other.level);
+      }
+      // Same level?  Compare pet names.
+      if (comparison == 0) {
+        comparison = petName.CompareTo(other.petName);
+      }
+      return comparison;
+    }
+
+    // Used by migration code in ShinyMods.cs and BallItem.cs to upgrade
+    // Pokeheim v1 inhabitants to Pokeheim v2 inhabitants.
+    public void UpgradeLevel(int level) {
+      this.level = level;
     }
 
     public void Recreate(Vector3 position, Player player) {
@@ -97,9 +113,8 @@ namespace Pokeheim {
         name = $"{petName} ({GenericName})";
       }
 
-      int stars = level - 1;
-      if (stars > 0) {
-        name += " " + (new string('*', stars));
+      if (level > 1) {
+        name += " *";
       }
 
       return name;
@@ -114,6 +129,9 @@ namespace Pokeheim {
       }
 
       description += $"$stats_species: {GenericName}\n";
+      if (level > 1) {
+        description += $"$stats_shiny!\n";
+      }
       description += $"$stats_type: {metadata.FactionName}\n";
       description += $"$stats_level: {level}\n";
 
@@ -130,7 +148,9 @@ namespace Pokeheim {
     }
 
     public Sprite[] GetIcons() {
-      return new Sprite[] { metadata.CapturedIcon };
+      return new Sprite[] {
+        level > 1 ? metadata.CapturedShinyIcon : metadata.CapturedIcon,
+      };
     }
   }
 }

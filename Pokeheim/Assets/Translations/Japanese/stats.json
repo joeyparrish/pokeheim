@@ -5,5 +5,6 @@
   "stats_level": "レベル",
   "stats_hp": "HP",
   "stats_damage": "ダメージ量",
-  "stats_caught": "捕まえた数"
+  "stats_caught": "捕まえた数",
+  "stats_shiny": "いろちがい"
 }
