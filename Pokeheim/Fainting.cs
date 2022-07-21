@@ -549,6 +549,7 @@ namespace Pokeheim {
       }  // static IEnumerable<CodeInstruction> Patch2
     }  // class ExcludeFainted_Patch
 
+#if DEBUG
     [RegisterCommand]
     class FaintAll : ConsoleCommand {
       public override string Name => "faintall";
@@ -572,5 +573,20 @@ namespace Pokeheim {
         }
       }
     }
+
+    [RegisterCommand]
+    class RemoveRagdolls : ConsoleCommand {
+      public override string Name => "removeragdolls";
+      public override string Help => "Remove all nearby ragdolls.";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var allRagdolls = UnityEngine.Object.FindObjectsOfType<Ragdoll>();
+        foreach (var ragdoll in allRagdolls) {
+          ragdoll.ZDestroy();
+        }
+      }
+    }
+#endif
   }
 }
