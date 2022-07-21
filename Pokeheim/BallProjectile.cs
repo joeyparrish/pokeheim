@@ -267,13 +267,19 @@ namespace Pokeheim {
         } else if (ragdoll != null) {
           willNotReturn = ragdoll.WillNotReturn();
           thingGameObject = ragdoll.gameObject;
+
+          var monsterData = ragdoll.GetMonsterData();
+          if (monsterData == "") {
+            Logger.LogError($"Cannot return ragdoll with no monster data! {ragdoll}");
+            willNotReturn = true;
+          }
         }
 
         if (willNotReturn) {
           thingGameObject.ZDestroy();
         } else {
           // Use DoCapture() to bypass the random chance check in Capture().
-          DoCapture(ball, monster, withSound: false);
+          DoCapture(ball, thing, withSound: false);
           numReturned++;
         }
       }
