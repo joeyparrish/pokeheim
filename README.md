@@ -70,6 +70,7 @@ you need to be enticed, though, please check out these preview videos:
  - You can change clothes with a "style" button in the inventory, without visiting the Wardrobe
  - Fainted skeletons no longer count against spawners
  - Wardrobe now respects DLC restrictions
+ - Improved styling on Giovanni's Persian
 
 
 ### Dependencies
