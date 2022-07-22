@@ -173,7 +173,7 @@
 
 ## 6. PVP
 
-1. Have at least 3 captured greylings
+1. Have at least 3 captured greylings, one tougher thing like a greydwarf brute
 1. Release greyling
 1. Check that PVP is off
 1. Hit greyling with torch, should not hit
@@ -198,13 +198,20 @@
 1. Check that greylings attack each other
 1. Disable PVP
 1. Check that greylings stop attacking each other
+1. Catch all greylings
+1. Release greydwarf brute
+1. Switch players
 1. Enable PVP
-1. Try to catch one of the other player's greylings, should not be trivial
+1. Try to catch the brute, should not be trivial
 1. Check that capture message was "Gotcha!" and not "return!"
+1. Release more things
+1. Switch players
+1. Release one greyling
 1. Disable PVP
-1. Recall all, check that only your own greyling was recalled, with the
+1. Recall all, check that only your own things were recalled, with the
    message "Greyling, return!" and not "Everyone, return!"
-1. Try to catch the other player's remaining greyling, should work right away
+1. Try to catch the other player's remaining things, should work right away
+   with PVP off
 1. Check that capture message was "Gotcha!" and not "return!"
 
 
@@ -222,10 +229,9 @@
 1. Type "killall" in dev console
 1. Confirm that greyling dies
 1. Release greyling
-1. Faint it
+1. Enable PVP and attack it until it faints (or use "faintall" debug command)
 1. Recall all, check that your fainted greyling does not come back
-1. Spawn deathsquito
-1. Attack it until it faints (or use "faintall" in dev console)
+1. Spawn deathsquito and faint it
 1. Check that it falls from the sky and lands upside down
 1. Spawn skeleton and faint it
 1. Check that it stops making noise
@@ -243,7 +249,7 @@
 1. Check that the dragon is still affected by gravity, even when pushed
 1. Spawn "hatchling" (Drake) and faint it
 1. Check that it falls from the sky (ragdoll)
-1. Spawn The Elder (wild)
+1. Spawn "gd_king" (The Elder)
 1. Wait for The Elder to spawn roots
 1. Wait for the roots to faint (timed destruction)
 1. Capture roots
@@ -269,7 +275,7 @@
 1. Confirm that there's no ooze effect from the ooze bomb they are based on
 1. Confirm the "hit" sound plays on impact
 1. Confirm consistent accuracy
-1. Spawn greyling
+1. Spawn greyling and faint it
 1. Confirm that a direct hit is not needed to capture (2m radius OK)
 1. Spawn troll
 1. Try to catch troll with pokeball, greatball, and ultraball
@@ -279,7 +285,7 @@
 1. Spawn a deer
 1. Fly far enough away to be out of its sensory range
 1. Throw a rock nearby the deer
-1. Check that the deer is startled and runs away
+1. Check that the deer is startled
 
 
 ## 9. Berries
