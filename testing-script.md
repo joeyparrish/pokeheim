@@ -13,6 +13,7 @@
    messages
 1. Confirm that Professor Raven appears with tutorials on welcome, catching,
    and crafting
+1. Confirm that the welcome message contains the correct number of bosses
 
 
 ## 2. Wardrobe
@@ -72,20 +73,21 @@
 1. Check that the greyling is not afraid of fire
 1. Recall greyling
 1. Check stats in ball description
-1. Spawn and catch a level 2 greydwarf
-1. Release level 2 greydwarf, confirm correct coloring
 1. Spawn "pickaxeiron"
 1. Dig a small pit (2-3m deep, 2m x 4m wide) to force monsters together
 1. Spawn a greydwarf in the pit and faint it
 1. Release a greyling in the pit, rename it to "Fainted"
 1. Spawn another greydwarf in the pit and wait for it to faint the greyling
+1. Run debug command "freeze Greydwarf" (case sensitive)
 1. Release a greyling in the pit and rename it "Awake"
+1. Run debug command "freeze Greyling" (case sensitive)
 1. Confirm that ball catches wild fainted greydwarf first ("Gotcha!")
 1. Confirm that ball catches tame fainted greyling next ("Fainted, return!")
 1. Confirm that ball catches wild awake greyling next ("Gotcha!")
 1. Confirm that ball catches tame awake greyling next ("Awake, return!")
 1. Open settings
 1. Confirm that "Recall Monsters" appears in key settings (default "R")
+1. Recall anything that might be out
 1. Release The Elder
 1. Check how many "root" balls you have
 1. Spawn Eikthyr
