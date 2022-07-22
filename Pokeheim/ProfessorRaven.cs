@@ -349,6 +349,7 @@ namespace Pokeheim {
               // Once the player makes a saddle, don't bother with a the
               // "swimming" tutorial, which gives hints about building a saddle.
               player.SetSeenTutorial("swimming");
+              SwimTutorial_Patch.triggered = true;
             }
           }
         }
@@ -359,7 +360,7 @@ namespace Pokeheim {
     // saddles.
     [HarmonyPatch(typeof(Character), nameof(Character.UpdateWater))]
     class SwimTutorial_Patch {
-      static bool triggered = false;
+      public static bool triggered = false;
 
       static void Postfix(Player __instance) {
         // Since this runs on every Update(), make it as cheap as possible to
@@ -477,6 +478,9 @@ namespace Pokeheim {
           var key = args[0];
           Player.m_localPlayer.m_shownTutorials.Remove(key);
           Debug.Log($"Reset tutorial {key}.");
+          if (key == "swimming") {
+            SwimTutorial_Patch.triggered = false;
+          }
         } else {
           Debug.Log($"Please specify a tutorial to reset.");
         }
