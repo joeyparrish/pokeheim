@@ -544,7 +544,7 @@
 1. Go to Giovanni (left-ctrl + middle-click on map to teleport)
 1. Verify that his name says "Giovanni"
 1. Verify that his Lox is named "Persian"
-1. Verify that Giovanni text has been overridden
+1. Verify that Giovanni's speech has been overridden
 1. Verify that Giovanni cannot be interacted with, no interact hovertext
 1. Verify that Persian is covered in "shadow smoke"
 
@@ -555,7 +555,9 @@
 1. Open the chest, verify that only useful stuff appears in it
 1. At the locations below, left-ctrl + middle-click on map to teleport
    1. Run "findlocation WoodHouse1" or "findlocation WoodHouse2"
-   1. Find a chest in a house
+   1. Go there
+   1. Run "catchemall" because crypt monsters are annoying during testing
+   1. Find a chest in the house/crypt
    1. Verify that only useful stuff appears in it
    1. Repeat for one of "findlocation Crypt2", "findlocation Crypt3",
       or "findlocation Crypt4"
@@ -597,7 +599,8 @@
 1. Throw away all boss balls
 1. Run debug command "removedrops"
 1. Run debug command "resetpokedex"
-1. Run debug command "tutorialreset"
+1. Run debug command "resettutorial caught_boss"
+1. Run debug command "resettutorial caught_all_bosses"
 1. Spawn Eikthyr
 1. Run debug command "catchemall"
 1. Check that the "caught a boss" tutorial runs
