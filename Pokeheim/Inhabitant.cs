@@ -133,7 +133,6 @@ namespace Pokeheim {
         description += $"$stats_shiny!\n";
       }
       description += $"$stats_type: {metadata.FactionName}\n";
-      description += $"$stats_level: {level}\n";
 
       // HP for a real monster will be the base health (hard-coded for prefab)
       // times the level (applied in SetupMaxHealth) times HealthBump (applied

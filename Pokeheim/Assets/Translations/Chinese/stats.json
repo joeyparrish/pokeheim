@@ -2,7 +2,6 @@
   "pokedex": "寶可夢圖鑑",
   "stats_name": "名稱",
   "stats_type": "屬性",
-  "stats_level": "等級",
   "stats_hp": "HP",
   "stats_damage": "傷害量",
   "stats_caught": "已捕捉",

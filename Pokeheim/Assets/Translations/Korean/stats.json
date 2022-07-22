@@ -2,7 +2,6 @@
   "pokedex": "도감",
   "stats_name": "이름",
   "stats_type": "타입",
-  "stats_level": "레벨",
   "stats_hp": "HP",
   "stats_damage": "데미지",
   "stats_caught": "잡은 수",

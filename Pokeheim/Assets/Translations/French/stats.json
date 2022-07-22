@@ -2,7 +2,6 @@
   "pokedex": "Pokédex",
   "stats_name": "Nom",
   "stats_type": "Type",
-  "stats_level": "Niveau",
   "stats_hp": "PV",
   "stats_damage": "Dégâts",
   "stats_caught": "Attrapés",

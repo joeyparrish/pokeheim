@@ -2,7 +2,6 @@
   "pokedex": "Покедекс",
   "stats_name": "Имя",
   "stats_type": "Тип",
-  "stats_level": "Уровень",
   "stats_hp": "ОЖ",
   "stats_damage": "Урон",
   "stats_caught": "Поймано",
