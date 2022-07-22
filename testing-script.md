@@ -377,7 +377,7 @@
    1. Try to start raid again
    1. Confirm that raid does not start (already caught)
    1. Loop if Vegvisir present (all but last boss)
-1. Use debug command "tutorialreset"
+1. Use debug command "resettutorial boss_trophy"
 1. Release Eikthyr
 1. Confirm that Eikthyr does not attack
 1. Punch Eikthyr to death
@@ -391,7 +391,7 @@
 
 ## 12. Inventory
 
-1. Use debug command "tutorialreset"
+1. Use debug command "resettutorial inventory_screen"
 1. Open inventory
 1. Check that it's twice as large as usual (8x8)
 1. Check that Professor Raven comes to tell you about sorting and style
@@ -437,6 +437,7 @@
 ## 14. Pokedex
 
 1. Run debug command "resetpokedex"
+1. Run debug command "resettutorial caught"
 1. Spawn neck
 1. Catch neck
 1. Confirm that Professor Raven appears with first catch tutorial
@@ -453,7 +454,8 @@
 1. Confirm that neck stats are shown
 1. Confirm that other entries are silhouetted
 1. Go to shoreline
-1. Search up shore for accessible, non-deep-sea Serpent
+1. Search up shore for accessible, non-deep-sea Serpent (random - you may need
+   to find a spot to sit for an hour to be sure one will spawn)
 
 
 ## 15. Riding
@@ -466,33 +468,34 @@
 1. Release Lox
 1. Check that you can saddle and ride Lox
 1. Test various monsters
-  1. For each of these:
-    - boar
-    - wolf
-    - greyling
-    - greydwarf
-    - fuling shaman (GoblinShaman)
-    - greydwarf brute (Greydwarf_Elite)
-    - drake (Hatchling)
-    - deathsquito
-    - bat
-    - wraith
-  1. Spawn, catch, release, saddle
-  1. Spawn wild greyling
-  1. Verify that tamed monster does not react
-  1. Ride
-  1. Run
-  1. Primary attack (if supported)
-  1. Secondary attack (if supported)
-  1. Back stops
-  1. Block stops and changes direction
-  1. Check that we can zoom way out
-  1. Check that the camera is relatively stable
-  1. Check that the riding HUD shows the correct monster icon and name
-  1. If flying monster:
-    1. Test flying up (jump) and down (crouch)
-  1. If Moder:
-    1. Test landing (crouch near ground) and taking off (jump while walking)
+   1. For each of these:
+      - boar
+      - wolf
+      - greyling
+      - greydwarf
+      - fuling shaman (GoblinShaman)
+      - greydwarf brute (Greydwarf_Elite)
+      - drake (Hatchling)
+      - Moder (Dragon)
+      - deathsquito
+      - bat
+      - wraith
+   1. Spawn, catch, release, saddle
+   1. Spawn wild greyling
+   1. Verify that saddled monster does not react
+   1. Ride
+   1. Run
+   1. Primary attack (if supported)
+   1. Secondary attack (if supported)
+   1. Back stops
+   1. Block stops and changes direction
+   1. Check that we can zoom way out
+   1. Check that the camera is relatively stable
+   1. Check that the riding HUD shows the correct monster icon and name
+   1. If flying monster:
+      - Test flying up (jump) and down (crouch)
+   1. If Moder:
+      - Test landing (crouch near ground) and taking off (jump while walking)
 1. Mount a deathsquito
 1. Fly up a bit
 1. Run debug command "faintall"
@@ -501,19 +504,19 @@
 1. Catch the deathsquito
 1. Verify no additional saddle dropped
 1. Test saddle targeting:
-  1. For each of these tall monsters:
-    - troll
-    - The Elder (GD_King)
-    - Moder (Dragon)
-  1. Saddle the monster
-  1. Verify that the saddle can be reached
-  1. Fly up if applicable
-  1. Dismount
-  1. Verify that you don't die on impact on the ground
-  1. Mount again
-  1. Fly up again if applicable
-  1. Call "return"
-  1. Verify that you don't die on impact
+   1. For each of these tall monsters:
+      - troll
+      - The Elder (GD_King)
+      - Moder (Dragon)
+   1. Saddle the monster
+   1. Verify that the saddle can be reached
+   1. Fly up (if applicable)
+   1. Dismount
+   1. Verify that you don't die on impact on the ground
+   1. Mount again
+   1. Fly up again (if applicable)
+   1. Call "return"
+   1. Verify that you don't die on impact
 1. Release two greydwarves
 1. Saddle one greydwarf
 1. Log out
@@ -525,12 +528,12 @@
 1. Disable PVP
 1. Check that you _can_ mount the saddled greydwarf
 1. Check that you _can_ saddle the unsaddled greydwarf
-1. Use debug command "tutorialreset"
+1. Use debug command "resettutorial swimming"
 1. Saddle something
 1. Jump in the water (yourself)
 1. Check that no swimming tutorial is given
 1. Get back to land
-1. Use debug command "tutorialreset"
+1. Use debug command "resettutorial swimming"
 1. Jump in the water again
 1. Check that a swimming tutorial is given
 
@@ -538,7 +541,7 @@
 ## 16. Giovanni
 
 1. Run "findlocation Vendor_BlackForest" if Giovanni location unknown
-1. Go to Giovanni
+1. Go to Giovanni (left-ctrl + middle-click on map to teleport)
 1. Verify that his name says "Giovanni"
 1. Verify that his Lox is named "Persian"
 1. Verify that Giovanni text has been overridden
@@ -550,21 +553,15 @@
 
 1. Spawn `TreasureChest_meadows`
 1. Open the chest, verify that only useful stuff appears in it
-1. Run "findlocation WoodHouse1", "findlocation WoodHouse2", etc.
-1. Find a chest in a house
-1. Verify that only useful stuff appears in it
-1. Run "findlocation Crypt2", "findlocation Crypt3", "findlocation Crypt4"
-1. Find a chest in a skeleton crypt
-1. Verify that only useful stuff appears in it
-1. Run "findlocation SunkenCrypt4"
-1. Find a chest in a swamp crypt
-1. Verify that only useful stuff appears in it
-1. Run "findlocation MountainCave02"
-1. Find a chest in a mountain cave
-1. Verify that only useful stuff appears in it
-1. Run "findlocation GoblinCamp2"
-1. Find a chest in a fuling village
-1. Verify that only useful stuff appears in it
+1. At the locations below, left-ctrl + middle-click on map to teleport
+   1. Run "findlocation WoodHouse1" or "findlocation WoodHouse2"
+   1. Find a chest in a house
+   1. Verify that only useful stuff appears in it
+   1. Repeat for one of "findlocation Crypt2", "findlocation Crypt3",
+      or "findlocation Crypt4"
+   1. Repeat for "findlocation SunkenCrypt4"
+   1. Repeat for "findlocation MountainCave02"
+   1. Repeat for "findlocation GoblinCamp2"
 
 
 ## 18. Shiny
