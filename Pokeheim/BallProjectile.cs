@@ -261,9 +261,12 @@ namespace Pokeheim {
         GameObject thingGameObject = null;
 
         if (monster != null) {
-          name = monster.GetHoverName();
           willNotReturn = monster.WillNotReturn();
           thingGameObject = monster.gameObject;
+
+          if (!willNotReturn) {  // Ugh, double-negative.
+            name = monster.GetHoverName();
+          }
         } else if (ragdoll != null) {
           willNotReturn = ragdoll.WillNotReturn();
           thingGameObject = ragdoll.gameObject;

@@ -93,6 +93,7 @@
 1. Spawn Eikthyr
 1. Wait for The Elder to spawn roots
 1. Recall The Elder
+1. Check that the screen didn't say "root, return!"
 1. Check that the roots disappear without being captured/recalled
 1. Log out and log back in
 1. Check that all ball items were correctly generated and placed in inventory
