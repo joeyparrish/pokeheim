@@ -320,31 +320,31 @@
 
 1. Use debug command "tutorialreset"
 1. Spawn:
-  - "stone" x50
-  - "wood" x50
-  - "LeatherScraps" x50
-  - "TrophyDeer"
-  - "raspberry"
-  - "blueberries"
-  - "mushroomyellow"
+   - "stone" x50
+   - "wood" x50
+   - "LeatherScraps" x50
+   - "TrophyDeer"
+   - "raspberry"
+   - "blueberries"
+   - "mushroomyellow"
 1. Craft:
-  - pokeball
-  - greatball
-  - ultraball
-  - wood arrows
-  - stone axe
-  - club
-  - hammer
-  - hoe
-  - pickaxe
-  - torch
-  - bow
-  - saddle
+   - pokeball
+   - greatball
+   - ultraball
+   - wood arrows
+   - stone axe
+   - club
+   - hammer
+   - hoe
+   - pickaxe
+   - torch
+   - bow
+   - saddle
 1. Verify that you see tutorials for:
-  - food
-  - pokeballs
-  - hammer
-  - pickaxe
+   - food
+   - pokeballs
+   - hammer
+   - pickaxe
 1. Verify that you can build camp fire with hammer
 1. Verify that you can raise and level ground with hoe
 1. Find a pine tree
@@ -364,19 +364,19 @@
 1. Remove any captured bosses from inventory
 1. Run debug command "removedrops"
 1. Loop over all Vegvisir:
-  1. Read Vegvisir
-  1. Check that next boss is on the map
-  1. Use debug command "findboss NAME_OR_INDEX" (0-based)
-  1. Check that other locations for this boss are all farther from the start
-  1. Go to next boss (any location, left-ctrl+middle-click on map to teleport)
-  1. Confirm no runestone or item stands
-  1. Confirm altar hovertext says "start encounter"
-  1. Start raid at altar
-  1. Confirm "go!" message shown
-  1. Type "catchemall" in dev console
-  1. Try to start raid again
-  1. Confirm that raid does not start (already caught)
-  1. Loop if Vegvisir present (all but last boss)
+   1. Read Vegvisir
+   1. Check that next boss is on the map
+   1. Use debug command "findboss NAME_OR_INDEX" (0-based)
+   1. Check that other locations for this boss are all farther from the start
+   1. Go to next boss (any location, left-ctrl+middle-click on map to teleport)
+   1. Confirm no runestone or item stands
+   1. Confirm altar hovertext says "start encounter"
+   1. Start raid at altar
+   1. Confirm "go!" message shown
+   1. Type "catchemall" in dev console
+   1. Try to start raid again
+   1. Confirm that raid does not start (already caught)
+   1. Loop if Vegvisir present (all but last boss)
 1. Use debug command "tutorialreset"
 1. Release Eikthyr
 1. Confirm that Eikthyr does not attack
@@ -400,12 +400,12 @@
 1. Check that the chest inventory GUI is positioned below the player inventory
 1. Check that the sort button appears next to inventory grid
 1. Check that the mouseover text says "sort"
-1. Click sort and verify that it reorders your things, except the first row
-  1. Uninhabited balls, getting stronger
-  1. Inhabited balls, going up in Pokedex order
-  1. Non-equippable items
-  1. Equippable, unequipped
-  1. Equippable, equipped
+1. Click sort and verify that it reorders your things, except the first row:
+   1. Uninhabited balls, getting stronger
+   1. Inhabited balls, going up in Pokedex order
+   1. Non-equippable items
+   1. Equippable, unequipped
+   1. Equippable, equipped
 
 
 ## 13. Player
