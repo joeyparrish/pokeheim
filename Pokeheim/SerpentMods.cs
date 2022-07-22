@@ -34,8 +34,8 @@ namespace Pokeheim {
         shorelineSerpentConfig.AddSpawnConfig(new SpawnConfig {
           Name = "ShorelineSerpent",
 
-          MaxSpawned = 1,  // max shoreline serpents loaded at once
-          SpawnChance = 1f,  // percentage chance of spawn in each interval
+          MaxSpawned = 2,  // max shoreline serpents loaded at once
+          SpawnChance = 5f,  // percentage chance of spawn in each interval
           SpawnInterval = 600f,  // seconds between spawn checks
           SpawnDistance = 100f,  // min distance between serpents
 
