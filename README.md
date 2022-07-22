@@ -51,6 +51,7 @@ you need to be enticed, though, please check out these preview videos:
  - Early Gameplay Preview: https://www.youtube.com/watch?v=NodOlfTvtKU
  - Play-through by YouTuber "itsSpicy": https://www.youtube.com/watch?v=CMBfmaKfHw4
  - Play-through by YouTuber "Shieda": https://www.youtube.com/watch?v=4Eygu8owr5s
+ - V2 Teaser: https://www.youtube.com/watch?v=8_JwRSPphDg
 
 
 ### V2 Changes
