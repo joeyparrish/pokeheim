@@ -58,7 +58,10 @@ namespace Pokeheim {
           return;
         }
 
-        var level3 = hud.m_level3;
+        if (hud.m_level3 == null) {
+          // This is true of bosses.
+          return;
+        }
 
         // Make a replacement for the level 3 GUI, anchored to the name UI.
         var replacement = new GameObject("Shiny image");

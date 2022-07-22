@@ -582,6 +582,8 @@
 1. Release shiny greydwarf
 1. Confirm that coloring is correct
 1. Confirm that HUD shows shiny icon instead of Valheim yellow star icons
+1. Spawn Eikthyr
+1. Confirm that the boss is not marked "shiny"
 
 
 ## 19. Music
