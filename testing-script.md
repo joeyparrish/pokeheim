@@ -120,6 +120,8 @@
 1. Remove Eikthyr
 1. Release deer
 1. Check that deer follows you
+1. Run debug command "nospawns"
+1. Run debug command "catchemall"
 1. Release troll x4
 1. Check that the trolls don't crowd you so closely that they push you around
 1. Spawn Eikthyr
