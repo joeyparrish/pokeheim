@@ -375,6 +375,10 @@ namespace Pokeheim {
             // The boss is immune to attacks from the Player.  You _must_ use
             // captured monsters on a boss.
             hit.ApplyModifier(0f);
+          } else if (hit.m_skill == Skills.SkillType.Unarmed) {
+            // Beating up your monsters is brutal.  Apply these stats:
+            hit.m_damage.m_damage = 20f;
+            hit.m_damage.m_blunt = 20f;
           } else {
             // No matter what badass weapons you bring into Pokeheim (which you
             // shouldn't do!), they will all do about 5 damage, equivalent to a
