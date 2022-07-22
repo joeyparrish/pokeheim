@@ -65,6 +65,11 @@ namespace Pokeheim {
       ragdoll.m_nview.SetExtraData(RagdollMonsterDataKey, data);
     }
 
+    public static void DoNotExplode(this Ragdoll ragdoll) {
+      // Make the ragdoll durable by canceling its destruction timer.
+      ragdoll.CancelInvoke();
+    }
+
     private static EffectList GetRagdollEffect(this Character monster) {
       EffectList.EffectData[] data = monster.m_deathEffects.m_effectPrefabs;
       for (int i = 0; i < data.Length; ++i) {
@@ -260,6 +265,7 @@ namespace Pokeheim {
       ragdoll.SetCaptured(monster.IsCaptured());
       ragdoll.SetOwner(monster.GetOwnerName());
       ragdoll.SetNoReturn(monster.WillNotReturn());
+      ragdoll.DoNotExplode();
 
       // Destroy the actual monster object.
       monster.ZDestroy();
@@ -307,8 +313,12 @@ namespace Pokeheim {
           }
         }
 
-        // Make the ragdoll durable by canceling its destruction call.
-        ragdoll.CancelInvoke();
+        // If we're reloading an existing ragdoll, don't let it explode.
+        // If it's a ragdoll created by punching a monster to death, it won't
+        // have any monster data set on it.
+        if (ragdoll.GetMonsterData() != "") {
+          ragdoll.DoNotExplode();
+        }
       }
     }
 
@@ -341,9 +351,9 @@ namespace Pokeheim {
           return true;
         }
 
-        var isFisticuffs = hit.m_skill == Skills.SkillType.Unarmed;
         var isDevConsole = hit.m_damage.m_damage > 1e6;
-        var isOwnMonster = monster.IsSaddenedBy(hit);
+        var isFisticuffs = hit.m_skill == Skills.SkillType.Unarmed;
+        var isSad = monster.IsSaddenedBy(hit);
 
         // Compute how much damage we are about to do.
         var health = monster.GetHealth();
@@ -357,7 +367,7 @@ namespace Pokeheim {
         // Don't kill the monster, unless you've used the dev console or you've
         // beaten your own monster with your bare hands.  Why are your bare
         // hands deadly?  Because that poor monster died of SADNESS.
-        if (isDevConsole || (isFisticuffs && isOwnMonster)) {
+        if (isDevConsole || (isFisticuffs && isSad)) {
           // Let the original method run.
           return true;
         }
