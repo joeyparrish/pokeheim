@@ -322,7 +322,6 @@
 1. Spawn:
   - "stone" x50
   - "wood" x50
-  - "feathers" x50
   - "LeatherScraps" x50
   - "TrophyDeer"
   - "raspberry"
@@ -342,7 +341,7 @@
   - bow
   - saddle
 1. Verify that you see tutorials for:
-  - berries
+  - food
   - pokeballs
   - hammer
   - pickaxe
@@ -362,14 +361,16 @@
 1. Enter game at starting location
 1. Confirm that the chains on boss stones are not interactable
 1. Remove any boss locations from map
+1. Remove any captured bosses from inventory
+1. Run debug command "removedrops"
 1. Loop over all Vegvisir:
   1. Read Vegvisir
   1. Check that next boss is on the map
-  1. Use debug command "findboss NAME_OR_INDEX"
+  1. Use debug command "findboss NAME_OR_INDEX" (0-based)
   1. Check that other locations for this boss are all farther from the start
-  1. Fly to next boss (any location)
+  1. Go to next boss (any location, left-ctrl+middle-click on map to teleport)
   1. Confirm no runestone or item stands
-  1. Confirm alter hovertext says "start encounter"
+  1. Confirm altar hovertext says "start encounter"
   1. Start raid at altar
   1. Confirm "go!" message shown
   1. Type "catchemall" in dev console
@@ -381,8 +382,9 @@
 1. Confirm that Eikthyr does not attack
 1. Punch Eikthyr to death
 1. Grab boss trophy
-1. Verify that Prof. Raven tutorial shows to shame you for it
+1. Verify that Prof. Raven tutorial shows up to shame you for it
 1. Spawn Eikthyr
+1. Freeze Eikthyr
 1. Spawn "SwordBlackmetal"
 1. Verify that sword does no damage to Eikthyr
 
