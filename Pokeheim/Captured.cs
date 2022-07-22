@@ -460,7 +460,9 @@ namespace Pokeheim {
         var monster = tameable.m_character;
         var localPlayer = Player.m_localPlayer;
 
-        if (monster.IsCaptured()) {
+        if (monster.IsFainted()) {
+          return "";
+        } else if (monster.IsCaptured()) {
           var owner = monster.GetOwnerName();
           var name = monster.GetPetName();
           if (name == "") {
@@ -489,7 +491,8 @@ namespace Pokeheim {
         var tameable = __instance;
         var monster = tameable.m_character;
 
-        if (monster.AlliedWith(user as Player) == false) {
+        if (monster.AlliedWith(user as Player) == false ||
+            monster.IsFainted()) {
           __result = false;
           return false;
         }
@@ -502,7 +505,8 @@ namespace Pokeheim {
     class IncreasePetNameLength_Patch {
       static bool Prefix(Tameable __instance) {
         var tameable = __instance;
-        if (tameable.m_character.IsTamed()) {
+        if (tameable.m_character.IsTamed() &&
+            !tameable.m_character.IsFainted()) {
           TextInput.instance.RequestText(
               tameable, "$hud_rename", MaxPetNameLength);
         }

@@ -229,6 +229,10 @@
 1. Check that it falls from the sky and lands upside down
 1. Spawn skeleton and faint it
 1. Check that it stops making noise
+1. Check that the mouseover HUD doesn't show up
+1. Log out & back in
+1. Confirm that skeleton is still on its back and not upside-down
+1. Check that the mouseover HUD _still_ doesn't show up
 1. Spawn blob, wraith, and bonemass and faint them
 1. Check that they stop fuming
 1. Spawn serpent and faint it

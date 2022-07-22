@@ -436,13 +436,12 @@ namespace Pokeheim {
       }
     }
 
-    [HarmonyPatch(typeof(EnemyHud), nameof(EnemyHud.ShowHud))]
+    [HarmonyPatch(typeof(EnemyHud), nameof(EnemyHud.TestShow))]
     class FaintedMonstersDoNotShowHealth_Patch {
-      static bool Prefix(Character c) {
+      static void Postfix(ref bool __result, Character c) {
         if (c.IsFainted()) {
-          return false;
+          __result = false;
         }
-        return true;
       }
     }
 
