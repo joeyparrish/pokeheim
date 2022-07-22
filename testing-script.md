@@ -518,6 +518,7 @@
 1. Verify that his Lox is named "Persian"
 1. Verify that Giovanni text has been overridden
 1. Verify that Giovanni cannot be interacted with, no interact hovertext
+1. Verify that Persian is covered in "shadow smoke"
 
 
 ## 17. Chests
