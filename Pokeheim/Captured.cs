@@ -157,7 +157,10 @@ namespace Pokeheim {
 
     public static void SetTarget(this Character monster, Character target) {
       var monsterAI = monster.m_baseAI as MonsterAI;
-      monsterAI.m_targetCreature = target;
+      // This will be null for wild deer.
+      if (monsterAI != null) {
+        monsterAI.m_targetCreature = target;
+      }
       if (target != null) {
         monster.m_baseAI.Alert();
       }
@@ -293,6 +296,8 @@ namespace Pokeheim {
           // Unregister RPCs from the old BaseAI, so the new one can take over.
           monster.m_baseAI.m_nview.Unregister("Alert");
           monster.m_baseAI.m_nview.Unregister("OnNearProjectileHit");
+          // A custom one from Berries.cs
+          monster.m_baseAI.m_nview.Unregister("Relax");
           UnityEngine.Object.Destroy(monster.GetComponent<BaseAI>());
 
           // Create a MonsterAI component, and set sensible defaults based on a

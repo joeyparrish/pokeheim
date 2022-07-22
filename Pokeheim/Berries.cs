@@ -55,6 +55,29 @@ namespace Pokeheim {
       return 0f;
     }
 
+    private static void RegisterCustomRPCs(this BaseAI baseAI) {
+      baseAI.m_nview.Register(
+          "PokeheimRelax",
+          sender => baseAI.RPC_Relax(sender));
+    }
+
+    private static void Relax(this BaseAI baseAI) {
+      if (baseAI.m_nview.IsValid() && baseAI.IsAlerted()) {
+        if (baseAI.m_nview.IsOwner()) {
+          baseAI.SetAlerted(alert: false);
+        } else {
+          // Send an RPC to the owner.
+          baseAI.m_nview.InvokeRPC("PokeheimRelax");
+        }
+      }
+    }
+
+    private static void RPC_Relax(this BaseAI baseAI, long sender) {
+      if (baseAI.m_nview.IsOwner()) {
+        baseAI.SetAlerted(alert: false);
+      }
+    }
+
     public class BerryEater : MonoBehaviour {
       public const float BerrySearchInterval = 10f;  // seconds
       public const float BerrySearchRadius = 10f;  // meters
@@ -127,6 +150,7 @@ namespace Pokeheim {
             // Drop the target after eating, so the monster must wait another
             // interval before eating another berry from a stack.
             Target = null;
+            baseAI.Relax();
           }
         }
 
@@ -230,6 +254,14 @@ namespace Pokeheim {
             berryEater.NoticeBerries(item);
           }
         }
+      }
+    }
+
+    [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.Awake))]
+    class SetupBerryRPCs_Patch {
+      static void Postfix(BaseAI __instance) {
+        var baseAI = __instance;
+        baseAI.RegisterCustomRPCs();
       }
     }
   }

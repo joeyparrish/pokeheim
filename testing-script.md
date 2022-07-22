@@ -290,22 +290,30 @@
 
 ## 9. Berries
 
-1. Spawn greyling
+1. Fly so deer won't see/hear you
+1. Spawn deer
 1. Spawn "raspberry"
+1. Check that the deer is alerted, goes for the berry, and eats it, then
+   relaxes (within 10s interval)
+1. Remove deer
+1. Stop flying
+1. Spawn and pick up "raspberry", "blueberries", and "cloudberry"
+1. Spawn greyling, wait for it to attack
+1. Throw raspberry
 1. Check that the greyling goes for the berry and eats it (within 10s interval)
 1. Repeat with "blueberries" and "cloudberry"
 1. Remove greyling
 1. Spawn boar
-1. Tame boar
+1. Tame boar with debug command "tame"
 1. Spawn "carrot"
-1. Check that the boar does not eat the carrot
+1. Check that the boar _does not_ eat the carrot
 1. Spawn "raspberry"
-1. Check that the boar does not eat the raspberry
+1. Check that the boar _does_ eat the raspberry
 1. Remove boar
 1. Spawn 50 "raspberry" and pick them up
 1. Spawn greyling
 1. Throw full stack of 50 "raspberry"
-1. Check that greyling sits to eat for a long time and ignores you
+1. Check that greyling continues to return to the berry pile every ~10s
 
 
 ## 10. Crafting
