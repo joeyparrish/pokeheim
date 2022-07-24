@@ -187,7 +187,7 @@ namespace Pokeheim {
             color: GUIManager.Instance.ValheimOrange,
             outline: true,
             outlineColor: Color.black,
-            width: 285f,
+            width: 270f,
             height: 90f,
             addContentSizeFitter: false);
 
