@@ -49,7 +49,7 @@ namespace Pokeheim {
     public static Hook OnRPCsReady =
         new Hook("OnRPCsReady", oneShot: false);
     public static Hook OnDLCManAwake =
-        new Hook("OnDLCManAwake");
+        new Hook("OnDLCManAwake", oneShot: false);
 
     [HarmonyPatch]
     private static class HookPatches {
@@ -66,7 +66,10 @@ namespace Pokeheim {
       private static void RPCsReady() => OnRPCsReady.Trigger();
 
       [HarmonyPatch(typeof(DLCMan), nameof(DLCMan.Awake)), HarmonyPostfix]
-      private static void DLC() => OnDLCManAwake.Trigger();
+      private static void DLCAwake() => OnDLCManAwake.Trigger();
+
+      [HarmonyPatch(typeof(DLCMan), nameof(DLCMan.OnDestroy)), HarmonyPostfix]
+      private static void DLCDead() => OnDLCManAwake.Untrigger();
     }
 
     public class Hook {
@@ -108,6 +111,11 @@ namespace Pokeheim {
         foreach (Action callback in callbacks) {
           SafeInvoke(callback);
         }
+      }
+
+      internal void Untrigger() {
+        triggered = false;
+        Logger.LogDebug($"Untriggering hook {name}");
       }
 
       private void SafeInvoke(Action callback) {

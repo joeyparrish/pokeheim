@@ -98,7 +98,11 @@ namespace Pokeheim {
       public static void RegisterAllClothing() {
         // Seek out all clothing and build the menus dynamically.
         foreach (var prefab in ZNetScene.instance.m_prefabs) {
-          RegisterIfClothing(prefab);
+          try {
+            RegisterIfClothing(prefab);
+          } catch (Exception ex) {
+            Logger.LogError($"Exception registering possible clothing {prefab}: {ex}");
+          }
         }
       }
 
