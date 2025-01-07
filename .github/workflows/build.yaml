@@ -10,10 +10,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -31,14 +31,14 @@ jobs:
       - name: Install NuGet dependencies
         run: |
           # Fixes weird permission errors that started in GitHub Actions
-          # environments on June 14th:
-          sudo chown -R $USER /tmp/NuGetScratch/
+          # environments on January 24th 2023:
+          sudo chown -R $USER ~/.config/NuGet/
 
           nuget restore Pokeheim.sln
 
       - name: Cache Valheim
         id: cachevalheim
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/VHINSTALL
           key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-${{ steps.bepinexversion.outputs.bepinexversion }}
@@ -50,12 +50,12 @@ jobs:
       - name: Prepare Pokeheim dependencies
         if: steps.cachevalheim.outputs.cache-hit != 'true'
         run: |
-          wget -O bepinex.zip "https://valheim.thunderstore.io/package/download/denikson/BepInExPack_Valheim/${{ steps.bepinexversion.outputs.bepinexversion }}/"
+          wget -O bepinex.zip "https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/${{ steps.bepinexversion.outputs.bepinexversion }}/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
-          wget -O mountup.zip "https://valheim.thunderstore.io/package/download/Oran1/Mountup/3.2.9/"
+          wget -O mountup.zip "https://thunderstore.io/package/download/Oran1/Mountup/3.2.9/"
           unzip mountup.zip -d ~/VHINSTALL/BepInEx/plugins/
 
       - name: Remove old DLLs
@@ -84,7 +84,7 @@ jobs:
         run: |
           RELEASE_VERSION="${RELEASE_VERSION:-0.0.1}" ./scripts/package.sh
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           # Will result in Pokeheim.zip
           name: Pokeheim
@@ -92,7 +92,7 @@ jobs:
           path: staging/
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: Pokeheim.zip
