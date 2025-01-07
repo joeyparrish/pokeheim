@@ -19,11 +19,11 @@ jobs:
 
       - name: Get Valheim version id
         id: valheimversion
-        run: echo "::set-output name=valheimversion::$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r '.data.\"896660\".depots.branches.public.buildid')"
+        run: echo "valheimversion=$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r '.data.\"896660\".depots.branches.public.buildid')" >> $GITHUB_OUTPUT
 
       - name: Get BepInEx version
         id: bepinexversion
-        run: echo "::set-output name=bepinexversion::$(./scripts/get-dep-version.sh denikson-BepInExPack_Valheim)"
+        run: echo "bepinexversion=$(./scripts/get-dep-version.sh denikson-BepInExPack_Valheim)" >> $GITHUB_OUTPUT
 
       - name: Get build commands
         run: scripts/install-linux-tools.sh
