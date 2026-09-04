@@ -28,6 +28,7 @@ using UnityEngine.Networking;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
+  [Feature(Features.Music)]
   public static class MusicMods {
     private static readonly Dictionary<string, string> OverrideMusic = new Dictionary<string, string> {
       {"menu", "Main-Menu.mp3"},

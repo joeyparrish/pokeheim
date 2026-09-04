@@ -46,8 +46,6 @@ namespace Pokeheim {
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
   // We are incompatible with AllTameable.
   [BepInIncompatibility("meldurson.valheim.AllTameable")]
-  // Hard dep on MountUp, which we leverage for the generic saddle prefab, and then disable.
-  [BepInDependency("Koosemose.MountUp", BepInDependency.DependencyFlags.HardDependency)]
   // Hard dep on Jotunn, which we use everywhere.
   [BepInDependency("com.jotunn.jotunn", BepInDependency.DependencyFlags.HardDependency)]
   // Require everyone playing together to use the same version of this mod.
@@ -58,20 +56,18 @@ namespace Pokeheim {
     public const string PluginName = "Pokeheim";
     public const string PluginVersion = ModVersion.String;
 
-    internal static readonly Harmony harmony = new Harmony(PluginName);
     private static string PokeheimIntroFlag = "com.pokeheim.IntroSeen";
 
     public void Awake() {
-      try {
-        harmony.PatchAll();
-      } catch (Exception ex) {
-        Logger.LogError($"Exception installing patches for {PluginName}: {ex}");
-      }
+      // Patches, initializes and registers one feature at a time, so that a
+      // game update which breaks one feature disables only that feature.
+      Features.ApplyAll();
 
       PokeheimInit.InitAll();
       RegisterCommand.RegisterAll();
     }
 
+    [Feature(Features.Logo)]
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     class ReplaceLogo_Patch {
       static void Postfix(FejdStartup __instance) {
@@ -85,6 +81,7 @@ namespace Pokeheim {
     }
 
     // Add our version number to the game's built-in version number.
+    [Feature(Features.Version)]
     [HarmonyPatch(typeof(Version), nameof(Version.GetVersionString))]
     class VersionString_Patch {
       static void Postfix(ref string __result) {
@@ -92,13 +89,16 @@ namespace Pokeheim {
       }
     }
 
+    [Feature(Features.Intro)]
     [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
     class Intro_Patch {
-      static void Prefix(Player __instance) {
+      static void Prefix(Player __instance, ref bool spawnValkyrie) {
         var player = __instance;
 
-        // Skip the Valkyrie,
-        player.m_valkyrie = null;
+        // Skip the Valkyrie.  The game takes this as a parameter now, so we
+        // no longer have to clear the prefab reference ourselves.  (It became
+        // a SoftReference, which cannot be nulled anyway.)
+        spawnValkyrie = false;
 
         // but force our own version of the intro text for player who are new
         // to Pokeheim.
@@ -119,6 +119,7 @@ namespace Pokeheim {
       }
     }
 
+    [Feature(Features.LoadingScreen)]
     [HarmonyPatch(typeof(Hud), nameof(Hud.Awake))]
     class TweakLoadingScreen_Patch {
       static void Postfix(Hud __instance) {
@@ -144,6 +145,12 @@ namespace Pokeheim {
 
       var initMethods = new List<MethodInfo>();
       foreach (var type in allTypes) {
+        // Skip anything whose feature was disabled or whose patches failed.
+        // Initializing half of a feature is worse than not running it at all.
+        if (!Features.IsLoaded(type)) {
+          continue;
+        }
+
         var publicStaticMethods =
             type.GetMethods(BindingFlags.Static | BindingFlags.Public);
 
@@ -182,6 +189,12 @@ namespace Pokeheim {
 
       var constructors = new List<ConstructorInfo>();
       foreach (var type in allTypes) {
+        // You cannot have a debug console command for a feature that was
+        // skipped, so gate registration the same way Init() is gated.
+        if (!Features.IsLoaded(type)) {
+          continue;
+        }
+
         var registerAttributes =
             type.GetCustomAttributes(typeof(RegisterCommand), false);
         if (registerAttributes.Length > 0) {

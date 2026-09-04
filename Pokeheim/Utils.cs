@@ -243,7 +243,7 @@ namespace Pokeheim {
         return null;
       }
 
-      var players = Player.m_players;
+      var players = Player.GetAllPlayers();
       foreach (var player in players) {
         if (player.GetPlayerName() == name) {
           return player;
@@ -322,9 +322,11 @@ namespace Pokeheim {
         return null;
       }
 
-      var prefabName = zoneLocation.m_prefab.name;
+      // Locations are soft-referenced now, so the prefab is a handle rather
+      // than the object itself.  The handle knows its name without loading.
+      var prefabName = zoneLocation.m_prefab.Name;
       var cloneName = prefabName + "(Clone)";
-      foreach (var location in Location.m_allLocations) {
+      foreach (var location in Location.s_allLocations) {
         if (location.gameObject.name == cloneName) {
           Logger.LogDebug($"Found existing instance of location {name}.");
           return location.gameObject;
@@ -332,7 +334,10 @@ namespace Pokeheim {
       }
 
       Logger.LogDebug($"Found no existing instances of location {name}.");
-      return zoneLocation.m_prefab;
+      // Force the soft reference to resolve, since callers expect a usable
+      // prefab rather than a handle.
+      zoneLocation.m_prefab.Load();
+      return zoneLocation.m_prefab.Asset;
     }
 
     private static string cachedAssetRootPath = null;
