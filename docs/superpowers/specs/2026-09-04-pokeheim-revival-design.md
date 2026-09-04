@@ -80,8 +80,9 @@ and the task never ran at all.
 
 ### The damage is smaller than expected
 
-Valheim grew from 443 to 815 types between the 2022 baseline and the May 2026
-build. Of the 125 patch targets that could be resolved automatically:
+Valheim grew from 443 to 856 types between the 2022 baseline and the May 2026
+build, counting the four assemblies the dump script now covers. Of the 125 patch
+targets that could be resolved automatically:
 
 | Outcome                            | Count | Share |
 | ---------------------------------- | ----: | ----: |
