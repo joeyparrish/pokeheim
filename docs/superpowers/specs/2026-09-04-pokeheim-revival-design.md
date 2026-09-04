@@ -207,10 +207,41 @@ codebase is preferred over introducing a second, differently shaped one.
 
 MountUp is removed as a dependency in Stage 0. Supplying a replacement generic
 saddle prefab is deferred to the riding stage, since nothing before that needs
-it. The options are to ship an asset through Jotunn or to derive one at runtime
-from an existing in-game saddle. The choice is deferred rather than guessed,
-because it depends on what the current game's saddle assets look like, which is
-best assessed against 1.0.
+it. The options are to derive a saddle at runtime from an existing in-game
+saddle, or to author our own asset and ship it through Jotunn. Deriving from
+vanilla is preferred, and is the natural parallel to what the mod already does
+when it clones the vanilla `SaddleLox` item. The final choice is deferred rather
+than guessed, because it depends on what the current game's saddle assets look
+like, which is best assessed against 1.0.
+
+### Reusing MountUp's saddle asset is not an option
+
+MountUp's generic saddle is original art, loaded from an AssetBundle embedded in
+its DLL, and not derived from any vanilla asset. Extracting it was considered
+and rejected on licensing grounds.
+
+No license grant for MountUp could be found anywhere: the Thunderstore package
+the build fetched states none and is only a reupload, the DLL carries nothing
+but an unedited Visual Studio template copyright string, and the successor
+project's repository has no license file and no source code. The original lives
+on Nexus Mods, whose permissions block could not be retrieved automatically and
+remains the one place a grant might exist.
+
+Absent a stated license, default copyright applies and all rights are reserved.
+Attribution does not help, because attribution satisfies a condition of a
+license that requires it and cannot substitute for a grant that was never made.
+
+The distinction that matters is that depending on a mod and redistributing part
+of it are different acts. The current design only ever depended on MountUp, with
+users installing it themselves and Pokéheim redistributing nothing. Bundling the
+prefab would convert that into redistribution, which is the step that needs a
+license Pokéheim does not have.
+
+Note also that even an explicit but qualified permission, of the kind commonly
+written on Nexus pages, would likely remain incompatible. Pokéheim is
+GPL-3.0-or-later, which requires that everything distributed be redistributable
+under GPL terms without additional restrictions, so a grant limited to
+noncommercial use or conditioned on credit would still not qualify.
 
 The existing per monster saddle metadata, a mount point path plus an offset and
 rotation, is unaffected by this change and remains hand authored, supported by
