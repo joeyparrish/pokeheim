@@ -206,14 +206,37 @@ codebase is preferred over introducing a second, differently shaped one.
 
 ## Saddle prefab
 
-MountUp is removed as a dependency in Stage 0. Supplying a replacement generic
-saddle prefab is deferred to the riding stage, since nothing before that needs
-it. The options are to derive a saddle at runtime from an existing in-game
-saddle, or to author our own asset and ship it through Jotunn. Deriving from
-vanilla is preferred, and is the natural parallel to what the mod already does
-when it clones the vanilla `SaddleLox` item. The final choice is deferred rather
-than guessed, because it depends on what the current game's saddle assets look
-like, which is best assessed against 1.0.
+MountUp is removed as a dependency in Stage 0. Supplying the replacement saddle
+is deferred to the riding stage, since nothing before that needs it.
+
+The saddle is derived at runtime from vanilla. Lox riding has been in the base
+game since before the mod was written, so the game already ships a working
+saddle: a child object carrying a `Sadle` component, which finds its owner
+through `GetComponentInParent<Character>()` and registers its RPCs on the
+character's `ZNetView`. Cloning that object onto other monsters is the natural
+parallel to what the mod already does when it clones the vanilla `SaddleLox`
+item, and it keeps the mod free of any redistributed third party asset.
+
+Every field the mod relies on survived the update: `Tameable.m_saddleItem`,
+`Tameable.m_saddle`, `m_dropSaddleOnDeath`, and `m_dropSaddleOffset` are all
+still present, and `Sadle` itself was not converted to the new update
+interfaces. The change is therefore confined to where the prefab comes from. The
+surrounding machinery in `Riding.cs`, meaning the scale insulating parent, the
+per monster offset and rotation, the rider attach point, and the universal
+saddle item, is unaffected.
+
+Two smaller consequences follow. The code that removes MountUp's `SaddleBoar`
+and `SaddleWolf` items is deleted, because without MountUp those items never
+exist. And the vanilla saddle is modeled to fit a lox, so it will look oversized
+on small monsters; whether to add an optional per monster scale alongside the
+existing offset and rotation, or to accept the mismatch as fitting the mod's
+tone, is decided at the riding stage.
+
+Whether Ashlands added a second rideable creature, and therefore a second and
+possibly better proportioned saddle to derive from, could not be determined from
+the code dumps, because creature prefabs are data rather than code. It is
+answered in game with the mod's existing prefab dumping commands when the riding
+stage is reached.
 
 ### Reusing MountUp's saddle asset is not an option
 
