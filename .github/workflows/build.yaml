@@ -13,35 +13,29 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Get Valheim version id
         id: valheimversion
-        run: echo "valheimversion=$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r '.data.\"896660\".depots.branches.public.buildid')" >> $GITHUB_OUTPUT
+        run: echo "valheimversion=$(curl -s https://api.steamcmd.net/v1/info/896660 | jq -r '.data."896660".depots.branches.public.buildid')" >> "$GITHUB_OUTPUT"
 
       - name: Get BepInEx version
         id: bepinexversion
-        run: echo "bepinexversion=$(./scripts/get-dep-version.sh denikson-BepInExPack_Valheim)" >> $GITHUB_OUTPUT
+        run: echo "bepinexversion=$(./scripts/get-dep-version.sh denikson-BepInExPack_Valheim)" >> "$GITHUB_OUTPUT"
 
-      - name: Get build commands
-        run: scripts/install-linux-tools.sh
-
-      - name: Install NuGet dependencies
-        run: |
-          # Fixes weird permission errors that started in GitHub Actions
-          # environments on January 24th 2023:
-          sudo chown -R $USER ~/.config/NuGet/
-
-          nuget restore Pokeheim.sln
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
 
       - name: Cache Valheim
         id: cachevalheim
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/VHINSTALL
-          key: ${{ steps.valheimversion.outputs.valheimversion }}-${{ hashFiles('**/lockfiles') }}-BepInExPack-${{ steps.bepinexversion.outputs.bepinexversion }}
+          key: ${{ steps.valheimversion.outputs.valheimversion }}-BepInExPack-${{ steps.bepinexversion.outputs.bepinexversion }}
 
       - name: Install SteamCMD
         if: steps.cachevalheim.outputs.cache-hit != 'true'
@@ -53,14 +47,21 @@ jobs:
           wget -O bepinex.zip "https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/${{ steps.bepinexversion.outputs.bepinexversion }}/"
           unzip bepinex.zip -d ~/BepInExRaw
           steamcmd +login anonymous +force_install_dir ~/VHINSTALL +app_update 896660 validate +exit
-          mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/valheim_Data/
+          # We build against the dedicated server, whose data directory is
+          # named valheim_server_Data.  Rename it to Valheim_Data, with a
+          # capital V, because that is the one spelling both halves of Jotunn
+          # accept: its Paths.props probes Valheim_Data and valheim_Data when
+          # setting VALHEIM_MANAGED, while its build task looks for
+          # Valheim_Data or valheim_server_Data when publicizing.  Only
+          # Valheim_Data satisfies both.
+          mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/Valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
-          wget -O mountup.zip "https://thunderstore.io/package/download/Oran1/Mountup/3.2.9/"
-          unzip mountup.zip -d ~/VHINSTALL/BepInEx/plugins/
 
-      - name: Remove old DLLs
+      - name: Remove stale generated DLLs
         run: |
-          rm -rf ~/VHINSTALL/valheim_server_Data/Managed/publicized_assemblies
+          # Publicized assemblies are regenerated from the game DLLs, and a
+          # stale set silently builds against the wrong game version.
+          rm -rf ~/VHINSTALL/Valheim_Data/Managed/publicized_assemblies
           rm -rf ~/VHINSTALL/BepInEx/plugins/MMHOOK
 
       - name: Set references to DLLs
@@ -68,7 +69,11 @@ jobs:
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
       - name: Build debug version
-        run: ./scripts/build.sh Debug
+        # scripts/fix-jotunn-linux.sh reads VALHEIM_INSTALL to decide whether
+        # its workaround is needed.  It is not, since we renamed the data
+        # directory to Valheim_Data above, but it still has to be able to find
+        # the install to determine that.
+        run: VALHEIM_INSTALL="$HOME/VHINSTALL" ./scripts/build.sh Debug
 
       # Set the version to the tag, if this was a tag push.
       - name: Prepare release
@@ -82,9 +87,10 @@ jobs:
       # pull requests.
       - name: Build release zip
         run: |
+          export VALHEIM_INSTALL="$HOME/VHINSTALL"
           RELEASE_VERSION="${RELEASE_VERSION:-0.0.1}" ./scripts/package.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           # Will result in Pokeheim.zip
           name: Pokeheim
@@ -92,7 +98,7 @@ jobs:
           path: staging/
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: Pokeheim.zip
