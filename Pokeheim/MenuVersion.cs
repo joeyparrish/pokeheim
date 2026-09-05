@@ -59,13 +59,19 @@ namespace Pokeheim {
       // Rect(Screen.width - 100, 5, 100, 25) while the "start" scene is
       // active.  We mirror that and drop one line below it.
       //
-      // Their rectangle cannot be read at runtime, so this offset is a
-      // hardcoded assumption about their layout.  If they move their label,
-      // ours ends up visibly out of place rather than quietly wrong, which is
-      // the failure we would rather have.
-      private const float Width = 100f;
-      private const float Height = 25f;
+      // Their rectangle cannot be read at runtime, so these are hardcoded
+      // assumptions about their layout.  If they move their label, ours ends
+      // up visibly out of place rather than quietly wrong, which is the
+      // failure we would rather have.
+      private const float JotunnWidth = 100f;
+      private const float JotunnHeight = 25f;
       private const float JotunnTop = 5f;
+
+      // How close the label may come to the right edge of the screen when a
+      // long version pushes it out past Jotunn's box.
+      private const float RightMargin = 5f;
+
+      private GUIStyle style = null;
 
       private void OnGUI() {
         // Only on the main menu, matching Jotunn.
@@ -73,9 +79,30 @@ namespace Pokeheim {
           return;
         }
 
-        UnityEngine.GUI.Label(
-            new Rect(Screen.width - Width, JotunnTop + Height, Width, Height),
+        // GUI.skin is only valid inside OnGUI, so build this on first use
+        // rather than in Init().
+        if (style == null) {
+          style = new GUIStyle(UnityEngine.GUI.skin.label);
+          // The default label style wraps.  In a box this size, a version like
+          // "3.10.10" wraps to a second line and is then cut off part way down
+          // it, so measure and place the text ourselves instead.
+          style.wordWrap = false;
+        }
+
+        var content = new GUIContent(
             "Pokéheim v" + PokeheimMod.PluginVersion);
+        var size = style.CalcSize(content);
+
+        // Line up with Jotunn's label, but slide left instead of running off
+        // the edge of the screen when our version is longer than fits.
+        var x = Mathf.Min(
+            Screen.width - JotunnWidth,
+            Screen.width - size.x - RightMargin);
+
+        UnityEngine.GUI.Label(
+            new Rect(x, JotunnTop + JotunnHeight, size.x, size.y),
+            content,
+            style);
       }
     }
   }
