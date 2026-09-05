@@ -61,6 +61,7 @@
     <Compile Include="Utils.cs" />
 
     <!-- Stage 0 features. -->
+    <Compile Include="MenuVersion.cs" />
     <Compile Include="MusicMods.cs" />
 
     <!-- Features still to be revived.  Uncomment as each stage brings one

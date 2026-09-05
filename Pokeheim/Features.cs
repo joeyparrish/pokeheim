@@ -56,7 +56,11 @@ namespace Pokeheim {
 
     public const string Logo = "Logo";
     public const string Music = "Music";
+    // Appends our version to the game's version string, which feeds the logs
+    // and the multiplayer version check.
     public const string Version = "Version";
+    // Shows our version on the main menu, and hides the game's own label there.
+    public const string MenuVersion = "MenuVersion";
     public const string Intro = "Intro";
     public const string LoadingScreen = "LoadingScreen";
 
@@ -67,6 +71,8 @@ namespace Pokeheim {
       Core,
       Logo,
       Music,
+      Version,
+      MenuVersion,
     };
 
     public enum Status {
