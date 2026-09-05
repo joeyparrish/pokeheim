@@ -77,49 +77,49 @@ namespace Pokeheim {
           return;
         }
 
-        var logo = menu.transform.FindChildIgnoringCase("Logo");
-        if (logo == null) {
-          // This hierarchy has changed under us before and will again.  Say
-          // what is actually there instead of throwing a bare
-          // NullReferenceException from inside a patch.
+        // "Logo" is a container.  As of 2026 it holds the logo itself, several
+        // drifting ember effects, and a parked, inactive variant for each
+        // themed update: Ashlands, Mistlands, and the old Hearth & Home badge.
+        // Transform.LogHierarchy below will show you the current shape of it.
+        var container = menu.transform.FindChildIgnoringCase("Logo");
+        if (container == null) {
           Jotunn.Logger.LogError(
-              "No \"Logo\" under the main menu.  Direct children are:");
-          foreach (Transform child in menu.transform) {
-            Jotunn.Logger.LogError($"    {child.name}");
-          }
+              "No \"Logo\" under the main menu.  Its hierarchy is:");
+          menu.transform.LogHierarchy();
           return;
         }
 
-        // "Logo" became a container at some point, so the artwork may be on a
-        // descendant rather than on the object itself.
-        var image = logo.GetComponent<Image>();
-        if (image == null) {
-          image = logo.GetComponentInChildren<Image>(includeInactive: true);
-          if (image != null) {
-            Jotunn.Logger.LogInfo(
-                $"Found the logo Image on child \"{image.name}\".");
+        // Match on being active rather than on a fixed path.  The themed
+        // variants exist because the game swaps which logo is live, so if a
+        // promotion switches "LOGO" off and "AshlandsLogo" on, we want to
+        // follow it rather than silently paint a hidden object, which is
+        // indistinguishable from doing nothing.  Only active objects are
+        // considered, which also excludes the parked variants.
+        Image image = null;
+        foreach (var candidate in
+                 container.GetComponentsInChildren<Image>(includeInactive: false)) {
+          var name = candidate.name;
+          if (name.IndexOf("logo", StringComparison.OrdinalIgnoreCase) < 0) {
+            // Embers and other decoration.
+            continue;
           }
+          if (name.IndexOf("glow", StringComparison.OrdinalIgnoreCase) >= 0) {
+            // The themed logos come with a separate glow layer behind them.
+            continue;
+          }
+          image = candidate;
+          break;
         }
 
         if (image == null) {
           Jotunn.Logger.LogError(
-              "Found no Image under \"Logo\".  Its hierarchy is:");
-          logo.LogHierarchy();
+              "Found no active logo Image.  The Logo hierarchy is:");
+          container.LogHierarchy();
           return;
         }
+
+        Jotunn.Logger.LogDebug($"Replacing the logo on \"{image.name}\".");
         image.sprite = Utils.LoadSprite("Logo.png");
-
-        // The "H&H" badge dates from the Hearth & Home update, and is gone as
-        // of 2026.  Its absence is not an error.
-        var hh = menu.transform.FindChildIgnoringCase("H&H");
-        if (hh == null) {
-          Jotunn.Logger.LogInfo("No \"H&H\" badge to hide; skipping.");
-          return;
-        }
-        var hhImage = hh.GetComponent<Image>();
-        if (hhImage != null) {
-          hhImage.enabled = false;
-        }
       }
     }
 

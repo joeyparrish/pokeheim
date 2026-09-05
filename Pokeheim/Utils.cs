@@ -279,13 +279,19 @@ namespace Pokeheim {
     // Logs a transform, its components, and its descendants.  When the game
     // reorganizes a piece of UI we patch, this turns "it broke" into "here is
     // exactly what is there now" in a single run.
+    //
+    // Inactive objects are included and marked as such, because the game keeps
+    // seasonal and event variants of things parked inactive in the hierarchy,
+    // and picking one of those looks identical to picking nothing at all.
     public static void LogHierarchy(
-        this Transform root, int maxDepth = 3, int depth = 0) {
+        this Transform root, int maxDepth = 4, int depth = 0) {
       var indent = new string(' ', 4 * (depth + 1));
       var components = root.GetComponents<Component>()
           .Where(c => c != null)
           .Select(c => c.GetType().Name);
-      Logger.LogError($"{indent}{root.name} [{string.Join(", ", components)}]");
+      var state = root.gameObject.activeInHierarchy ? "" : " (INACTIVE)";
+      Logger.LogInfo(
+          $"{indent}{root.name}{state} [{string.Join(", ", components)}]");
 
       if (depth >= maxDepth) {
         return;
