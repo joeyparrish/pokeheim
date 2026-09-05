@@ -90,9 +90,21 @@ namespace Pokeheim {
           return;
         }
 
+        // "Logo" became a container at some point, so the artwork may be on a
+        // descendant rather than on the object itself.
         var image = logo.GetComponent<Image>();
         if (image == null) {
-          Jotunn.Logger.LogError("\"Logo\" has no Image component.");
+          image = logo.GetComponentInChildren<Image>(includeInactive: true);
+          if (image != null) {
+            Jotunn.Logger.LogInfo(
+                $"Found the logo Image on child \"{image.name}\".");
+          }
+        }
+
+        if (image == null) {
+          Jotunn.Logger.LogError(
+              "Found no Image under \"Logo\".  Its hierarchy is:");
+          logo.LogHierarchy();
           return;
         }
         image.sprite = Utils.LoadSprite("Logo.png");

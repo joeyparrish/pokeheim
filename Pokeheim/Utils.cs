@@ -276,6 +276,25 @@ namespace Pokeheim {
       return null;
     }
 
+    // Logs a transform, its components, and its descendants.  When the game
+    // reorganizes a piece of UI we patch, this turns "it broke" into "here is
+    // exactly what is there now" in a single run.
+    public static void LogHierarchy(
+        this Transform root, int maxDepth = 3, int depth = 0) {
+      var indent = new string(' ', 4 * (depth + 1));
+      var components = root.GetComponents<Component>()
+          .Where(c => c != null)
+          .Select(c => c.GetType().Name);
+      Logger.LogError($"{indent}{root.name} [{string.Join(", ", components)}]");
+
+      if (depth >= maxDepth) {
+        return;
+      }
+      foreach (Transform child in root) {
+        child.LogHierarchy(maxDepth, depth + 1);
+      }
+    }
+
     public static void SetGlobalScaleToOne(this Transform transform) {
       // We can only set a local scale, relative to the parent transform.
       // The global scale (lossyScale) is read-only.  But some objects should
