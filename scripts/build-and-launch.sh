@@ -27,8 +27,10 @@ if ! pgrep -x steam >/dev/null 2>&1; then
 fi
 
 cd ~/.local/share/Steam/steamapps/common/Valheim
-# NOTE: -force-glcore dates from 2021 and forces the legacy GL core renderer.
-# If the game misbehaves on launch, try dropping it before suspecting the mod.
+# NOTE: we used to pass -force-glcore here, which forces the legacy OpenGL
+# Core renderer.  As of 2026 that segfaults on startup inside
+# libnvidia-glcore.so, with no managed frames involved.  Let Unity choose its
+# own renderer.
 ./start_game_bepinex.sh \
     ~/.local/share/Steam/steamapps/common/Valheim/valheim.x86_64 \
-    -force-glcore -console
+    -console
