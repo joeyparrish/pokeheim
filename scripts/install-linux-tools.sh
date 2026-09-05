@@ -1,13 +1,46 @@
 #!/bin/bash
 
-set -e
-set -x
+# Written for me (Joey), and working on Ubuntu 24.04 LTS.  I make no promises
+# that it will work for you.
+#
+# Installs the .NET SDK into your home directory, plus the decompiler used by
+# scripts/dump-valheim.sh.  Nothing here needs root, and nothing is installed
+# system-wide: everything lands in ~/.dotnet, which you can delete to undo it.
+#
+# We no longer need mono, msbuild, or nuget.  The project is an SDK-style
+# project built with "dotnet build", and its dependencies come from NuGet
+# PackageReferences rather than a packages.config.
 
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-sudo dpkg --force-confnew -i packages-microsoft-prod.deb
-sudo apt-get -y update || true
-sudo apt-get -y install mono-roslyn mono-complete mono-dbg msbuild nuget unzip dirmngr dotnet-sdk-5.0 dotnet-runtime-5.0
-sudo nuget update -self
-nuget sources Add -Name nuget.org -Source https://api.nuget.org/v3/index.json || true
+set -e
+
+DOTNET_ROOT="$HOME/.dotnet"
+
+if [ -x "$DOTNET_ROOT/dotnet" ]; then
+  echo "dotnet SDK already installed at $DOTNET_ROOT"
+else
+  echo "Installing the .NET SDK to $DOTNET_ROOT ..."
+  INSTALLER=$(mktemp)
+  trap 'rm -f "$INSTALLER"' EXIT
+  curl -fsSL https://dot.net/v1/dotnet-install.sh -o "$INSTALLER"
+  chmod +x "$INSTALLER"
+  "$INSTALLER" --channel LTS --install-dir "$DOTNET_ROOT"
+fi
+
+export DOTNET_ROOT
+export PATH="$DOTNET_ROOT:$DOTNET_ROOT/tools:$PATH"
+
+# ilspycmd decompiles the game assemblies for scripts/dump-valheim.sh.
+if command -v ilspycmd >/dev/null 2>&1; then
+  echo "ilspycmd already installed"
+else
+  echo "Installing ilspycmd ..."
+  dotnet tool install --global ilspycmd
+fi
+
+echo
+echo "Done.  Add this to your shell profile if it is not there already:"
+echo
+echo "    export DOTNET_ROOT=\"\$HOME/.dotnet\""
+echo "    export PATH=\"\$DOTNET_ROOT:\$DOTNET_ROOT/tools:\$PATH\""
+echo
+echo "scripts/build.sh will find the SDK either way."

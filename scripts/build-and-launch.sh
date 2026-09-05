@@ -17,7 +17,18 @@ cd "$(dirname "$0")"/..
 ./scripts/build.sh "$BUILD_TYPE"
 ./scripts/install-mod.sh "$BUILD_TYPE"
 
+# Valheim initializes the Steam API on startup and exits immediately if the
+# Steam client is not running.  It does this silently enough that it looks
+# like a mod problem, so check up front and say so plainly.
+if ! pgrep -x steam >/dev/null 2>&1; then
+  echo "Steam does not appear to be running." 1>&2
+  echo "Valheim will exit at startup without it.  Start Steam first." 1>&2
+  exit 1
+fi
+
 cd ~/.local/share/Steam/steamapps/common/Valheim
+# NOTE: -force-glcore dates from 2021 and forces the legacy GL core renderer.
+# If the game misbehaves on launch, try dropping it before suspecting the mod.
 ./start_game_bepinex.sh \
     ~/.local/share/Steam/steamapps/common/Valheim/valheim.x86_64 \
     -force-glcore -console
