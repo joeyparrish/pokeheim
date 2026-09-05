@@ -50,10 +50,14 @@ jobs:
         run: |
           wget -O bepinex.zip "https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/${{ steps.bepinexversion.outputs.bepinexversion }}/"
           unzip bepinex.zip -d ~/BepInExRaw
-          # force_install_dir has to come before login.  Newer steamcmd
-          # rejects the other order with "Please use force_install_dir before
-          # logon!" and then fails with "Missing configuration".
-          steamcmd +force_install_dir "$HOME/VHINSTALL" +login anonymous +app_update 896660 validate +exit
+          # Two ordering requirements here, both of which fail the same way if
+          # you get them wrong, with "Missing configuration":
+          #  - force_install_dir has to come before login, or newer steamcmd
+          #    rejects it with "Please use force_install_dir before logon!"
+          #  - app_info_update is required before app_update, because runners
+          #    are ephemeral and a cold steamcmd has no app info cached.
+          #    Re-running the job does not help, since it starts cold again.
+          steamcmd +force_install_dir "$HOME/VHINSTALL" +login anonymous +app_info_update 1 +app_update 896660 validate +exit
           # We build against the dedicated server, whose data directory is
           # named valheim_server_Data.  Rename it to Valheim_Data, with a
           # capital V, because that is the one spelling both halves of Jotunn
