@@ -15,16 +15,20 @@ content for the new biomes.
 
 ### Reference dumps
 
-`../study/` holds decompiled dumps of the game across several years. The
-baseline for all comparison work is `ref.cs.2022`, because that is the build the
-existing patches were written against. `ref.cs.2023` is a dump Joey took
-intending to do an update that never started, and no patch has ever been
-validated against it. Using it as a baseline would misattribute 2022 to 2023
+Decompiled dumps of the game are produced by `scripts/dump-valheim.sh` and kept
+outside the repository, since they are large and derived from the game's own
+assemblies. Dumps going back several years are archived alongside each other,
+named by the year they were taken.
+
+The baseline for all comparison work is the **2022** dump, because that is the
+build the existing patches were written against. There is also a 2023 dump,
+taken while intending an update that never started; no patch has ever been
+validated against it, and using it as a baseline would misattribute 2022 to 2023
 game changes to the current update.
 
-`../study/publicized_assemblies.2022/` holds the publicized assemblies from the
-last working build, preserved because the 2022 game DLLs they were generated
-from no longer exist on disk.
+The publicized assemblies from the last working build are archived next to those
+dumps, preserved because the 2022 game DLLs they were generated from no longer
+exist on disk.
 
 ## Goals
 
