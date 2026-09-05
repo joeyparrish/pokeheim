@@ -256,6 +256,26 @@ namespace Pokeheim {
       return null;
     }
 
+    // Like Transform.Find, but tolerant of the game renaming a child's
+    // capitalization, which it does.  The main menu's logo was "LOGO" for
+    // years and is "Logo" now, and an exact match is not worth breaking a
+    // feature over.  Returns null if there is no match either way.
+    public static Transform FindChildIgnoringCase(
+        this Transform parent, string name) {
+      var exact = parent.Find(name);
+      if (exact != null) {
+        return exact;
+      }
+
+      foreach (Transform child in parent) {
+        if (string.Equals(child.name, name,
+                          StringComparison.OrdinalIgnoreCase)) {
+          return child;
+        }
+      }
+      return null;
+    }
+
     public static void SetGlobalScaleToOne(this Transform transform) {
       // We can only set a local scale, relative to the parent transform.
       // The global scale (lossyScale) is read-only.  But some objects should

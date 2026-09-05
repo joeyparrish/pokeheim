@@ -77,13 +77,13 @@ namespace Pokeheim {
           return;
         }
 
-        var logo = menu.transform.Find("LOGO");
+        var logo = menu.transform.FindChildIgnoringCase("Logo");
         if (logo == null) {
           // This hierarchy has changed under us before and will again.  Say
           // what is actually there instead of throwing a bare
           // NullReferenceException from inside a patch.
           Jotunn.Logger.LogError(
-              "No \"LOGO\" under the main menu.  Direct children are:");
+              "No \"Logo\" under the main menu.  Direct children are:");
           foreach (Transform child in menu.transform) {
             Jotunn.Logger.LogError($"    {child.name}");
           }
@@ -92,14 +92,14 @@ namespace Pokeheim {
 
         var image = logo.GetComponent<Image>();
         if (image == null) {
-          Jotunn.Logger.LogError("\"LOGO\" has no Image component.");
+          Jotunn.Logger.LogError("\"Logo\" has no Image component.");
           return;
         }
         image.sprite = Utils.LoadSprite("Logo.png");
 
-        // The "H&H" badge dates from the Hearth & Home update.  It may simply
-        // not exist any more, which is not an error.
-        var hh = menu.transform.Find("H&H");
+        // The "H&H" badge dates from the Hearth & Home update, and is gone as
+        // of 2026.  Its absence is not an error.
+        var hh = menu.transform.FindChildIgnoringCase("H&H");
         if (hh == null) {
           Jotunn.Logger.LogInfo("No \"H&H\" badge to hide; skipping.");
           return;
