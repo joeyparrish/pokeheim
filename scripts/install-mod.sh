@@ -22,6 +22,19 @@ PLUGINS_PATH=~/.local/share/Steam/steamapps/common/"$GAME_NAME"/BepInEx/plugins
 
 cd "$(dirname "$0")"/..
 
+# SDK-style projects put their output under a target-framework subdirectory.
+BUILD_OUTPUT="Pokeheim/bin/$BUILD_TYPE/net462"
+
+if [ ! -d "$BUILD_OUTPUT" ]; then
+  echo "No $BUILD_TYPE build found at $BUILD_OUTPUT." 1>&2
+  echo "Run ./scripts/build.sh $BUILD_TYPE first." 1>&2
+  exit 1
+fi
+
+# We wipe and recreate the plugins directory contents we own, but the directory
+# itself may not exist at all on a fresh BepInEx install.
+mkdir -p "$PLUGINS_PATH"
+
 # Old location (<= v1.0.3)
 rm -rf "$PLUGINS_PATH"/Pokeheim/
 
@@ -37,10 +50,10 @@ mkdir -p "$POKEHEIM_ASSETS"
 if [ "$BUILD_TYPE" == "Release" ]; then
   cp $(./scripts/fetch-jotunn-release.sh) "$PLUGINS_PATH"/Jotunn.dll
 else
-  cp Pokeheim/bin/$BUILD_TYPE/Jotunn.dll "$PLUGINS_PATH"/
+  cp "$BUILD_OUTPUT"/Jotunn.dll "$PLUGINS_PATH"/
 fi
 
-cp Pokeheim/bin/$BUILD_TYPE/Pokeheim.dll "$POKEHEIM_FOLDER"/
+cp "$BUILD_OUTPUT"/Pokeheim.dll "$POKEHEIM_FOLDER"/
 cp Pokeheim/Assets/*.png "$POKEHEIM_ASSETS"/
 cp Pokeheim/Assets/*.mp3 "$POKEHEIM_ASSETS"/
 cp -a Pokeheim/Assets/Translations "$POKEHEIM_ASSETS"/
