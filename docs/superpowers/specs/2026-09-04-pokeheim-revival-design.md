@@ -311,17 +311,59 @@ progresses rather than up front:
 
 ## Stage ordering after Stage 0
 
-The following order is provisional and is validated against real code
-dependencies before the implementation plan commits to it. The principle is that
-foundational and diagnostic code comes first, because later stages depend on the
-in-game tooling it provides.
+This order has been validated against the mod's actual internal dependency
+graph rather than assumed.
 
-1. Foundation and debug commands, which unblock the saddle and icon workflows.
-2. The capture loop: balls, capture state, and fainting.
-3. World and progression: spawning, bosses, recipes.
-4. Player and UI: inventory, wardrobe, the Professor Raven guide.
-5. Riding, including the replacement saddle prefab.
-6. Polish, including shinies and the MusicMod spin out.
+Four files are infrastructure rather than features, and are always compiled:
+`Pokeheim.cs` (the entry point and the init and command attributes, with 21
+dependents), `Utils.cs` (20 dependents, and itself depending on nothing else in
+the mod), `TranspilerSequence.cs` (6 dependents, no dependencies), and
+`Features.cs`.
+
+The remaining files form five tiers. Everything in the first tier depends only
+on infrastructure: `Berries`, `BossMods`, `ContainerMods`, `Credits`,
+`Debugging`, `DressUp`, `Giovanni`, `InventoryMods`, `MonsterWithWeapons`,
+`MusicMods`, `SerpentMods` and `Sounds`. Above that sit `MonsterMetadata`,
+`OdinMods` and `Riding`; then `Captured` and `Inhabitant`; then `BallItem` and
+`Fainting`; and finally `BallProjectile`, `PlayerMods`, `ShinyMods`,
+`Suppressipes` and `ProfessorRaven`.
+
+The order is therefore:
+
+1. Debug commands, sounds and monster weapons. `Debugging` has no internal
+   dependencies and provides the `dumpbodyparts`, `setmountpoint` and
+   `renderanddump` commands that later stages need, so it goes first on
+   evidence rather than on intuition.
+2. Monster identity: berries, then monster metadata.
+3. The capture state: captured monsters, inhabitants, fainting.
+4. Balls: the item, then the projectile.
+5. Player and inventory: player mods, recipe suppression, shinies, inventory
+   and container changes.
+6. World and NPCs: Odin, credits, Professor Raven, bosses, serpents, Giovanni.
+7. Riding, including the replacement saddle derived from vanilla.
+8. Remaining polish: the wardrobe, the version string, the intro and the
+   loading screen.
+
+### Riding must be decoupled from capture first
+
+Taken literally the graph puts riding second, ahead of capture and the balls,
+because `Captured` depends on `Riding`. That would mean hand tuning saddle
+offsets on monsters there is not yet any way to catch.
+
+The coupling is a single line, `Captured.cs` adding a `Riding.Mountable`
+component to every captured monster. Before stage 3, that responsibility moves
+into `Riding`, which patches the same hook and attaches the component itself.
+`Captured` then no longer references `Riding` and the order above holds.
+(`ProfessorRaven` also names `Riding.SaddleName`, but that is a constant with no
+behavior behind it.)
+
+This is worth doing for a second and more important reason. Compile time
+coupling between features defeats the registry's runtime isolation: as written,
+a `Riding` feature whose patches failed and were rolled back would still have
+`Captured` adding `Riding.Mountable` to everything it captures, so disabling
+riding would not actually disable riding. The registry can only isolate features
+that are not wired into each other, so each stage should check for this shape as
+its feature comes back.
 
 ## Risks
 
