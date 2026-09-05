@@ -71,12 +71,43 @@ namespace Pokeheim {
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     class ReplaceLogo_Patch {
       static void Postfix(FejdStartup __instance) {
-        var startup = __instance;
-        var logo = startup.m_mainMenu.transform.Find("LOGO").gameObject;
-        var hh = startup.m_mainMenu.transform.Find("H&H").gameObject;
+        var menu = __instance.m_mainMenu;
+        if (menu == null) {
+          Jotunn.Logger.LogError("No main menu; cannot replace the logo.");
+          return;
+        }
 
-        logo.GetComponent<Image>().sprite = Utils.LoadSprite("Logo.png");
-        hh.GetComponent<Image>().enabled = false;
+        var logo = menu.transform.Find("LOGO");
+        if (logo == null) {
+          // This hierarchy has changed under us before and will again.  Say
+          // what is actually there instead of throwing a bare
+          // NullReferenceException from inside a patch.
+          Jotunn.Logger.LogError(
+              "No \"LOGO\" under the main menu.  Direct children are:");
+          foreach (Transform child in menu.transform) {
+            Jotunn.Logger.LogError($"    {child.name}");
+          }
+          return;
+        }
+
+        var image = logo.GetComponent<Image>();
+        if (image == null) {
+          Jotunn.Logger.LogError("\"LOGO\" has no Image component.");
+          return;
+        }
+        image.sprite = Utils.LoadSprite("Logo.png");
+
+        // The "H&H" badge dates from the Hearth & Home update.  It may simply
+        // not exist any more, which is not an error.
+        var hh = menu.transform.Find("H&H");
+        if (hh == null) {
+          Jotunn.Logger.LogInfo("No \"H&H\" badge to hide; skipping.");
+          return;
+        }
+        var hhImage = hh.GetComponent<Image>();
+        if (hhImage != null) {
+          hhImage.enabled = false;
+        }
       }
     }
 

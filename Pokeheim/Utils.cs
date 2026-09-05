@@ -32,6 +32,9 @@ using UnityEngine.UI;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
+  // Nested types inherit this, so it also covers HookPatches below, which
+  // drives the lifecycle hooks the rest of the mod waits on.
+  [Feature(Features.Core)]
   public static class Utils {
     // Other classes can register callbacks here without worrying about
     // unregistering.  Similar events from Jotunn will be invoked many times,

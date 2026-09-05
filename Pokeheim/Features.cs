@@ -49,6 +49,11 @@ namespace Pokeheim {
   public static class Features {
     // Feature names.  Keep these in sync with the Compile list in
     // Pokeheim.csproj and with the sections of testing-script.md.
+    // Infrastructure the rest of the mod is built on, notably the lifecycle
+    // hooks in Utils.  Always enabled: without it, features that wait for
+    // OnVanillaPrefabsAvailable and friends would simply never run.
+    public const string Core = "Core";
+
     public const string Logo = "Logo";
     public const string Music = "Music";
     public const string Version = "Version";
@@ -59,6 +64,7 @@ namespace Pokeheim {
     // as each stage brings a feature back.  See
     // docs/superpowers/specs/2026-09-04-pokeheim-revival-design.md.
     private static readonly List<string> EnabledFeatures = new List<string> {
+      Core,
       Logo,
       Music,
     };
