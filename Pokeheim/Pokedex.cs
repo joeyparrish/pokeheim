@@ -1015,7 +1015,7 @@ namespace Pokeheim {
 
         foreach (var metadata in GetAllMonsters()) {
           if (faction == null || faction.ToLower() == metadata.LocalizedFactionName.ToLower()) {
-            Logger.LogInfo($" - {metadata.LocalizedGenericName}");
+            Logger.LogInfo($" - {metadata.prefabName}: \"{metadata.LocalizedGenericName}\"");
           }
         }
       }
