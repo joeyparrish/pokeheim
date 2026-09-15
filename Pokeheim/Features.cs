@@ -37,7 +37,17 @@ namespace Pokeheim {
                   Inherited = false)]
   public class FeatureAttribute : Attribute {
     public string Name { get; private set; }
-    public string[] DependsOn { get; private set; }
+
+    // Settable so that it can be named at the call site.  Both of these work:
+    //
+    //   [Feature(Features.Captured, dependsOn: new[] { Features.Pokedex })]
+    //   [Feature(Features.Captured, DependsOn = new[] { Features.Pokedex })]
+    //
+    // The first names the constructor parameter, the second assigns this
+    // property.  C# reserves "=" in an attribute for fields and properties and
+    // ":" for constructor parameters, which is why the casing differs between
+    // the two.
+    public string[] DependsOn { get; set; }
 
     public FeatureAttribute(string name) {
       this.Name = name;
@@ -188,8 +198,9 @@ namespace Pokeheim {
 
         // A feature can be declared by more than one type, so take the union
         // of everything they ask for.  Core is implicit, so ignore it if
-        // someone names it anyway.
-        foreach (var dep in attribute.DependsOn) {
+        // someone names it anyway.  DependsOn is settable, so guard against it
+        // having been assigned null at the call site.
+        foreach (var dep in attribute.DependsOn ?? new string[0]) {
           if (dep != Core) {
             info.DependsOn.Add(dep);
           }
