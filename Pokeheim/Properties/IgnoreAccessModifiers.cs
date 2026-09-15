@@ -1,6 +1,6 @@
 ﻿/**
  * Pokeheim - A Valheim Mod
- * Copyright (C) 2021 Joey Parrish
+ * Copyright (C) 2021-2026 Joey Parrish
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,10 @@
 
 using System.Security.Permissions;
 
-// SecurityPermision set to minimum
-// for skipping access modifiers check from the mono JIT
-// The same attribute are added to the assembly when ticking
-// Unsafe Code in the Project settings
-// This is done here to allow an explanation of the trick and
-// not in an outside source you could potentially miss.
+// SecurityPermision set to minimum to skip the access modifiers check from
+// the mono JIT.  The same attribute is added to the assembly when you select
+// "Unsafe Code" in the project settings.  This is done here to allow an
+// explanation of the trick for clarity.
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]

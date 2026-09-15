@@ -1,6 +1,6 @@
 ﻿/**
  * Pokeheim - A Valheim Mod
- * Copyright (C) 2021 Joey Parrish
+ * Copyright (C) 2021-2026 Joey Parrish
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ using Logger = Jotunn.Logger;
 
 [assembly: AssemblyTitle("Pokeheim")]
 [assembly: AssemblyProduct("Pokeheim")]
-[assembly: AssemblyCopyright("Copyright © 2021 Joey Parrish")]
+[assembly: AssemblyCopyright("Copyright © 2021-2026 Joey Parrish")]
 [assembly: AssemblyVersion(Pokeheim.ModVersion.String + ".0")]
 
 namespace Pokeheim {

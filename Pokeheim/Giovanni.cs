@@ -1,6 +1,6 @@
 ﻿/**
  * Pokeheim - A Valheim Mod
- * Copyright (C) 2021 Joey Parrish
+ * Copyright (C) 2021-2026 Joey Parrish
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
