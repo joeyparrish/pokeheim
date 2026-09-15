@@ -38,25 +38,17 @@ namespace Pokeheim {
   public class FeatureAttribute : Attribute {
     public string Name { get; private set; }
 
-    // Settable so that it can be named at the call site.  Both of these work:
+    // Named at the call site, like so:
     //
-    //   [Feature(Features.Captured, dependsOn: new[] { Features.Pokedex })]
     //   [Feature(Features.Captured, DependsOn = new[] { Features.Pokedex })]
     //
-    // The first names the constructor parameter, the second assigns this
-    // property.  C# reserves "=" in an attribute for fields and properties and
-    // ":" for constructor parameters, which is why the casing differs between
-    // the two.
+    // Assigning a property is why this is PascalCase: C# reserves "=" in an
+    // attribute for fields and properties, and ":" for constructor parameters.
     public string[] DependsOn { get; set; }
 
     public FeatureAttribute(string name) {
       this.Name = name;
       this.DependsOn = new string[0];
-    }
-
-    public FeatureAttribute(string name, string[] dependsOn) {
-      this.Name = name;
-      this.DependsOn = dependsOn ?? new string[0];
     }
   }
 
