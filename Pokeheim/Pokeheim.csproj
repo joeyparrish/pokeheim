@@ -44,7 +44,7 @@
     <!-- Jotunn brings BepInEx, HarmonyX and MonoMod in transitively, and its
          build/ props publicize the game assemblies for us.  There is no
          packages.config and no packages/ directory any more. -->
-    <PackageReference Include="JotunnLib" Version="2.29.2" />
+    <PackageReference Include="JotunnLib" Version="2.30.0" />
     <!-- Needed to target .NET Framework on Linux, where the reference
          assemblies are not installed system-wide. -->
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />

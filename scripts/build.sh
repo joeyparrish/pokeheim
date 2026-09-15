@@ -34,7 +34,4 @@ else
   exit 1
 fi
 
-# WORKAROUND, REMOVE ME WHEN FIXED UPSTREAM.  See the script for details.
-./scripts/fix-jotunn-linux.sh
-
 "$DOTNET" build Pokeheim.sln /p:Configuration="$BUILD_TYPE"

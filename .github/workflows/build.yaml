@@ -59,12 +59,11 @@ jobs:
           #    Re-running the job does not help, since it starts cold again.
           steamcmd +force_install_dir "$HOME/VHINSTALL" +login anonymous +app_info_update 1 +app_update 896660 validate +exit
           # We build against the dedicated server, whose data directory is
-          # named valheim_server_Data.  Rename it to Valheim_Data, with a
-          # capital V, because that is the one spelling both halves of Jotunn
-          # accept: its Paths.props probes Valheim_Data and valheim_Data when
-          # setting VALHEIM_MANAGED, while its build task looks for
-          # Valheim_Data or valheim_server_Data when publicizing.  Only
-          # Valheim_Data satisfies both.
+          # named valheim_server_Data.  Jotunn's Paths.props only looks for
+          # Valheim_Data or valheim_Data when setting VALHEIM_MANAGED, so
+          # rename it.  (Jotunn's build task accepts valheim_server_Data, and
+          # since 2.30.0 matches case-insensitively, but Paths.props does
+          # neither.)
           mv ~/VHINSTALL/valheim_server_Data/ ~/VHINSTALL/Valheim_Data/
           mv ~/BepInExRaw/BepInExPack_Valheim/* ~/VHINSTALL/
 
@@ -80,11 +79,8 @@ jobs:
           echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><Project ToolsVersion=\"Current\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><VALHEIM_INSTALL>$HOME/VHINSTALL/</VALHEIM_INSTALL></PropertyGroup></Project>" > Environment.props
 
       - name: Build debug version
-        # scripts/fix-jotunn-linux.sh reads VALHEIM_INSTALL to decide whether
-        # its workaround is needed.  It is not, since we renamed the data
-        # directory to Valheim_Data above, but it still has to be able to find
-        # the install to determine that.
-        run: VALHEIM_INSTALL="$HOME/VHINSTALL" ./scripts/build.sh Debug
+        # The build finds the game through Environment.props, written above.
+        run: ./scripts/build.sh Debug
 
       # Set the version to the tag, if this was a tag push.
       - name: Prepare release
@@ -98,7 +94,6 @@ jobs:
       # pull requests.
       - name: Build release zip
         run: |
-          export VALHEIM_INSTALL="$HOME/VHINSTALL"
           RELEASE_VERSION="${RELEASE_VERSION:-0.0.1}" ./scripts/package.sh
 
       - uses: actions/upload-artifact@v7
