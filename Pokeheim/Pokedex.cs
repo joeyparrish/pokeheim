@@ -35,6 +35,7 @@ using System.IO;
 #endif
 
 namespace Pokeheim {
+  [Feature(Features.Pokedex)]
   public static class Pokedex {
     // NOTE: Adding New Monsters
     //
