@@ -721,7 +721,12 @@ namespace Pokeheim {
           return "$faction_ocean";
         case Character.Faction.PlainsMonsters:
           return "$faction_plains";
-        // TODO: Add more factions
+        case Character.Faction.MistlandsMonsters:
+          return "$faction_mistlands";
+        case Character.Faction.Dverger:
+          return "$faction_dverger";
+        case Character.Faction.DeepNorth:
+          return "$faction_deepnorth";
         case Character.Faction.Boss:
           return "$faction_boss";
         default:
@@ -735,13 +740,19 @@ namespace Pokeheim {
           return 0.1;
         case Character.Faction.Undead:
         case Character.Faction.Demon:
-          return 0.05;
+          return 0.07;
         case Character.Faction.MountainMonsters:
-          return 0.02;
-        case Character.Faction.SeaMonsters:
-        case Character.Faction.PlainsMonsters:
           return 0.05;
-        // TODO: Add more factions
+        case Character.Faction.SeaMonsters:
+          return 0.05;
+        case Character.Faction.PlainsMonsters:
+          return 0.04;
+        case Character.Faction.MistlandsMonsters:
+          return 0.03;
+        case Character.Faction.Dverger:
+          return 0.04;
+        case Character.Faction.DeepNorth:
+          return 0.02;
         case Character.Faction.Boss:
         default:
           return 0;

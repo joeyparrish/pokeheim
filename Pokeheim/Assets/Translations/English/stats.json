@@ -15,6 +15,9 @@
   "faction_mountain": "Mountain",
   "faction_ocean": "Ocean",
   "faction_plains": "Plains",
+  "faction_mistlands": "Mistlands",
+  "faction_dverger": "Dverger",
+  "faction_deepnorth": "Deep North",
   "faction_boss": "Boss",
   "faction_unknown": "???",
   "stats_shiny": "Shiny"
