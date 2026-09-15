@@ -51,5 +51,37 @@ namespace Pokeheim {
         }
       }
     }
+
+    // Valheim 1.0 added pre-rendered cinematics: an intro at startup and again
+    // on a new world, an outro and credits at the end of the game, and dream
+    // videos when you sleep.  None of them fit Pokeheim, which tells its own
+    // story, so starve the whole system rather than intercepting each trigger.
+    [HarmonyPatch(typeof(CinematicsManager), nameof(CinematicsManager.Awake))]
+    class SuppressCinematics_Patch {
+      static void Postfix(CinematicsManager __instance) {
+        // Both intro paths check these before they call Play().  Clearing them
+        // matters most for the one at startup: letting Play() merely fail
+        // there logs "Failed to play intro cinematic" as an error on every
+        // launch.
+        //
+        // The new-world path falls through to ShowIntro(), the old text intro,
+        // which is exactly what Intro_Patch above replaces.  So this restores
+        // the behaviour Pokeheim was built around rather than fighting it.
+        __instance.m_introOnStartup = false;
+        __instance.m_introOnNewWorld = false;
+
+        // Everything else reaches Play() through GetVideo(), which searches
+        // this list.  With it empty, GetVideo() returns null and Play() bails
+        // on its own null check, so we never have to patch Play itself.
+        //
+        // That matters: all three Play() overloads funnel into one, but
+        // suppressing it directly would strand the main menu.  Its cinematics
+        // viewer calls Play() and then hides the menu, relying on Play's
+        // completion callback to bring it back.  Emptying the list instead
+        // leaves nothing in the viewer to select in the first place, since it
+        // is built by iterating this same list.
+        __instance.m_videos.Clear();
+      }
+    }
   }
 }
