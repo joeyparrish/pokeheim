@@ -978,6 +978,21 @@ namespace Pokeheim {
     }
 
     [RegisterCommand]
+    class FillPokedex : ConsoleCommand {
+      public override string Name => "fillpokedex";
+      public override string Help => "Fill the pokedex";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var player = Player.m_localPlayer;
+
+        foreach (var metadata in GetAllMonsters()) {
+          LogCapture(metadata.PrefabName);
+        }
+      }
+    }
+
+    [RegisterCommand]
     class ListAll : ConsoleCommand {
       public override string Name => "listall";
       public override string Help => "[opt_faction] - List all monsters of a certain faction, or one of everything in the game.";
