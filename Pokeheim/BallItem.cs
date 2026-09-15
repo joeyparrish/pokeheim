@@ -35,7 +35,6 @@ namespace Pokeheim {
       public ItemConfig ItemConfig;
     }
 
-    public static Skills.SkillType Skill = 0;
     public static List<string> RecipeNames = new List<string>();
 
     private static Mesh BallMesh = null;
@@ -125,7 +124,7 @@ namespace Pokeheim {
     }
 
     public static bool IsBall(this ItemDrop.ItemData item) {
-      return item.m_shared.m_skillType == Skill;
+      return item.m_shared.m_skillType == Pokedex.TrainerSkill;
     }
 
     public static bool IsInhabitedBall(this ItemDrop.ItemData item) {
@@ -161,14 +160,6 @@ namespace Pokeheim {
     }
 
     private static void AddBalls() {
-      Skill = SkillManager.Instance.AddSkill(new SkillConfig {
-        Identifier = "training",
-        Name = "$skill_monster_training",
-        Description = "$skill_monster_training_description",
-        Icon = Utils.LoadSprite("Skill icon.png"),
-        IncreaseStep = 1f,
-      });
-
       foreach (var entry in BallConfigs) {
         var config = entry.Value;
         AddBall(entry.Key, config);
@@ -232,7 +223,7 @@ namespace Pokeheim {
 
       // Set the associated skill.
       var sharedData = customItem.ItemDrop.m_itemData.m_shared;
-      sharedData.m_skillType = Skill;
+      sharedData.m_skillType = Pokedex.TrainerSkill;
 
       // Set the stack size.
       sharedData.m_maxStackSize = 100;

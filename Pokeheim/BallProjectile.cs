@@ -71,7 +71,7 @@ namespace Pokeheim {
       }
 
       if (BaseAI.IsEnemy(monster, ball.m_owner)) {
-        var catchRate = monster.GetCatchRate(ball.BallFactor());
+        var catchRate = GetCatchRate(monster, ball.BallFactor());
         Logger.LogDebug($"Monster: {monster} catchRate: {catchRate}");
 
         if (UnityEngine.Random.value > catchRate) {
@@ -82,6 +82,46 @@ namespace Pokeheim {
 
       DoCapture(ball, monster);
       return true;
+    }
+
+    private static double GetCatchRate(
+        Character monster, double ballFactor = 1.0) {
+      // Using an older .NET SDK which doesn't have MathF for floats.  So
+      // this calculation is done in doubles.
+
+      // Start with the base catch rate from the metadata object.  This is not
+      // specific to an instance.
+      var metadata = GetMetadata(monster.GetPrefabName());
+      double catchRate = metadata.CatchRate;
+
+      // Cut the catch rate in half again for each level of this monster.
+      // Levels are 1-based, so a level 1 monster (no stars) will keep the
+      // base catch rate based on faction.  A level 2 monster (1 star) will
+      // be twice as hard to catch.
+      catchRate /= Math.Pow(2.0, (double)(monster.m_level - 1));
+
+      // These steps require a real-life monster, but monster could be a
+      // component of a prefab that doesn't exist in the world yet.
+      if (monster.m_nview != null) {
+        // Divide by the health ratio.  A monster at 1% is 100x more likely to
+        // be caught.
+        var healthRatio = monster.GetHealth() / monster.GetMaxHealth();
+        catchRate /= (double)healthRatio;
+
+        // Apply a bonus when the monster eats a berry.
+        var berryEater = monster.GetComponent<Berries.BerryEater>();
+        catchRate *= berryEater?.GetBerryCatchRate() ?? 1.0;
+
+        // These steps can overflow 1.0, so cap it.
+        catchRate = Math.Min(catchRate, 1.0);
+      }
+
+      // Finally, the ball provides an exponent on the failure rate.  Since
+      // the failure rate is a fraction of 1.0, raising it to a power lowers
+      // the failure rate.
+      catchRate = 1.0 - Math.Pow(1.0 - catchRate, ballFactor);
+
+      return catchRate;
     }
 
     // T may be a Ragdoll or Character (monster).
@@ -127,8 +167,10 @@ namespace Pokeheim {
         player.Message(MessageHud.MessageType.Center,
             Localization.instance.Localize("$monster_return", name));
       } else {
-        player.LogCapture(inhabitant.PrefabName);
-        player.Message(MessageHud.MessageType.Center, "$monster_caught");
+        if (player == Player.m_localPlayer) {
+          Pokedex.LogCapture(inhabitant.PrefabName);
+          player.Message(MessageHud.MessageType.Center, "$monster_caught");
+        }
         if (MonsterMetadata.PokedexFullness() == 1f) {
           player.PokeheimTutorial("caught_em_all", immediate: true);
         } else {

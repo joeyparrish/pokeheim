@@ -16,18 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 
 using Logger = Jotunn.Logger;
 
+#if DEBUG
+using System.IO;
+#endif
+
 namespace Pokeheim {
-  public static class MonsterMetadata {
+  public static class Pokedex {
     // NOTE: Adding New Monsters
     //
     // When new content is added to Valheim, it should show up in the Pokedex
@@ -212,10 +220,25 @@ namespace Pokeheim {
 
     private const int TrophyPanelWidth = 7;
 
+    private const string PokedexFakeStationPrefix = "com.pokeheim.pokedex.";
+    private const string PokedexIconPath = "Pokedex icon.png";
+
+    public static Skills.SkillType TrainerSkill = 0;
+
     [PokeheimInit]
     public static void Init() {
       InhabitedOverlay = Utils.LoadSprite(InhabitedOverlayPath, centerPivot);
       ShinyOverlay = Utils.LoadSprite(ShinyOverlayPath, centerPivot);
+
+      Utils.OnVanillaPrefabsAvailable += delegate {
+        TrainerSkill = SkillManager.Instance.AddSkill(new SkillConfig {
+          Identifier = "training",
+          Name = "$skill_monster_training",
+          Description = "$skill_monster_training_description",
+          Icon = Utils.LoadSprite("Skill icon.png"),
+          IncreaseStep = 1f,
+        });
+      };
 
       // If this runs OnVanillaPrefabsAvailable, some (Deer, Neck, Skeleton)
       // will be missing Character components.  Waiting until the scene starts
@@ -278,7 +301,7 @@ namespace Pokeheim {
       };
     }
 
-    public static Metadata Get(string prefabName) {
+    public static Metadata GetMetadata(string prefabName) {
       Metadata metadata = null;
       if (!MonsterMap.TryGetValue(prefabName, out metadata)) {
         // If we don't have an entry, it could be a new monster added to the
@@ -291,13 +314,13 @@ namespace Pokeheim {
       return metadata;
     }
 
-    public static float PokedexFullness() {
+    public static float Fullness() {
       var player = Player.m_localPlayer;
       int found = 0;
       int total = 0;
       foreach (var metadata in GetAllMonsters()) {
         total++;
-        if (player.HasInPokedex(metadata.PrefabName)) {
+        if (Has(metadata.PrefabName)) {
           found++;
         }
       }
@@ -319,11 +342,49 @@ namespace Pokeheim {
     public static bool CaughtAllBosses() {
       var player = Player.m_localPlayer;
       foreach (var metadata in AllMonsters) {
-        if (metadata.IsBoss && !player.HasInPokedex(metadata.PrefabName)) {
+        if (metadata.IsBoss && !Has(metadata.PrefabName)) {
           return false;
         }
       }
       return true;
+    }
+
+    public static void LogCapture(string prefabName) {
+      // Abuse m_knownStations (maps string to int) to keep track of monsters
+      // caught for the Pokedex.
+      var player = Player.m_localPlayer;
+      var fakeStationName = PokedexFakeStationPrefix + prefabName;
+      int caught = 0;
+      player.m_knownStations.TryGetValue(fakeStationName, out caught);
+      caught += 1;
+      player.m_knownStations[fakeStationName] = caught;
+
+      // Now update the skill level.
+      var skill = player.m_skills.GetSkill(TrainerSkill);
+      var oldLevel = skill.m_level;
+
+      // Set the trainer skill level based on the fullness of the pokedex.
+      var pokedexPercent = Fullness() * 100f;
+      skill.m_level = (float)((int)pokedexPercent);
+      var leftovers = pokedexPercent - skill.m_level;
+      skill.m_accumulator = skill.GetNextLevelRequirement() * leftovers;
+
+      if (skill.m_level != oldLevel) {
+        player.OnSkillLevelup(TrainerSkill, skill.m_level);
+        var messageType = oldLevel > 0 ?
+            MessageHud.MessageType.TopLeft : MessageHud.MessageType.Center;
+        var message = "$msg_skillup $skill_monster_training: " +
+            (int)skill.m_level;
+        player.Message(messageType, message, 0, skill.m_info.m_icon);
+      }
+    }
+
+    public static bool Has(string prefabName) {
+      var player = Player.m_localPlayer;
+      var fakeStationName = PokedexFakeStationPrefix + prefabName;
+      var caught = 0;
+      player.m_knownStations.TryGetValue(fakeStationName, out caught);
+      return caught > 0;
     }
 
     // Only those whose entries are "complete" and can be shown in the Pokedex.
@@ -658,6 +719,7 @@ namespace Pokeheim {
           return "$faction_ocean";
         case Character.Faction.PlainsMonsters:
           return "$faction_plains";
+        // TODO: Add more factions
         case Character.Faction.Boss:
           return "$faction_boss";
         default:
@@ -677,53 +739,242 @@ namespace Pokeheim {
         case Character.Faction.SeaMonsters:
         case Character.Faction.PlainsMonsters:
           return 0.05;
+        // TODO: Add more factions
         case Character.Faction.Boss:
         default:
           return 0;
       }
     }
 
-    public static double GetCatchRate(
-        this Character monster, double ballFactor = 1.0) {
-      // Using an older .NET SDK which doesn't have MathF for floats.  So
-      // this calculation is done in doubles.
+    public static string GetTrophyPrefabName(string prefabName) {
+      return GetMetadata(prefabName).TrophyName;
+    }
 
-      // Start with the base catch rate from the metadata object.  This is not
-      // specific to an instance.
-      var metadata = Get(monster.GetPrefabName());
-      double catchRate = metadata.CatchRate;
+    // Untranslated name
+    public static string GetEntryName(string prefabName) {
+      var metadata = GetMetadata(prefabName);
 
-      // Cut the catch rate in half again for each level of this monster.
-      // Levels are 1-based, so a level 1 monster (no stars) will keep the
-      // base catch rate based on faction.  A level 2 monster (1 star) will
-      // be twice as hard to catch.
-      catchRate /= Math.Pow(2.0, (double)(monster.m_level - 1));
-
-      // These steps require a real-life monster, but monster could be a
-      // component of a prefab that doesn't exist in the world yet.
-      if (monster.m_nview != null) {
-        // Divide by the health ratio.  A monster at 1% is 100x more likely to
-        // be caught.
-        var healthRatio = monster.GetHealth() / monster.GetMaxHealth();
-        catchRate /= (double)healthRatio;
-
-        // Apply a bonus when the monster eats a berry.
-        var berryEater = monster.GetComponent<Berries.BerryEater>();
-        catchRate *= berryEater?.GetBerryCatchRate() ?? 1.0;
-
-        // These steps can overflow 1.0, so cap it.
-        catchRate = Math.Min(catchRate, 1.0);
+      if (!Has(prefabName)) {
+        return "???";
       }
 
-      // Finally, the ball provides an exponent on the failure rate.  Since
-      // the failure rate is a fraction of 1.0, raising it to a power lowers
-      // the failure rate.
-      catchRate = 1.0 - Math.Pow(1.0 - catchRate, ballFactor);
+      return metadata.GenericName;
+    }
 
-      return catchRate;
+    public static Sprite GetEntryIcon(string prefabName) {
+      var metadata = GetMetadata(prefabName);
+
+      if (!Has(prefabName)) {
+        return metadata.TrophyShadowIcon;
+      } else {
+        return metadata.TrophyIcon;
+      }
+    }
+
+    public static string GetLore(string prefabName) {
+      var metadata = GetMetadata(prefabName);
+
+      // Abuse m_knownStations (maps string to int) to keep track of
+      // monsters caught for the Pokedex.
+      var fakeStationName = PokedexFakeStationPrefix + prefabName;
+      int caught = 0;
+      var player = Player.m_localPlayer;
+      player.m_knownStations.TryGetValue(fakeStationName, out caught);
+
+      if (caught == 0) {
+        return "";
+      }
+
+      var lore = $"$stats_type: {metadata.FactionName}\n";
+      lore += $"$stats_hp: {metadata.BaseHealth}\n";
+      lore += $"$stats_damage: {metadata.TotalDamage}\n";
+      lore += $"$stats_catch_rate: {metadata.CatchRate:P2}\n";
+      lore += $"$stats_caught: {caught}";
+      return lore;
+    }
+
+    [RegisterCommand]
+    class ResetPokedex : ConsoleCommand {
+      public override string Name => "resetpokedex";
+      public override string Help => "Clear the pokedex";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var player = Player.m_localPlayer;
+        var keys = new List<string>(player.m_knownStations.Keys);
+        foreach (var key in keys) {
+          if (key.StartsWith(PokedexFakeStationPrefix)) {
+            player.m_knownStations.Remove(key);
+          }
+        }
+      }
+    }
+
+    // We use LogCapture to set the trainer skill level.
+    // RaiseSkill is suppressed for this skill.
+    [HarmonyPatch(typeof(Player), nameof(Player.RaiseSkill))]
+    class TrainerSkillOnlyChangedByCapture_Patch {
+      static bool Prefix(Skills.SkillType skill) {
+        // For the trainer skill, suppress this method.
+        return skill != TrainerSkill;
+      }
+    }
+
+    // Instead of trophy prefab names, this will return monster prefab names.
+    [HarmonyPatch(typeof(Player), nameof(Player.GetTrophies))]
+    class OverrideTrophiesToDrivePokedex_Patch {
+      static List<string> Postfix(List<string> ignored) {
+        var result = new List<string>();
+        foreach (var metadata in GetAllMonsters()) {
+          result.Add(metadata.PrefabName);
+        }
+        return result;
+      }
+    }
+
+    [HarmonyPatch]
+    class RenameTrophiesPanel_Patch {
+      static Text TrophyPanelTitle = null;
+
+      [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
+      [HarmonyPostfix]
+      static void FindPokedexComponents(InventoryGui __instance) {
+        var gui = __instance;
+
+        foreach (var component in gui.m_trophiesPanel.GetComponentsInChildren<Text>()) {
+          if (component.name == "topic") {
+            TrophyPanelTitle = component;
+            break;
+          }
+        }
+
+        foreach (var component in gui.m_inventoryRoot.GetComponentsInChildren<UITooltip>()) {
+          if (component.name == "Trophies") {
+            component.Set("", "$pokedex");
+          }
+        }
+
+        foreach (var component in gui.m_inventoryRoot.GetComponentsInChildren<Button>()) {
+          if (component.name == "Trophies") {
+            foreach (var child in component.GetComponentsInChildren<Image>()) {
+              if (child.name == "Image") {
+                child.sprite = Utils.LoadSprite(PokedexIconPath);
+              }
+            }
+          }
+        }
+      }
+
+      [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.OnOpenTrophies))]
+      [HarmonyPostfix]
+      static void ComputePokedexTitleElementAndText(InventoryGui __instance) {
+        var pokedexPercent = Fullness() * 100f;
+        Logger.LogInfo($"Pokedex {pokedexPercent:n1}% complete");
+        Utils.PatchUIText(TrophyPanelTitle,
+            Localization.instance.Localize(
+            "$pokedex_percent_complete", pokedexPercent.ToString("n1")));
+      }
+    }
+
+    [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.UpdateTrophyList))]
+    class UpdatePokedex_Patch {
+      static IEnumerable<CodeInstruction> Transpiler(
+          IEnumerable<CodeInstruction> instructions,
+          ILGenerator generator) {
+        var monsterNameBackupVar = generator.DeclareLocal(typeof(String));
+
+        var getStringItemMethod = typeof(List<string>).GetMethod("get_Item");
+        var localizeMethod = typeof(Localization).GetMethod(
+            "Localize", new Type[] { typeof(string) });
+        var getIconMethod = typeof(ItemDrop.ItemData).GetMethod("GetIcon");
+
+        var getTrophyPrefabNameMethod = typeof(Pokedex).GetMethod(nameof(Pokedex.GetTrophyPrefabName));
+        var getEntryNameMethod = typeof(Pokedex).GetMethod(nameof(Pokedex.GetEntryName));
+        var getEntryIconMethod = typeof(Pokedex).GetMethod(nameof(Pokedex.GetEntryIcon));
+        var getLoreMethod = typeof(Pokedex).GetMethod(nameof(Pokedex.GetLore));
+
+        var phases = new TranspilerSequence.Phase[] {
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == getStringItemMethod),
+            replacer = code => new CodeInstruction[] {
+              // Load a string from the array of trophy prefab names.
+              code,
+
+              // After the original instruction, inject instructions to back up
+              // the original monster name in our own local var.
+              new CodeInstruction(OpCodes.Stloc_S, monsterNameBackupVar),
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
+
+              // Then convert that to a trophy name.  The original method will
+              // now store this into a local var of its own, and we don't care
+              // what index it has because we have our own backup.
+              new CodeInstruction(OpCodes.Call, getTrophyPrefabNameMethod),
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == localizeMethod),
+            replacer = code => new CodeInstruction[] {
+              // Right before we localize the entry name, replace it.
+              // Remove the trophy name from the stack.
+              new CodeInstruction(OpCodes.Pop),
+              // Load our backup of the original monster name onto the stack.
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
+              // Get the replacement name (untranslated) for this Pokedex entry.
+              new CodeInstruction(OpCodes.Call, getEntryNameMethod),
+              // Continue with the Localize() call.
+              code,
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Callvirt &&
+                               (code.operand as MethodInfo) == getIconMethod),
+            replacer = code => new CodeInstruction[] {
+              // Instead of loading the icon from the trophy ItemDrop, call our
+              // method instead.
+              // Remove the item data from the stack.
+              new CodeInstruction(OpCodes.Pop),
+              // Load our backup of the original monster name onto the stack.
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
+              // Get the replacement icon for this Pokedex entry.
+              new CodeInstruction(OpCodes.Call, getEntryIconMethod),
+            },
+          },
+          new TranspilerSequence.Phase {
+            matcher = code => (code.opcode == OpCodes.Ldstr &&
+                               (code.operand as String) == "_lore"),
+            replacer = code => new CodeInstruction[] {
+              // This occurs right before the original method concatenates the
+              // trophy name with "_lore".  Skip this, and instead...
+              // Remove the trophy name from the stack.
+              new CodeInstruction(OpCodes.Pop),
+              // Load our backup of the original monster name onto the stack.
+              new CodeInstruction(OpCodes.Ldloc_S, monsterNameBackupVar),
+              // Get the replacement lore (untranslated) for this Pokedex entry.
+              new CodeInstruction(OpCodes.Call, getLoreMethod),
+              // The next instruction is a 2-string concat operation.  So place
+              // a blank string onto the stack.
+              new CodeInstruction(OpCodes.Ldstr, ""),
+              // The rest of the loop will now concat the two and then localize.
+            },
+          },
+        };
+        return TranspilerSequence.Execute(
+            "UpdateTrophyList", phases, instructions);
+      }
     }
 
 #if DEBUG
+    private static GameObject Find(string name) {
+      return GameObject.Find(name + "(Clone)");
+    }
+
+    private static Character FindCharacter(string name) {
+      var gameObject = Find(name);
+      return gameObject?.GetComponent<Character>();
+    }
+
     [RegisterCommand]
     class ListAll : ConsoleCommand {
       public override string Name => "listall";
@@ -888,7 +1139,7 @@ namespace Pokeheim {
           Logger.LogInfo($"  Body part: {path} - position {position} rotation {rotation} local rotation {localRotation}");
         }
 
-        var tameable = monster.GetTameable();
+        var tameable = monster.m_tameable;
         if (tameable != null && tameable.m_saddle != null) {
           Logger.LogInfo($"  Saddle: {tameable.m_saddle}");
         }

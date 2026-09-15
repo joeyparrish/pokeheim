@@ -58,11 +58,13 @@
          decides what gets patched, and shared helpers. -->
     <Compile Include="Pokeheim.cs" />
     <Compile Include="Features.cs" />
+    <Compile Include="TranspilerSequence.cs" />
     <Compile Include="Utils.cs" />
 
     <!-- Stage 0 features. -->
     <Compile Include="MenuVersion.cs" />
     <Compile Include="MusicMods.cs" />
+    <Compile Include="Pokedex.cs" />
 
     <!-- Features still to be revived.  Uncomment as each stage brings one
          back, together with its section of testing-script.md.  See
@@ -80,7 +82,6 @@
     <Compile Include="Giovanni.cs" />
     <Compile Include="Inhabitant.cs" />
     <Compile Include="InventoryMods.cs" />
-    <Compile Include="MonsterMetadata.cs" />
     <Compile Include="MonsterWithWeapons.cs" />
     <Compile Include="OdinMods.cs" />
     <Compile Include="PlayerMods.cs" />
@@ -90,7 +91,6 @@
     <Compile Include="ShinyMods.cs" />
     <Compile Include="Sounds.cs" />
     <Compile Include="Suppressipes.cs" />
-    <Compile Include="TranspilerSequence.cs" />
     -->
   </ItemGroup>
 
