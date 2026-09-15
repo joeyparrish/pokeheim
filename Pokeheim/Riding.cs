@@ -866,6 +866,52 @@ namespace Pokeheim {
         }
       }
     }
+
+    [RegisterCommand]
+    class Saddle : ConsoleCommand {
+      public override string Name => "saddle";
+      public override string Help => "Saddle a nearby tame creature.";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var allCharacters = Character.GetAllCharacters();
+        foreach (var monster in allCharacters) {
+          var tameable = monster.GetTameable();
+          if (monster.IsTamed() && !tameable.HaveSaddle()) {
+            Logger.LogInfo($"Saddling {monster}");
+            tameable.RPC_AddSaddle(0L);
+            return;
+          }
+        }
+
+        Logger.LogInfo($"Found nothing to saddle.");
+      }
+    }
+
+    [RegisterCommand]
+    class Mount : ConsoleCommand {
+      public override string Name => "mount";
+      public override string Help => "Mount a nearby saddled creature.";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var allCharacters = Character.GetAllCharacters();
+        foreach (var monster in allCharacters) {
+          var tameable = monster.GetTameable();
+          if (tameable?.HaveSaddle() ?? false) {
+            Logger.LogInfo($"Mounting {monster}");
+            var saddle = tameable.m_saddle;
+            var maxUseRange = saddle.m_maxUseRange;
+            saddle.m_maxUseRange = 9999f;
+            saddle.Interact(Player.m_localPlayer, repeat: false, alt: false);
+            saddle.m_maxUseRange = maxUseRange;
+            return;
+          }
+        }
+
+        Logger.LogInfo($"Found nothing to mount.");
+      }
+    }
 #endif
   }
 }

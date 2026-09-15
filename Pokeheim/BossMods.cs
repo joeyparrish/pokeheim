@@ -50,6 +50,8 @@ namespace Pokeheim {
             Quaternion.identity);
 
         AddVegvisir(prefab, "GoblinKing", null, null);
+
+        // TODO: Add new bosses
       };
     }
 
@@ -225,5 +227,38 @@ namespace Pokeheim {
             "Vegvisir.Interact", phases, instructions);
       }
     }
+
+#if DEBUG
+    [RegisterCommand]
+    class FindBoss : FindLocation {
+      public override string Name => "findboss";
+      public override string Help => "[name or index] - Find all altars for a given boss.";
+      public override bool IsCheat => true;
+
+      private string[] bossLocationNames = new string[] {
+        "Eikthyrnir",
+        "GDKing",
+        "Bonemass",
+        "Dragonqueen",
+        "GoblinKing",
+        // TODO: Add new bosses
+      };
+
+      public override void Run(string[] args) {
+        string name = args[0];
+        try {
+          var index = int.Parse(args[0]);
+          if (index < 0 || index >= bossLocationNames.Length) {
+            Debug.Log($"Bad index: {index}");
+            return;
+          }
+
+          name = bossLocationNames[index];
+        } catch (Exception) {}
+
+        base.Run(new string[] {name});
+      }
+    }
+#endif
   }
 }

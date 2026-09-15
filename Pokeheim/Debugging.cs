@@ -212,104 +212,6 @@ namespace Pokeheim {
     }
 
     [RegisterCommand]
-    class RenderAndDump : ConsoleCommand {
-      public override string Name => "renderanddump";
-      public override string Help => "[name] [size=128] - Instantiate a prefab, render it, and dump it to disk";
-      public override bool IsCheat => true;
-
-      public override void Run(string[] args) {
-        var name = args[0];
-        var gameObject = Find(name);
-        if (gameObject != null) {
-          Debug.Log($"Found existing object for {name}");
-        } else {
-          var prefab = PrefabManager.Instance.GetPrefab(name);
-          if (prefab == null) {
-            Debug.Log($"Unable to find prefab named {name} to dump");
-            return;
-          }
-          gameObject = UnityEngine.Object.Instantiate(prefab);
-          Debug.Log($"Loaded prefab for {name}");
-        }
-
-        var size = 128;
-        if (args.Length > 1) {
-          size = int.Parse(args[1]);
-        }
-
-        var request = new RenderManager.RenderRequest(gameObject) {
-          Width = size,
-          Height = size,
-        };
-
-        var sprite = RenderManager.Instance.Render(request);
-        var tex = sprite.texture;
-        var bytes = tex.EncodeToPNG();
-        var path = $"{Application.persistentDataPath}/renders/{name}.png";
-			  Directory.CreateDirectory(Path.GetDirectoryName(path));
-        File.WriteAllBytes(path, bytes);
-        Debug.Log($"Sprite saved to {path}");
-      }
-    }
-
-    [RegisterCommand]
-    class DumpComponents : ConsoleCommand {
-      public override string Name => "dumpcomponents";
-      public override string Help => "[name] - Dump a list of components in an object";
-      public override bool IsCheat => true;
-
-      public override void Run(string[] args) {
-        var gameObject = Find(args[0]);
-        if (gameObject == null) {
-          Debug.Log($"Unable to find object named {args[0]} to dump");
-          return;
-        }
-
-        Logger.LogInfo($"Object: {gameObject}");
-        foreach (var component in gameObject.GetComponents<Component>()) {
-          Logger.LogInfo($"  Direct component: {component}");
-        }
-        foreach (var component in gameObject.GetComponentsInChildren<Component>()) {
-          Logger.LogInfo($"  Child component: {component}");
-        }
-      }
-    }
-
-    [RegisterCommand]
-    class DumpBodyParts : ConsoleCommand {
-      public override string Name => "dumpbodyparts";
-      public override string Help => "[name] - Dump a list of body parts in a character";
-      public override bool IsCheat => true;
-
-      public override void Run(string[] args) {
-        var monster = FindCharacter(args[0]);
-        if (monster == null) {
-          Debug.Log($"Unable to find object named {args[0]} to dump");
-          return;
-        }
-        var visual = monster.transform.Find("Visual");
-        var children = visual.gameObject.GetComponentsInChildren<Transform>();
-
-        Logger.LogInfo($"Monster: {monster}");
-        foreach (var child in children) {
-          var path = child.PathFrom(visual);
-          // localPosition is local to the immediate parent.  Instead, this is
-          // local to the overall monster.
-          var position = child.position - monster.transform.position;
-          var localRotation = child.localRotation.eulerAngles;
-          var rotation = Quaternion.FromToRotation(
-              child.forward, monster.transform.forward).eulerAngles;
-          Logger.LogInfo($"  Body part: {path} - position {position} rotation {rotation} local rotation {localRotation}");
-        }
-
-        var tameable = monster.GetTameable();
-        if (tameable != null && tameable.m_saddle != null) {
-          Logger.LogInfo($"  Saddle: {tameable.m_saddle}");
-        }
-      }
-    }
-
-    [RegisterCommand]
     class DumpAnimations : ConsoleCommand {
       public override string Name => "dumpanimations";
       public override string Help => "[name] - Dump animation triggers for a specific character";
@@ -407,52 +309,6 @@ namespace Pokeheim {
       }
     }
 
-    [RegisterCommand]
-    class Saddle : ConsoleCommand {
-      public override string Name => "saddle";
-      public override string Help => "Saddle a nearby tame creature.";
-      public override bool IsCheat => true;
-
-      public override void Run(string[] args) {
-        var allCharacters = Character.GetAllCharacters();
-        foreach (var monster in allCharacters) {
-          var tameable = monster.GetTameable();
-          if (monster.IsTamed() && !tameable.HaveSaddle()) {
-            Logger.LogInfo($"Saddling {monster}");
-            tameable.RPC_AddSaddle(0L);
-            return;
-          }
-        }
-
-        Logger.LogInfo($"Found nothing to saddle.");
-      }
-    }
-
-    [RegisterCommand]
-    class Mount : ConsoleCommand {
-      public override string Name => "mount";
-      public override string Help => "Mount a nearby saddled creature.";
-      public override bool IsCheat => true;
-
-      public override void Run(string[] args) {
-        var allCharacters = Character.GetAllCharacters();
-        foreach (var monster in allCharacters) {
-          var tameable = monster.GetTameable();
-          if (tameable?.HaveSaddle() ?? false) {
-            Logger.LogInfo($"Mounting {monster}");
-            var saddle = tameable.m_saddle;
-            var maxUseRange = saddle.m_maxUseRange;
-            saddle.m_maxUseRange = 9999f;
-            saddle.Interact(Player.m_localPlayer, repeat: false, alt: false);
-            saddle.m_maxUseRange = maxUseRange;
-            return;
-          }
-        }
-
-        Logger.LogInfo($"Found nothing to mount.");
-      }
-    }
-
     private static bool SpawnsEnabled = true;
 
     [RegisterCommand]
@@ -508,36 +364,6 @@ namespace Pokeheim {
           }
         }
         Debug.Log($"Added pins for all {name} locations.");
-      }
-    }
-
-    [RegisterCommand]
-    class FindBoss : FindLocation {
-      public override string Name => "findboss";
-      public override string Help => "[name or index] - Find all altars for a given boss.";
-      public override bool IsCheat => true;
-
-      private string[] bossLocationNames = new string[] {
-        "Eikthyrnir",
-        "GDKing",
-        "Bonemass",
-        "Dragonqueen",
-        "GoblinKing",
-      };
-
-      public override void Run(string[] args) {
-        string name = args[0];
-        try {
-          var index = int.Parse(args[0]);
-          if (index < 0 || index >= bossLocationNames.Length) {
-            Debug.Log($"Bad index: {index}");
-            return;
-          }
-
-          name = bossLocationNames[index];
-        } catch (Exception) {}
-
-        base.Run(new string[] {name});
       }
     }
   }
