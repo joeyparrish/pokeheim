@@ -725,9 +725,27 @@ namespace Pokeheim {
 
 #if DEBUG
     [RegisterCommand]
+    class ListAll : ConsoleCommand {
+      public override string Name => "listall";
+      public override string Help => "[opt_faction] - List all monsters of a certain faction, or one of everything in the game.";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var player = Player.m_localPlayer;
+        var faction = args.Length != 0 ? args[0] : null;
+
+        foreach (var metadata in GetAllMonsters()) {
+          if (faction == null || faction.ToLower() == metadata.LocalizedFactionName.ToLower()) {
+            Logger.LogInfo($" - {metadata.LocalizedGenericName}");
+          }
+        }
+      }
+    }
+
+    [RegisterCommand]
     class SpawnAll : ConsoleCommand {
       public override string Name => "spawnall";
-      public override string Help => "[opt_faction] - Spawn all of a certain faction, or one of everything in the game.";
+      public override string Help => "[opt_faction] - Spawn all monsters of a certain faction, or one of everything in the game.";
       public override bool IsCheat => true;
 
       public override void Run(string[] args) {
