@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -356,6 +357,17 @@ namespace Pokeheim {
       element.text = newText;
 
       var dictionary = Localization.instance.textStrings;
+      if (dictionary.ContainsKey(element)) {
+        dictionary[element] = newText;
+      }
+    }
+
+    // Specialization for newer TextMeshProUGUI elements.
+    public static void PatchUIText(TextMeshProUGUI element, string newText) {
+      element.text = newText;
+
+      // These have their own cache dictionary.
+      var dictionary = Localization.instance.textMeshStrings;
       if (dictionary.ContainsKey(element)) {
         dictionary[element] = newText;
       }

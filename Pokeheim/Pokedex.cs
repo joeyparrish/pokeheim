@@ -21,6 +21,7 @@ using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
@@ -835,14 +836,14 @@ namespace Pokeheim {
 
     [HarmonyPatch]
     class RenameTrophiesPanel_Patch {
-      static Text TrophyPanelTitle = null;
+      static TextMeshProUGUI TrophyPanelTitle = null;
 
       [HarmonyPatch(typeof(InventoryGui), nameof(InventoryGui.Awake))]
       [HarmonyPostfix]
       static void FindPokedexComponents(InventoryGui __instance) {
         var gui = __instance;
 
-        foreach (var component in gui.m_trophiesPanel.GetComponentsInChildren<Text>()) {
+        foreach (var component in gui.m_trophiesPanel.GetComponentsInChildren<TextMeshProUGUI>()) {
           if (component.name == "topic") {
             TrophyPanelTitle = component;
             break;
