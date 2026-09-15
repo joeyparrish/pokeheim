@@ -17,16 +17,12 @@
  */
 
 using BepInEx;
-using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
-using UnityEngine;
-using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
@@ -56,8 +52,6 @@ namespace Pokeheim {
     public const string PluginName = "Pokeheim";
     public const string PluginVersion = ModVersion.String;
 
-    private static string PokeheimIntroFlag = "com.pokeheim.IntroSeen";
-
     public void Awake() {
       // Patches, initializes and registers one feature at a time, so that a
       // game update which breaks one feature disables only that feature.
@@ -65,115 +59,6 @@ namespace Pokeheim {
 
       PokeheimInit.InitAll();
       RegisterCommand.RegisterAll();
-    }
-
-    [Feature(Features.Logo)]
-    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
-    class ReplaceLogo_Patch {
-      static void Postfix(FejdStartup __instance) {
-        var menu = __instance.m_mainMenu;
-        if (menu == null) {
-          Jotunn.Logger.LogError("No main menu; cannot replace the logo.");
-          return;
-        }
-
-        // "Logo" is a container.  As of 2026 it holds the logo itself, several
-        // drifting ember effects, and a parked, inactive variant for each
-        // themed update: Ashlands, Mistlands, and the old Hearth & Home badge.
-        // Transform.LogHierarchy below will show you the current shape of it.
-        var container = menu.transform.FindChildIgnoringCase("Logo");
-        if (container == null) {
-          Jotunn.Logger.LogError(
-              "No \"Logo\" under the main menu.  Its hierarchy is:");
-          menu.transform.LogHierarchy();
-          return;
-        }
-
-        // Match on being active rather than on a fixed path.  The themed
-        // variants exist because the game swaps which logo is live, so if a
-        // promotion switches "LOGO" off and "AshlandsLogo" on, we want to
-        // follow it rather than silently paint a hidden object, which is
-        // indistinguishable from doing nothing.  Only active objects are
-        // considered, which also excludes the parked variants.
-        Image image = null;
-        foreach (var candidate in
-                 container.GetComponentsInChildren<Image>(includeInactive: false)) {
-          var name = candidate.name;
-          if (name.IndexOf("logo", StringComparison.OrdinalIgnoreCase) < 0) {
-            // Embers and other decoration.
-            continue;
-          }
-          if (name.IndexOf("glow", StringComparison.OrdinalIgnoreCase) >= 0) {
-            // The themed logos come with a separate glow layer behind them.
-            continue;
-          }
-          image = candidate;
-          break;
-        }
-
-        if (image == null) {
-          Jotunn.Logger.LogError(
-              "Found no active logo Image.  The Logo hierarchy is:");
-          container.LogHierarchy();
-          return;
-        }
-
-        Jotunn.Logger.LogDebug($"Replacing the logo on \"{image.name}\".");
-        image.sprite = Utils.LoadSprite("Logo.png");
-      }
-    }
-
-    // Add our version number to the game's built-in version number.
-    [Feature(Features.Version)]
-    [HarmonyPatch(typeof(Version), nameof(Version.GetVersionString))]
-    class VersionString_Patch {
-      static void Postfix(ref string __result) {
-        __result += " " + PluginName + " " + PluginVersion;
-      }
-    }
-
-    [Feature(Features.Intro)]
-    [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
-    class Intro_Patch {
-      static void Prefix(Player __instance, ref bool spawnValkyrie) {
-        var player = __instance;
-
-        // Skip the Valkyrie.  The game takes this as a parameter now, so we
-        // no longer have to clear the prefab reference ourselves.  (It became
-        // a SoftReference, which cannot be nulled anyway.)
-        spawnValkyrie = false;
-
-        // but force our own version of the intro text for player who are new
-        // to Pokeheim.
-        if (player.HaveUniqueKey(PokeheimIntroFlag) == false) {
-          player.AddUniqueKey(PokeheimIntroFlag);
-
-          // Clear the tutorial flags and log book, too, since we've replaced
-          // the content of those in Pokeheim.
-          player.m_knownTexts.Clear();
-          player.m_shownTutorials.Clear();
-
-          TextViewer.instance.ShowText(
-              TextViewer.Style.Intro,
-              "INTRO",
-              "$pokeheim_intro",
-              autoHide: false);
-        }
-      }
-    }
-
-    [Feature(Features.LoadingScreen)]
-    [HarmonyPatch(typeof(Hud), nameof(Hud.Awake))]
-    class TweakLoadingScreen_Patch {
-      static void Postfix(Hud __instance) {
-        // Update the tips.
-        __instance.m_loadingTips = Utils.GenerateStringList(
-            "$pokeheim_loadscreen_tip", 14);
-
-        // Update the logo.
-        var image = __instance.m_loadingProgress.transform.Find("text_darken/Logotype");
-        image.GetComponent<Image>().sprite = Utils.LoadSprite("Logo.png");
-      }
     }
   }
 

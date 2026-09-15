@@ -69,8 +69,10 @@
     <Compile Include="Utils.cs" />
 
     <!-- Stage 0: Pregame. -->
-    <Compile Include="MenuVersion.cs" />
+    <Compile Include="MainMenu.cs" />
     <Compile Include="MusicMods.cs" />
+    <Compile Include="Intro.cs" />
+    <Compile Include="LoadingScreen.cs" />
 
     <!-- Stage 1: Basics. -->
     <Compile Include="Debugging.cs" />

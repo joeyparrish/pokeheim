@@ -41,10 +41,8 @@ namespace Pokeheim {
     public const string Core = "Core";
 
     // Stage 0: pregame
-    public const string Logo = "Logo";
+    public const string MainMenu = "MainMenu";
     public const string Music = "Music";
-    public const string Version = "Version";
-    public const string MenuVersion = "MenuVersion";
     public const string Intro = "Intro";
     public const string LoadingScreen = "LoadingScreen";
 

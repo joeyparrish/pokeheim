@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Pokeheim - A Valheim Mod
  * Copyright (C) 2021 Joey Parrish
  *
@@ -17,8 +17,10 @@
  */
 
 using HarmonyLib;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 using Logger = Jotunn.Logger;
 
@@ -30,8 +32,8 @@ namespace Pokeheim {
   // column of other text, which makes it hard to read.  We still patch
   // Version.GetVersionString elsewhere, because that feeds the logs and the
   // multiplayer version check; this only changes what the main menu shows.
-  [Feature(Features.MenuVersion)]
-  public static class MenuVersion {
+  [Feature(Features.MainMenu)]
+  public static class MainMenu {
     // Hide the game's version label on the main menu.
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     class HideNativeVersion_Patch {
@@ -105,5 +107,69 @@ namespace Pokeheim {
             style);
       }
     }
-  }
+
+    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
+    class ReplaceLogo_Patch {
+      static void Postfix(FejdStartup __instance) {
+        var menu = __instance.m_mainMenu;
+        if (menu == null) {
+          Jotunn.Logger.LogError("No main menu; cannot replace the logo.");
+          return;
+        }
+
+        // "Logo" is a container.  As of 2026 it holds the logo itself, several
+        // drifting ember effects, and a parked, inactive variant for each
+        // themed update: Ashlands, Mistlands, and the old Hearth & Home badge.
+        // Transform.LogHierarchy below will show you the current shape of it.
+        var container = menu.transform.FindChildIgnoringCase("Logo");
+        if (container == null) {
+          Jotunn.Logger.LogError(
+              "No \"Logo\" under the main menu.  Its hierarchy is:");
+          menu.transform.LogHierarchy();
+          return;
+        }
+
+        // Match on being active rather than on a fixed path.  The themed
+        // variants exist because the game swaps which logo is live, so if a
+        // promotion switches "LOGO" off and "AshlandsLogo" on, we want to
+        // follow it rather than silently paint a hidden object, which is
+        // indistinguishable from doing nothing.  Only active objects are
+        // considered, which also excludes the parked variants.
+        Image image = null;
+        foreach (var candidate in
+                 container.GetComponentsInChildren<Image>(includeInactive: false)) {
+          var name = candidate.name;
+          if (name.IndexOf("logo", StringComparison.OrdinalIgnoreCase) < 0) {
+            // Embers and other decoration.
+            continue;
+          }
+          if (name.IndexOf("glow", StringComparison.OrdinalIgnoreCase) >= 0) {
+            // The themed logos come with a separate glow layer behind them.
+            continue;
+          }
+          image = candidate;
+          break;
+        }
+
+        if (image == null) {
+          Jotunn.Logger.LogError(
+              "Found no active logo Image.  The Logo hierarchy is:");
+          container.LogHierarchy();
+          return;
+        }
+
+        Jotunn.Logger.LogDebug($"Replacing the logo on \"{image.name}\".");
+        image.sprite = Utils.LoadSprite("Logo.png");
+      }
+    }
+
+    // Add our version number to the game's built-in version number.
+    [HarmonyPatch(typeof(Version), nameof(Version.GetVersionString))]
+    class VersionString_Patch {
+      static void Postfix(ref string __result) {
+        __result += " " + PokeheimMod.PluginName +
+                    " " + PokeheimMod.PluginVersion;
+      }
+    }
+  }  // public static class MainMenu
 }
