@@ -34,6 +34,13 @@ namespace Pokeheim {
   // multiplayer version check; this only changes what the main menu shows.
   [Feature(Features.MainMenu)]
   public static class MainMenu {
+    [PokeheimInit]
+    public static void Init() {
+      var holder = new GameObject("PokeheimVersionLabel");
+      UnityEngine.Object.DontDestroyOnLoad(holder);
+      holder.AddComponent<VersionLabel>();
+    }
+
     // Hide the game's version label on the main menu.
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     class HideNativeVersion_Patch {
@@ -45,13 +52,6 @@ namespace Pokeheim {
         }
         label.gameObject.SetActive(false);
       }
-    }
-
-    [PokeheimInit]
-    public static void Init() {
-      var holder = new GameObject("PokeheimVersionLabel");
-      UnityEngine.Object.DontDestroyOnLoad(holder);
-      holder.AddComponent<VersionLabel>();
     }
 
     // Drawn with IMGUI rather than built into the UI hierarchy, to match how
