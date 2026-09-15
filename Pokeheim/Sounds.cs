@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Pokeheim {
+  [Feature(Features.Sounds)]
   public static class Sounds {
     public enum SoundType {
       Hit = 0,

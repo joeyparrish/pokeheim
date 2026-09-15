@@ -28,6 +28,7 @@ using UnityEngine;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
+  [Feature(Features.Debugging)]
   public static class Debugging {
     private static readonly int IsFrozenKey = "com.pokeheim.IsFrozen".GetStableHashCode();
 
@@ -285,27 +286,6 @@ namespace Pokeheim {
       public override void Run(string[] args) {
         PrintSoundNames = !PrintSoundNames;
         Debug.Log($"Printing sound names: {PrintSoundNames}");
-      }
-    }
-
-    [RegisterCommand]
-    class StaggerAll : ConsoleCommand {
-      public override string Name => "staggerall";
-      public override string Help => "Stagger all nearby monsters.";
-      public override bool IsCheat => true;
-
-      public override void Run(string[] args) {
-        var allCharacters = Character.GetAllCharacters();
-        var playerPosition = Player.m_localPlayer.transform.position;
-
-        foreach (var monster in allCharacters) {
-          if (!monster.IsPlayer() && !monster.IsFainted()) {
-            var hitDirection = monster.transform.position - playerPosition;
-
-            monster.Stagger(hitDirection);
-            Debug.Log($"Staggered {monster}");
-          }
-        }
       }
     }
 

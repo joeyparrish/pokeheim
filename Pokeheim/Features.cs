@@ -25,45 +25,6 @@ using System.Reflection;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
-  // Marks a type as belonging to a named feature, and optionally names the
-  // other features it needs.  Nested types inherit the feature of the type that
-  // encloses them, so marking a feature's top-level static class covers its
-  // patches, its Init() methods and its console commands all at once.
-  //
-  // Being compiled in is what enables a feature.  There is no list of enabled
-  // features to keep in sync: to leave one out, either leave its source out of
-  // the Compile list in Pokeheim.csproj, or mark it [DisableFeature].
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct,
-                  Inherited = false)]
-  public class FeatureAttribute : Attribute {
-    public string Name { get; private set; }
-
-    // Named at the call site, like so:
-    //
-    //   [Feature(Features.Captured, DependsOn = new[] { Features.Pokedex })]
-    //
-    // Assigning a property is why this is PascalCase: C# reserves "=" in an
-    // attribute for fields and properties, and ":" for constructor parameters.
-    public string[] DependsOn { get; set; }
-
-    public FeatureAttribute(string name) {
-      this.Name = name;
-      this.DependsOn = new string[0];
-    }
-  }
-
-  // Turns a feature off without taking it out of the build.  Anything that
-  // depends on it is skipped in turn.
-  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct,
-                  Inherited = false)]
-  public class DisableFeatureAttribute : Attribute {
-    public string Reason { get; private set; }
-
-    public DisableFeatureAttribute(string reason = null) {
-      this.Reason = reason;
-    }
-  }
-
   // Applies the mod one feature at a time, in dependency order, so that a game
   // update which breaks one feature disables that feature and whatever needs
   // it, rather than the whole mod.
@@ -79,13 +40,18 @@ namespace Pokeheim {
     // Core failure skips everything.
     public const string Core = "Core";
 
+    // Stage 0: pregame
     public const string Logo = "Logo";
     public const string Music = "Music";
     public const string Version = "Version";
     public const string MenuVersion = "MenuVersion";
     public const string Intro = "Intro";
     public const string LoadingScreen = "LoadingScreen";
+
+    // Stage 1: basics
     public const string Pokedex = "Pokedex";
+    public const string Sounds = "Sounds";
+    public const string Debugging = "Debugging";
 
     public enum Status {
       // Patched, initialized and registered successfully.
@@ -450,6 +416,45 @@ namespace Pokeheim {
             $"  [no feature] {result.Name} was skipped because it has no " +
             "[Feature] attribute.");
       }
+    }
+  }
+
+  // Marks a type as belonging to a named feature, and optionally names the
+  // other features it needs.  Nested types inherit the feature of the type that
+  // encloses them, so marking a feature's top-level static class covers its
+  // patches, its Init() methods and its console commands all at once.
+  //
+  // Being compiled in is what enables a feature.  There is no list of enabled
+  // features to keep in sync: to leave one out, either leave its source out of
+  // the Compile list in Pokeheim.csproj, or mark it [DisableFeature].
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct,
+                  Inherited = false)]
+  public class FeatureAttribute : Attribute {
+    public string Name { get; private set; }
+
+    // Named at the call site, like so:
+    //
+    //   [Feature(Features.Captured, DependsOn = new[] { Features.Pokedex })]
+    //
+    // Assigning a property is why this is PascalCase: C# reserves "=" in an
+    // attribute for fields and properties, and ":" for constructor parameters.
+    public string[] DependsOn { get; set; }
+
+    public FeatureAttribute(string name) {
+      this.Name = name;
+      this.DependsOn = new string[0];
+    }
+  }
+
+  // Turns a feature off without taking it out of the build.  Anything that
+  // depends on it is skipped in turn.
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct,
+                  Inherited = false)]
+  public class DisableFeatureAttribute : Attribute {
+    public string Reason { get; private set; }
+
+    public DisableFeatureAttribute(string reason = null) {
+      this.Reason = reason;
     }
   }
 }

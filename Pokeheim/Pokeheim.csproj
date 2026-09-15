@@ -62,17 +62,20 @@
     <!-- Grants access to the publicized game assemblies. -->
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
 
-    <!-- Always present: the plugin entry point, the feature registry that
-         decides what gets patched, and shared helpers. -->
+    <!-- The entry point, feature registry, and shared helpers. -->
     <Compile Include="Pokeheim.cs" />
     <Compile Include="Features.cs" />
     <Compile Include="TranspilerSequence.cs" />
     <Compile Include="Utils.cs" />
 
-    <!-- Stage 0 features. -->
+    <!-- Stage 0: Pregame. -->
     <Compile Include="MenuVersion.cs" />
     <Compile Include="MusicMods.cs" />
+
+    <!-- Stage 1: Basics. -->
+    <Compile Include="Debugging.cs" />
     <Compile Include="Pokedex.cs" />
+    <Compile Include="Sounds.cs" />
 
     <!-- Features still to be revived.  Uncomment as each stage brings one
          back, together with its section of testing-script.md.  See
@@ -84,7 +87,6 @@
     <Compile Include="Captured.cs" />
     <Compile Include="ContainerMods.cs" />
     <Compile Include="Credits.cs" />
-    <Compile Include="Debugging.cs" />
     <Compile Include="DressUp.cs" />
     <Compile Include="Fainting.cs" />
     <Compile Include="Giovanni.cs" />
@@ -97,7 +99,6 @@
     <Compile Include="Riding.cs" />
     <Compile Include="SerpentMods.cs" />
     <Compile Include="ShinyMods.cs" />
-    <Compile Include="Sounds.cs" />
     <Compile Include="Suppressipes.cs" />
     -->
   </ItemGroup>
