@@ -46,6 +46,11 @@ fi
 # painful to trace back.  Tolerating one known warning by name keeps the rest
 # of the signal.
 ALLOWED_WARNINGS=(
+  # Indented lines, the full tree for any given version warning.  Not a
+  # headline warning, but needed here to suppress the output in normal
+  # operation.
+  'MSB3277:  '
+
   # We target net462 because that is the only framework Jotunn ships, and
   # net462 supplies the netstandard 2.0 facade while the game's UnityEngine.dll
   # was built against 2.1.  MSBuild picks 2.0, which is correct for us: we use
@@ -53,11 +58,17 @@ ALLOWED_WARNINGS=(
   'MSB3277: .*"netstandard'
 )
 
+ALLOWED_PATTERN=$(printf '%s|' "${ALLOWED_WARNINGS[@]}")
+ALLOWED_PATTERN="${ALLOWED_PATTERN%|}"
+
 LOG=$(mktemp)
+PERMANENT_LOG="/tmp/pokeheim-build.log"
 trap 'rm -f "$LOG"' EXIT
 
 set -o pipefail
-"$DOTNET" build Pokeheim.sln /p:Configuration="$BUILD_TYPE" 2>&1 | tee "$LOG"
+"$DOTNET" build Pokeheim.sln /p:Configuration="$BUILD_TYPE" 2>&1 | \
+    tee "$LOG" | \
+    grep -vE "$ALLOWED_PATTERN"
 set +o pipefail
 
 # Only look at the warnings themselves.  MSB3277 prints its whole conflict
@@ -69,14 +80,7 @@ WARNINGS=$(grep -oE 'warning [A-Z]+[0-9]+: [^ ].*' "$LOG" \
            | sort -u || true)
 
 if [ -n "$WARNINGS" ]; then
-  ALLOWED_PATTERN=$(printf '%s|' "${ALLOWED_WARNINGS[@]}")
-  ALLOWED_PATTERN="${ALLOWED_PATTERN%|}"
-
-  if [ -n "$ALLOWED_PATTERN" ]; then
-    UNEXPECTED=$(echo "$WARNINGS" | grep -vE "$ALLOWED_PATTERN" || true)
-  else
-    UNEXPECTED="$WARNINGS"
-  fi
+  UNEXPECTED=$(echo "$WARNINGS" | grep -vE "$ALLOWED_PATTERN" || true)
 
   if [ -n "$UNEXPECTED" ]; then
     echo 1>&2
@@ -85,6 +89,9 @@ if [ -n "$WARNINGS" ]; then
     echo 1>&2
     echo "Fix them, or add them to ALLOWED_WARNINGS in $0 with a note" 1>&2
     echo "saying why they are safe." 1>&2
+    echo 1>&2
+    echo "See $PERMANENT_LOG for full details." 1>&2
+    cp "$LOG" "$PERMANENT_LOG"
     exit 1
   fi
 fi
