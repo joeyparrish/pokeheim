@@ -18,6 +18,8 @@
 
 using HarmonyLib;
 
+using Logger = Jotunn.Logger;
+
 namespace Pokeheim {
   [Feature(Features.Intro)]
   public static class Intro {
@@ -49,6 +51,26 @@ namespace Pokeheim {
               "$pokeheim_intro",
               autoHide: false);
         }
+      }
+    }
+
+    // Suppress the game's own intro scroll, which we replace above.
+    //
+    // We never had to do this before.  Until 1.0 the intro text was shown by
+    // Valkyrie.ShowText(), so declining the Valkyrie removed the text as a side
+    // effect.  1.0 moved the text to Game.ShowIntro(), queued whenever the
+    // profile reports a first spawn, and decoupled it from the Valkyrie
+    // entirely.  Skipping the Valkyrie therefore no longer skips the text, and
+    // a new character got two scrolls: the game's, then ours.
+    //
+    // Skipping the body is safe.  Its caller sets m_inIntro before deciding
+    // between the cinematic and this, and that flag is what the spawn logic
+    // reads afterwards, so the only thing lost is the text itself.
+    [HarmonyPatch(typeof(Game), nameof(Game.ShowIntro))]
+    class SuppressVanillaIntro_Patch {
+      static bool Prefix() {
+        Logger.LogInfo("Suppressing the game's intro scroll.");
+        return false;
       }
     }
 
