@@ -44,6 +44,7 @@ namespace Pokeheim {
     }
 
     private static List<Contents> ContainerOptions = new List<Contents> {
+      // Pokeballs
       new Contents {
         PrefabName = "Pokeball",
         Min = 20,
@@ -62,6 +63,8 @@ namespace Pokeheim {
         Max = 20,
         Weight = 1f,
       },
+
+      // Basic weapons
       new Contents {
         PrefabName = "ArrowWood",
         Min = 10,
@@ -69,11 +72,13 @@ namespace Pokeheim {
         Weight = 2f,
       },
       new Contents {
-        PrefabName = "LeatherScraps",
-        Min = 3,
-        Max = 13,
-        Weight = 2f,
+        PrefabName = "CheapBow",
+        Min = 1,
+        Max = 1,
+        Weight = 0.03f,
       },
+
+      // Berries for monsters, and for making Pokeballs
       new Contents {
         PrefabName = "Raspberry",
         Min = 5,
@@ -98,18 +103,24 @@ namespace Pokeheim {
         Max = 20,
         Weight = 0.1f,
       },
+
+      // For making a saddle
+      new Contents {
+        PrefabName = "LeatherScraps",
+        Min = 3,
+        Max = 13,
+        Weight = 2f,
+      },
+
+      // For making a pickaxe
       new Contents {
         PrefabName = "TrophyDeer",
         Min = 1,
         Max = 1,
         Weight = 0.03f,
       },
-      new Contents {
-        PrefabName = "CheapBow",
-        Min = 1,
-        Max = 1,
-        Weight = 0.03f,
-      },
+
+      // Very lucky: a saddle
       new Contents {
         PrefabName = "SaddleUniversal",
         Min = 1,
