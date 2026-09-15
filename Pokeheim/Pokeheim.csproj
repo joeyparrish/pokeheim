@@ -51,6 +51,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Jotunn's reference list includes UnityEngine.ProfilerModule, which
+         this version of the game does not ship.  It is only ever a warning,
+         because nothing we build actually uses it, so drop the reference
+         rather than silencing the warning. -->
+    <Reference Remove="UnityEngine.ProfilerModule" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Grants access to the publicized game assemblies. -->
     <Compile Include="Properties\IgnoreAccessModifiers.cs" />
 
