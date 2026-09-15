@@ -18,6 +18,7 @@
 
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -160,6 +161,71 @@ namespace Pokeheim {
 
         Jotunn.Logger.LogDebug($"Replacing the logo on \"{image.name}\".");
         image.sprite = Utils.LoadSprite("Logo.png");
+      }
+    }
+
+    // Valheim 1.0 added a "Cinematics" entry to the main menu, opening a viewer
+    // for the game's story videos.  Intro.cs empties the video list, so that
+    // entry would open an empty viewer.  Take the entry out as well.
+    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
+    class HideCinematicsMenuItem_Patch {
+      // The handler the game wires this button to in the inspector.  Matching
+      // on the handler rather than on the object's name means this keeps
+      // working if they rename the object, and it never depended on the
+      // button's visible label, which is localized.
+      private const string Handler = "OnCinematics";
+
+      static void Postfix(FejdStartup __instance) {
+        var menu = __instance.m_mainMenu;
+        if (menu == null) {
+          // ReplaceLogo_Patch already reports this.
+          return;
+        }
+
+        var hidden = new List<Button>();
+        foreach (var button in
+                 menu.GetComponentsInChildren<Button>(includeInactive: true)) {
+          var clicks = button.onClick;
+          for (int i = 0; i < clicks.GetPersistentEventCount(); i++) {
+            // Exact match, so the "OnCinematicsBack" button inside the viewer
+            // itself is left alone.
+            if (clicks.GetPersistentMethodName(i) != Handler) {
+              continue;
+            }
+            Jotunn.Logger.LogDebug(
+                $"Hiding the cinematics menu entry \"{button.name}\".");
+            button.gameObject.SetActive(false);
+            hidden.Add(button);
+            break;
+          }
+        }
+
+        if (hidden.Count == 0) {
+          Jotunn.Logger.LogWarning(
+              $"No main menu button is wired to {Handler}; the cinematics " +
+              "entry may still be showing.");
+          return;
+        }
+
+        // Hiding the object is not enough on its own.  Awake() builds
+        // m_menuButtons from the menu list before we get here, and Valheim
+        // walks that array for keyboard and gamepad navigation rather than
+        // relying on Unity's own navigation, so a hidden button still gets
+        // selected and the menu appears to stick.
+        //
+        // The game has the same problem with the "Exit" entry on consoles, and
+        // solves it the same way: hide the object, then filter it out of the
+        // array.  Doing it here rather than in a Prefix keeps us independent of
+        // whether that collection ever starts including inactive objects.
+        if (__instance.m_menuButtons != null) {
+          var remaining = new List<Button>();
+          foreach (var button in __instance.m_menuButtons) {
+            if (!hidden.Contains(button)) {
+              remaining.Add(button);
+            }
+          }
+          __instance.m_menuButtons = remaining.ToArray();
+        }
       }
     }
 
