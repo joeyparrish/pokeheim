@@ -414,10 +414,15 @@ namespace Pokeheim {
     [RegisterCommand]
     class FindLocation : ConsoleCommand {
       public override string Name => "findlocation";
-      public override string Help => "[name] - Find all instances of a certain location.";
+      public override string Help => "[name] - Find all instances of a certain location.  With no name, lists what this world has.";
       public override bool IsCheat => true;
 
       public override void Run(string[] args) {
+        if (args.Length < 1) {
+          ListLocations();
+          return;
+        }
+
         string name = args[0];
 
         // Arbitrary pin type, not boss pin, easily differentiable from what
@@ -444,6 +449,31 @@ namespace Pokeheim {
           }
         }
         Debug.Log($"Added pins for all {name} locations.");
+      }
+
+      // Matching is by exact prefab name, which is not the name of anything you
+      // can see in game: the trader is "Haldor", but his location is
+      // "Vendor_BlackForest".  List what this world actually placed so there is
+      // nothing to guess at.
+      private static void ListLocations() {
+        var counts = new Dictionary<string, int>();
+        foreach (var instance in ZoneSystem.instance.m_locationInstances.Values) {
+          var name = instance.m_location.m_prefabName;
+          int count;
+          counts.TryGetValue(name, out count);
+          counts[name] = count + 1;
+        }
+
+        var names = new List<string>(counts.Keys);
+        names.Sort();
+
+        Logger.LogInfo($"This world has {names.Count} kinds of location:");
+        foreach (var name in names) {
+          Logger.LogInfo($"    {name} x{counts[name]}");
+        }
+        Debug.Log(
+            $"Listed {names.Count} kinds of location in the log.  " +
+            "Pass one to findlocation to pin it.");
       }
     }
   }
