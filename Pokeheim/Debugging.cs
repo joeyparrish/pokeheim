@@ -212,6 +212,106 @@ namespace Pokeheim {
       }
     }
 
+    // GameObject.Find only sees active objects, and Find() above only looks for
+    // spawned prefabs.  Menus and panels are usually inactive until opened,
+    // which is exactly when you want to look inside them, so fall back to a
+    // scan that includes inactive objects.
+    private static GameObject FindAnywhere(string name) {
+      var gameObject = GameObject.Find(name) ?? Find(name);
+      if (gameObject != null) {
+        return gameObject;
+      }
+
+      GameObject fallback = null;
+      foreach (var candidate in Resources.FindObjectsOfTypeAll<GameObject>()) {
+        if (candidate.name != name) {
+          continue;
+        }
+        // This also returns prefabs and other assets that belong to no scene.
+        // Prefer something really in the scene, but take an asset if that is
+        // all there is.
+        if (candidate.scene.IsValid()) {
+          return candidate;
+        }
+        if (fallback == null) {
+          fallback = candidate;
+        }
+      }
+      return fallback;
+    }
+
+    [RegisterCommand]
+    class DumpHierarchy : ConsoleCommand {
+      public override string Name => "dumphierarchy";
+      public override string Help => "[name] [depth=4] - Dump an object's descendants and their components.  With no name, dumps every GUI root.";
+      public override bool IsCheat => true;
+
+      public override void Run(string[] args) {
+        var depth = 4;
+        var name = (string)null;
+
+        // A bare number means a depth for the GUI dump, so that you can ask for
+        // more of it without having to name something first.  Nothing in the
+        // game is called "6".
+        if (args.Length > 0) {
+          int parsed;
+          if (int.TryParse(args[0], out parsed)) {
+            depth = parsed;
+          } else {
+            name = args[0];
+            if (args.Length > 1 && !int.TryParse(args[1], out depth)) {
+              Debug.Log($"Not a number: {args[1]}");
+              return;
+            }
+          }
+        }
+
+        if (name == null) {
+          DumpGuiRoots(depth);
+          return;
+        }
+
+        var gameObject = FindAnywhere(name);
+        if (gameObject == null) {
+          Debug.Log($"Unable to find an object named {name} to dump");
+          return;
+        }
+
+        // The tree goes to the log rather than the console, because it is
+        // usually far too big to read on screen.
+        Logger.LogInfo($"Hierarchy of {gameObject.name}:");
+        gameObject.transform.LogHierarchy(maxDepth: depth);
+        Debug.Log($"Dumped hierarchy of {gameObject.name} to the log.");
+      }
+
+      // Every canvas in the loaded scenes, which is as close to a single "GUI
+      // root" as the game has.  Doing it this way rather than naming one object
+      // means it works the same in the main menu and in the game, and picks up
+      // anything Jotunn or another mod has added.
+      private static void DumpGuiRoots(int depth) {
+        var count = 0;
+        foreach (var canvas in Resources.FindObjectsOfTypeAll<Canvas>()) {
+          // Prefabs and other assets belong to no scene.
+          if (!canvas.gameObject.scene.IsValid()) {
+            continue;
+          }
+          // A nested canvas is already inside its root's tree.
+          if (!canvas.isRootCanvas) {
+            continue;
+          }
+          Logger.LogInfo($"GUI root: {canvas.name}");
+          canvas.transform.LogHierarchy(maxDepth: depth);
+          count++;
+        }
+
+        if (count == 0) {
+          Debug.Log("Found no GUI roots.");
+        } else {
+          Debug.Log($"Dumped {count} GUI root(s) to the log.");
+        }
+      }
+    }
+
     [RegisterCommand]
     class DumpAnimations : ConsoleCommand {
       public override string Name => "dumpanimations";
