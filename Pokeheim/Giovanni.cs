@@ -27,8 +27,9 @@ using Logger = Jotunn.Logger;
 namespace Pokeheim {
   [Feature(Features.Giovanni)]
   public static class Giovanni {
+    private const string VendorLocation = "Vendor_BlackForest";
+
     private static ParticleSystem ParticlePrefab = null;
-    private static ParticleSystem ShadowSmoke = null;
 
     [PokeheimInit]
     public static void Init() {
@@ -45,36 +46,54 @@ namespace Pokeheim {
           Logger.LogError("Unable to find prefab for ShadowSmoke");
         }
       };
-
-      Utils.OnVanillaLocationsAvailable += delegate {
-        // Find Halstein.  He exists as a Petable / Hoverable.
-        var locationObject =
-            Utils.GetSpawnedLocationOrPrefab("Vendor_BlackForest");
-        foreach (var petable in locationObject.GetComponentsInChildren<Petable>()) {
-          // Rename him.
-          petable.m_name = "$npc_persian";
-          Logger.LogInfo($"Renamed Halstein: {petable}");
-
-          // Attach "shadow smoke" to him.
-          ShadowSmoke = UnityEngine.Object.Instantiate(
-              ParticlePrefab, petable.transform)
-                  .GetComponent<ParticleSystem>();
-          // Scale it up to Lox size.
-          ShadowSmoke.transform.localScale *= 3.0f;
-          // Raise it a little off the ground.
-          ShadowSmoke.transform.localPosition += new Vector3(0f, 1f, 0f);
-          // And make it purple.  Although a color picker told me the color I
-          // want was about (0.4, 0.1, 0.8), for whatever reason, this is
-          // what actually looks right in-game.
-          var main = ShadowSmoke.main;
-          main.startColor = new Color(0.1f, 0f, 1f);
-          Logger.LogInfo($"Shadow smoke added to Halstein: {ShadowSmoke}");
-          return;
-        }
-        Logger.LogError("Unable to locate Halstein!");
-      };
     }
 
+    // This has to happen on the spawned location rather than on the location
+    // prefab, because the smoke relies on a spawned scene object.
+    [HarmonyPatch(typeof(Location), nameof(Location.Awake))]
+    class DressUpHalstein_Patch {
+      static void Postfix(Location __instance) {
+        // Spawned instances carry a "(Clone)" suffix.
+        if (!__instance.gameObject.name.StartsWith(VendorLocation)) {
+          return;
+        }
+
+        foreach (var petable in
+                 __instance.GetComponentsInChildren<Petable>(includeInactive: true)) {
+          petable.m_name = "$npc_persian";
+          AddShadowSmoke(petable.transform);
+          return;
+        }
+
+        Logger.LogWarning($"Unable to find Lox in {VendorLocation}");
+      }
+    }
+
+    private static void AddShadowSmoke(Transform parent) {
+      if (ParticlePrefab == null) {
+        Logger.LogError("No particle prefab for shadow smoke.");
+        return;
+      }
+
+      var smoke = UnityEngine.Object.Instantiate(ParticlePrefab, parent);
+      // Raise it a little off the ground.
+      smoke.transform.localPosition = new Vector3(0f, 1.5f, 0f);
+      // Scale it up to Lox size.
+      smoke.transform.localScale *= 3.0f;
+
+      var main = smoke.main;
+      // Without this, scaling the transform moves the emitter but not the
+      // simulation, and the effect stays Blob-sized on a Lox.
+      main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+      // Make it purple.  Although a color picker told me the color I want was
+      // about (0.4, 0.1, 0.8), for whatever reason, this is what actually
+      // looks right in-game.
+      main.startColor = new Color(0.1f, 0f, 1f);
+
+      smoke.Play();
+    }
+
+    // TODO: Split Haldor and Hildir
     [HarmonyPatch]
     class Giovanni_Patch {
       // Rename Haldor.
