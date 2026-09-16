@@ -100,11 +100,16 @@ namespace Pokeheim {
       [HarmonyPatch(typeof(Trader), nameof(Trader.GetHoverName))]
       [HarmonyPatch(typeof(Trader), nameof(Trader.GetHoverText))]
       [HarmonyPostfix]
-      static string replaceName(string originalReturn) {
-        return Localization.instance.Localize("$npc_giovanni");
+      static void replaceName(Trader __instance, ref string __result) {
+        // TODO: Name Hildir
+        if (__instance.m_name == "$npc_haldor") {
+          __result = Localization.instance.Localize("$npc_giovanni");
+        } else {
+          Logger.LogInfo($"Unrecognized Trader: {__instance.m_name}");
+        }
       }
 
-      // Make it so that you can't interact with him.
+      // Make it so that you can't interact with them.
       [HarmonyPatch(typeof(Trader), nameof(Trader.Interact))]
       [HarmonyPrefix]
       static bool disableInteraction(ref bool __result) {
@@ -117,16 +122,19 @@ namespace Pokeheim {
       static void replaceSpeech(Trader __instance) {
         var trader = __instance;
 
-        trader.m_randomTalk = Utils.GenerateStringList(
-            "$npc_giovanni_smalltalk", 13);
+        // TODO: Dialog for Hildir
+        if (__instance.m_name == "$npc_haldor") {
+          trader.m_randomTalk = Utils.GenerateStringList(
+              "$npc_giovanni_smalltalk", 13);
 
-        trader.m_randomGreets = Utils.GenerateStringList(
-            "$npc_giovanni_greeting", 9);
+          trader.m_randomGreets = Utils.GenerateStringList(
+              "$npc_giovanni_greeting", 9);
 
-        trader.m_randomGoodbye = Utils.GenerateStringList(
-            "$npc_giovanni_goodbye", 5);
+          trader.m_randomGoodbye = Utils.GenerateStringList(
+              "$npc_giovanni_goodbye", 5);
+        }
 
-        // Make him chattier.  (30 => 15)
+        // Make them chattier.  (30 => 15)
         trader.m_randomTalkInterval = 15;
       }
     }
