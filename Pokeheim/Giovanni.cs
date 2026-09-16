@@ -125,6 +125,9 @@ namespace Pokeheim {
 
         trader.m_randomGoodbye = Utils.GenerateStringList(
             "$npc_giovanni_goodbye", 5);
+
+        // Make him chattier.  (30 => 15)
+        trader.m_randomTalkInterval = 15;
       }
     }
   }
