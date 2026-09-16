@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 using Logger = Jotunn.Logger;
 
@@ -383,7 +384,7 @@ namespace Pokeheim {
       return true;
     }
 
-    private static void LogReport() {
+    private static void LogReport(bool CanQuit = true) {
       var loaded = Results.Where(r => r.Status == Status.Loaded).ToList();
       var disabled = Results.Where(r => r.Status == Status.Disabled).ToList();
       var skipped = Results.Where(r => r.Status == Status.Skipped).ToList();
@@ -414,7 +415,48 @@ namespace Pokeheim {
             $"  [no feature] {result.Name} was skipped because it has no " +
             "[Feature] attribute.");
       }
+
+#if DEBUG
+      // In a debug build, fail immediately on any of these conditions.
+      if (CanQuit && skipped.Count + failed.Count + unassigned.Count > 0) {
+        LogAndQuitAfterFirstFrame();
+      }
+#endif
     }
+
+#if DEBUG
+    // Quitting from here directly does not work.
+    //
+    // Environment.Exit runs finalizers and unloads the AppDomain, and we are
+    // inside the plugin's Awake, so Unity is still initializing and holding
+    // native locks.  The teardown deadlocks and the game hangs rather than
+    // exiting.
+    //
+    // Application.Quit is the supported way to quit, but it is processed at the
+    // end of a frame, and during plugin load there is no frame yet, so it does
+    // nothing.
+    //
+    // So park a component that quits on the first frame instead.  By then the
+    // player loop is running and shutdown proceeds normally, which also flushes
+    // the log: BepInEx buffers its disk writer, so killing the process outright
+    // can lose the very lines that say which feature failed.
+    private static void LogAndQuitAfterFirstFrame() {
+      var holder = new GameObject("PokeheimFeatureFailureQuit");
+      UnityEngine.Object.DontDestroyOnLoad(holder);
+      holder.AddComponent<QuitOnFeatureFailure>();
+    }
+
+    private class QuitOnFeatureFailure : MonoBehaviour {
+      private void Update() {
+        // Log the report again, but this time, don't recurse into LogAndQuit...
+        LogReport(CanQuit: false);
+        // Quit is handled at the end of the frame, so stop asking every frame
+        // in the meantime.
+        enabled = false;
+        Application.Quit(1);
+      }
+    }
+#endif
   }
 
   // Marks a type as belonging to a named feature, and optionally names the
