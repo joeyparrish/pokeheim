@@ -51,6 +51,9 @@ namespace Pokeheim {
     public const string Pokedex = "Pokedex";
     public const string Sounds = "Sounds";
     public const string Debugging = "Debugging";
+    public const string Giovanni = "Giovanni";
+
+    // Stage 2:
 
     public enum Status {
       // Patched, initialized and registered successfully.

@@ -25,8 +25,9 @@ using UnityEngine;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
+  [Feature(Features.Giovanni)]
   public static class Giovanni {
-    private static ParticleSystem BlobParticlePrefab = null;
+    private static ParticleSystem ParticlePrefab = null;
     private static ParticleSystem ShadowSmoke = null;
 
     [PokeheimInit]
@@ -36,39 +37,39 @@ namespace Pokeheim {
         var particleSystems = prefab.GetComponentsInChildren<ParticleSystem>();
         foreach (var system in particleSystems) {
           if (system.gameObject.name == "wetsplsh") {
-            BlobParticlePrefab = system;
-            Logger.LogDebug($"Found prefab for ShadowSmoke: {BlobParticlePrefab}");
+            ParticlePrefab = system;
+            Logger.LogInfo($"Found prefab for ShadowSmoke: {ParticlePrefab}");
           }
+        }
+        if (ParticlePrefab == null) {
+          Logger.LogError("Unable to find prefab for ShadowSmoke");
         }
       };
 
       Utils.OnVanillaLocationsAvailable += delegate {
-        // Find Halstein.  He only exists as a MonoBehaviour with a HoverText
-        // component attached.
+        // Find Halstein.  He exists as a Petable / Hoverable.
         var locationObject =
             Utils.GetSpawnedLocationOrPrefab("Vendor_BlackForest");
-        foreach (var hover in locationObject.GetComponentsInChildren<HoverText>()) {
-          if (hover.m_text == "$npc_halstein") {
-            // Rename him.
-            hover.m_text = "$npc_persian";
-            Logger.LogDebug($"Renamed Halstein: {hover}");
+        foreach (var petable in locationObject.GetComponentsInChildren<Petable>()) {
+          // Rename him.
+          petable.m_name = "$npc_persian";
+          Logger.LogInfo($"Renamed Halstein: {petable}");
 
-            // Attach "shadow smoke" to him.
-            ShadowSmoke = UnityEngine.Object.Instantiate(
-                BlobParticlePrefab, hover.transform)
-                    .GetComponent<ParticleSystem>();
-            // Scale it up to Lox size.
-            ShadowSmoke.transform.localScale *= 3.0f;
-            // Raise it a little off the ground.
-            ShadowSmoke.transform.localPosition += new Vector3(0f, 1f, 0f);
-            // And make it purple.  Although a color picker told me the color I
-            // want was about (0.4, 0.1, 0.8), for whatever reason, this is
-            // what actually looks right in-game.
-            var main = ShadowSmoke.main;
-            main.startColor = new Color(0.1f, 0f, 1f);
-            Logger.LogDebug($"Shadow smoke added to Halstein: {ShadowSmoke}");
-            return;
-          }
+          // Attach "shadow smoke" to him.
+          ShadowSmoke = UnityEngine.Object.Instantiate(
+              ParticlePrefab, petable.transform)
+                  .GetComponent<ParticleSystem>();
+          // Scale it up to Lox size.
+          ShadowSmoke.transform.localScale *= 3.0f;
+          // Raise it a little off the ground.
+          ShadowSmoke.transform.localPosition += new Vector3(0f, 1f, 0f);
+          // And make it purple.  Although a color picker told me the color I
+          // want was about (0.4, 0.1, 0.8), for whatever reason, this is
+          // what actually looks right in-game.
+          var main = ShadowSmoke.main;
+          main.startColor = new Color(0.1f, 0f, 1f);
+          Logger.LogInfo($"Shadow smoke added to Halstein: {ShadowSmoke}");
+          return;
         }
         Logger.LogError("Unable to locate Halstein!");
       };
