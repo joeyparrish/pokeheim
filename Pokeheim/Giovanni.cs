@@ -24,6 +24,7 @@ using UnityEngine;
 
 using Logger = Jotunn.Logger;
 
+// Covers both Giovanni (Haldor) and Sierra (Hildir).
 namespace Pokeheim {
   [Feature(Features.Giovanni)]
   public static class Giovanni {
@@ -85,7 +86,6 @@ namespace Pokeheim {
       smoke.Play();
     }
 
-    // TODO: Split Haldor and Hildir
     [HarmonyPatch]
     class Giovanni_Patch {
       // Rename Haldor.
@@ -93,12 +93,14 @@ namespace Pokeheim {
       [HarmonyPatch(typeof(Trader), nameof(Trader.GetHoverText))]
       [HarmonyPostfix]
       static void replaceName(Trader __instance, ref string __result) {
-        // TODO: Name Hildir
         if (__instance.m_name == "$npc_haldor") {
           __result = Localization.instance.Localize("$npc_giovanni");
+        } else if (__instance.m_name == "$npc_hildir") {
+          __result = Localization.instance.Localize("$npc_sierra");
         } else {
           Logger.LogInfo($"Unrecognized Trader: {__instance.m_name}");
         }
+        // TODO: Name Bog Witch?
       }
 
       // Make it so that you can't interact with them.
@@ -114,20 +116,22 @@ namespace Pokeheim {
       static void replaceSpeech(Trader __instance) {
         var trader = __instance;
 
-        // TODO: Dialog for Hildir
+        // Turn off conditional dialogs, greetings, and goodbyes.
+        trader.m_randomTalkConditionals = new List<Trader.ConditionalDialog>();
+        trader.m_didGreet = true;
+        trader.m_didGoodbye = true;
+
+        // Make the Traders chattier.  (30 => 15)
+        trader.m_randomTalkInterval = 15;
+
         if (__instance.m_name == "$npc_haldor") {
           trader.m_randomTalk = Utils.GenerateStringList(
-              "$npc_giovanni_smalltalk", 13);
-
-          trader.m_randomGreets = Utils.GenerateStringList(
-              "$npc_giovanni_greeting", 9);
-
-          trader.m_randomGoodbye = Utils.GenerateStringList(
-              "$npc_giovanni_goodbye", 5);
+              "$npc_giovanni_smalltalk", 22);
+        } else if (__instance.m_name == "$npc_hildir") {
+          trader.m_randomTalk = Utils.GenerateStringList(
+              "$npc_sierra_smalltalk", 25);
         }
-
-        // Make them chattier.  (30 => 15)
-        trader.m_randomTalkInterval = 15;
+        // TODO: Dialog for Bog Witch?
       }
     }
   }
