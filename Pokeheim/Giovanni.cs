@@ -50,16 +50,36 @@ namespace Pokeheim {
 
       // This has to happen on the spawned location rather than on the location
       // prefab, because the smoke relies on a spawned scene object.
-      Utils.OnLocationSpawned(VendorLocation, delegate (Location location) {
-        foreach (var petable in
-                 location.GetComponentsInChildren<Petable>(includeInactive: true)) {
-          petable.m_name = "$npc_persian";
-          AddShadowSmoke(petable.transform);
-          return;
-        }
-
-        Logger.LogWarning($"Unable to find Lox in {VendorLocation}");
+      Utils.OnLocationSpawned("Vendor_BlackForest", delegate(Location location) {
+        UpdateVendorPetables(location, "$npc_persian");
       });
+      Utils.OnLocationSpawned("Hildir_camp", delegate(Location location) {
+        UpdateVendorPetables(location, "$npc_ursaring");
+
+        var table = location.GetComponentInChildren<Vegvisir>();
+        if (table == null) {
+          Logger.LogWarning("Could not find Hildir's map table!");
+        } else {
+          table.m_name = "$piece_maptable_sierra";
+          table.m_useText = "$piece_maptable_sierra_use";
+        }
+      });
+    }
+
+    private static void UpdateVendorPetables(Location location, string petname) {
+      var found = false;
+
+      foreach (var petable in
+               location.GetComponentsInChildren<Petable>(includeInactive: true)) {
+        petable.m_name = petname;
+        AddShadowSmoke(petable.transform);
+        Logger.LogWarning($"Found Lox in {location.gameObject.name}: {petable}");
+        found = true;
+      }
+
+      if (!found) {
+        Logger.LogWarning($"Unable to find Lox in {location.gameObject.name}");
+      }
     }
 
     private static void AddShadowSmoke(Transform parent) {
@@ -97,10 +117,11 @@ namespace Pokeheim {
           __result = Localization.instance.Localize("$npc_giovanni");
         } else if (__instance.m_name == "$npc_hildir") {
           __result = Localization.instance.Localize("$npc_sierra");
+        } else if (__instance.gameObject.name.StartsWith("BogWitch")) {
+          __result = Localization.instance.Localize("$npc_cliff");
         } else {
-          Logger.LogInfo($"Unrecognized Trader: {__instance.m_name}");
+          Logger.LogInfo($"Unrecognized Trader: {__instance}, m_name: \"{__instance.m_name}\"");
         }
-        // TODO: Name Bog Witch?
       }
 
       // Make it so that you can't interact with them.
@@ -130,8 +151,10 @@ namespace Pokeheim {
         } else if (__instance.m_name == "$npc_hildir") {
           trader.m_randomTalk = Utils.GenerateStringList(
               "$npc_sierra_smalltalk", 25);
+        } else if (__instance.gameObject.name.StartsWith("BogWitch")) {
+          trader.m_randomTalk = Utils.GenerateStringList(
+              "$npc_cliff_smalltalk", 18);
         }
-        // TODO: Dialog for Bog Witch?
       }
     }
   }
