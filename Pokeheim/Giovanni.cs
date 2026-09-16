@@ -46,27 +46,19 @@ namespace Pokeheim {
           Logger.LogError("Unable to find prefab for ShadowSmoke");
         }
       };
-    }
 
-    // This has to happen on the spawned location rather than on the location
-    // prefab, because the smoke relies on a spawned scene object.
-    [HarmonyPatch(typeof(Location), nameof(Location.Awake))]
-    class DressUpHalstein_Patch {
-      static void Postfix(Location __instance) {
-        // Spawned instances carry a "(Clone)" suffix.
-        if (!__instance.gameObject.name.StartsWith(VendorLocation)) {
-          return;
-        }
-
+      // This has to happen on the spawned location rather than on the location
+      // prefab, because the smoke relies on a spawned scene object.
+      Utils.OnLocationSpawned(VendorLocation, delegate (Location location) {
         foreach (var petable in
-                 __instance.GetComponentsInChildren<Petable>(includeInactive: true)) {
+                 location.GetComponentsInChildren<Petable>(includeInactive: true)) {
           petable.m_name = "$npc_persian";
           AddShadowSmoke(petable.transform);
           return;
         }
 
         Logger.LogWarning($"Unable to find Lox in {VendorLocation}");
-      }
+      });
     }
 
     private static void AddShadowSmoke(Transform parent) {

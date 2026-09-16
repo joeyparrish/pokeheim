@@ -129,41 +129,23 @@ namespace Pokeheim {
       },
     };
 
-    [PokeheimInit]
-    public static void Init() {
-      Utils.OnFirstSceneStart += delegate {
-        foreach (var prefab in ZNetScene.instance.m_prefabs) {
-          var container = prefab.GetComponent<Container>();
-          if (container != null) {
-            ReplaceContainerContents(
-                container, $"prefab container");
-          }
-        }
-      };
-
-      Utils.OnVanillaLocationsAvailable += delegate {
-        foreach (var location in ZoneSystem.instance.m_locationsByHash.Values) {
-          var containers =
-              location.m_prefab.GetComponentsInChildren<Container>();
-          foreach (var container in containers) {
-            ReplaceContainerContents(
-                container, $"location {location.m_prefabName}");
-          }
-        }
-      };
-    }
-
-    [HarmonyPatch(typeof(DungeonDB), nameof(DungeonDB.Start))]
-    class FindDungeonChests_Patch {
-      static void Postfix(DungeonDB __instance) {
-        var rooms = __instance.m_rooms;
-        foreach (var room in rooms) {
-          var containers = room.m_room.GetComponentsInChildren<Container>();
-          foreach (var container in containers) {
-            ReplaceContainerContents(
-                container, $"dungeon room type {room.m_room.m_theme}");
-          }
-        }
+    // Every container fills itself from the same method, whether it came from a
+    // location, a dungeon room, or the world, so one patch covers all of them.
+    //
+    // This used to be three passes that walked prefabs instead: ZNetScene's
+    // prefab list, every location's prefab, and every dungeon room's prefab.
+    // Two of those cannot work any more, because a location's and a room's
+    // prefab are SoftReferences now, owned by the asset system and not
+    // necessarily loaded when we would want to read them.  Patching the
+    // instance is both simpler and more complete: it catches containers no
+    // prefab walk would have reached.
+    //
+    // A prefix, because Awake() calls this to roll the contents, so a postfix
+    // would arrive after the vanilla loot had already been generated.
+    [HarmonyPatch(typeof(Container), nameof(Container.AddDefaultItems))]
+    class ReplaceChestContents_Patch {
+      static void Prefix(Container __instance) {
+        ReplaceContainerContents(__instance, __instance.name);
       }
     }
 

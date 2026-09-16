@@ -29,34 +29,52 @@ namespace Pokeheim {
   public static class BossMods {
     [PokeheimInit]
     public static void Init() {
-      Utils.OnVanillaLocationsAvailable += delegate {
-        // Add a Vegvisir to each boss site, pointing to the next boss site.
-        var temple = ZoneManager.Instance.GetZoneLocation("StartTemple");
-        var prefab =
-            temple.m_prefab.GetComponentInChildren<Vegvisir>().gameObject;
+      // The Vegvisir we clone comes from the starting temple.  Take it from the
+      // spawned temple rather than from its prefab: since Valheim 1.0 a
+      // location's prefab is a SoftReference owned by the asset system, which
+      // may not have it loaded when this runs.
+      //
+      // The temple is where the player spawns, so it wakes up before any boss
+      // site streams in.  If that ever stops being true, AddVegvisir below says
+      // so rather than failing quietly.
+      //
+      // TODO: 1.0 ships a Vegvisir prefab per boss (Vegvisir_Eikthyr,
+      // Vegvisir_GDKing, Vegvisir_SeekerQueen, Vegvisir_Fader, and so on).
+      // Using those directly would be simpler than cloning one and rewriting
+      // its fields, and would cover the new bosses for free.
+      Utils.OnLocationSpawned("StartTemple", delegate (Location temple) {
+        var vegvisir =
+            temple.GetComponentInChildren<Vegvisir>(includeInactive: true);
+        if (vegvisir == null) {
+          Logger.LogError("Found no Vegvisir at StartTemple to copy.");
+          return;
+        }
+        VegvisirPrefab = vegvisir.gameObject;
+      });
 
-        AddVegvisir(prefab, "Eikthyrnir", "GDKing", "$enemy_gdking",
-            overridePosition: true,
-            new Vector3(-7.0f, 0.8f, -0.4f));
+      // Add a Vegvisir to each boss site, pointing to the next boss site.
+      AddVegvisir("Eikthyrnir", "GDKing", "$enemy_gdking",
+          overridePosition: true,
+          new Vector3(-7.0f, 0.8f, -0.4f));
 
-        AddVegvisir(prefab, "GDKing", "Bonemass", "$enemy_bonemass");
+      AddVegvisir("GDKing", "Bonemass", "$enemy_bonemass");
 
-        AddVegvisir(prefab, "Bonemass", "Dragonqueen", "$enemy_dragon");
+      AddVegvisir("Bonemass", "Dragonqueen", "$enemy_dragon");
 
-        AddVegvisir(prefab, "Dragonqueen", "GoblinKing", "$enemy_goblinking",
-            overridePosition: true,
-            new Vector3(0f, 1.5f, 5f),
-            overrideRotation: true,
-            Quaternion.identity);
+      AddVegvisir("Dragonqueen", "GoblinKing", "$enemy_goblinking",
+          overridePosition: true,
+          new Vector3(0f, 1.5f, 5f),
+          overrideRotation: true,
+          Quaternion.identity);
 
-        AddVegvisir(prefab, "GoblinKing", null, null);
+      AddVegvisir("GoblinKing", null, null);
 
-        // TODO: Add new bosses
-      };
+      // TODO: Add new bosses
     }
 
+    private static GameObject VegvisirPrefab = null;
+
     private static void AddVegvisir(
-        GameObject prefab,
         string locationName,
         string nextLocationName,
         string nextEnemyName,
@@ -64,7 +82,30 @@ namespace Pokeheim {
         Vector3 position = default(Vector3),
         bool overrideRotation = false,
         Quaternion rotation = default(Quaternion)) {
-      var locationObject = Utils.GetSpawnedLocationOrPrefab(locationName);
+      Utils.OnLocationSpawned(locationName, delegate (Location location) {
+        AddVegvisirToLocation(
+            location, locationName, nextLocationName, nextEnemyName,
+            overridePosition, position, overrideRotation, rotation);
+      });
+    }
+
+    private static void AddVegvisirToLocation(
+        Location location,
+        string locationName,
+        string nextLocationName,
+        string nextEnemyName,
+        bool overridePosition,
+        Vector3 position,
+        bool overrideRotation,
+        Quaternion rotation) {
+      var locationObject = location.gameObject;
+
+      if (VegvisirPrefab == null) {
+        Logger.LogError(
+            $"No Vegvisir to copy yet, so {locationName} gets none.  " +
+            "StartTemple must spawn first.");
+        return;
+      }
 
       if (locationObject.GetComponentInChildren<Vegvisir>() != null) {
         Logger.LogDebug($"{locationName} already has a Vegvisir!");
@@ -94,7 +135,7 @@ namespace Pokeheim {
       if (nextLocationName != null) {
         // Create a new Vegvisir pointing to the next boss.
         vegvisir = UnityEngine.Object.Instantiate(
-              prefab, locationObject.transform);
+              VegvisirPrefab, locationObject.transform);
         vegvisir.name = $"Vegvisir_{nextLocationName}";
 
         vegvisir.transform.localPosition = position;

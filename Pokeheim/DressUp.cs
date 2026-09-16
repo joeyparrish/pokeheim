@@ -437,8 +437,12 @@ namespace Pokeheim {
         DressUpPanel.RegisterAllClothing();
       };
 
-      Utils.OnVanillaLocationsAvailable += delegate {
-        var templeObject = Utils.GetSpawnedLocationOrPrefab("StartTemple");
+      // Decorate the spawned temple, not its prefab.  Since Valheim 1.0 a
+      // location's prefab is a SoftReference owned by the asset system, and
+      // Unity will not parent a scene object to a prefab asset, so
+      // instantiating the wardrobe under the prefab silently did nothing.
+      Utils.OnLocationSpawned("StartTemple", delegate (Location temple) {
+        var templeObject = temple.gameObject;
         var wardrobePrefab = PrefabManager.Instance.GetPrefab(WardrobeName);
 
         Transform wardrobeTransform =
@@ -458,7 +462,7 @@ namespace Pokeheim {
 
         // Spin it to face the center of the circle.
         wardrobe.transform.rotation = Quaternion.Euler(0f, -135f, 0f);
-      };
+      });
     }
 
     private static void RegisterWardrobe() {

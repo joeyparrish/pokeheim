@@ -46,8 +46,6 @@ namespace Pokeheim {
 
     public static Hook OnVanillaPrefabsAvailable =
         new Hook("OnVanillaPrefabsAvailable");
-    public static Hook OnVanillaLocationsAvailable =
-        new Hook("OnVanillaLocationsAvailable", oneShot: false);
     public static Hook OnFirstSceneStart =
         new Hook("OnFirstSceneStart");
     public static Hook OnRPCsReady =
@@ -60,9 +58,6 @@ namespace Pokeheim {
       [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB)), HarmonyPrefix]
       private static void VanillaPrefabs() => OnVanillaPrefabsAvailable.Trigger();
 
-      [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations)), HarmonyPostfix]
-      private static void VanillaLocations() => OnVanillaLocationsAvailable.Trigger();
-
       [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix, HarmonyPriority(Priority.Last)]
       private static void FirstScene() => OnFirstSceneStart.Trigger();
 
@@ -74,6 +69,59 @@ namespace Pokeheim {
 
       [HarmonyPatch(typeof(DLCMan), nameof(DLCMan.OnDestroy)), HarmonyPostfix]
       private static void DLCDead() => OnDLCManAwake.Untrigger();
+    }
+
+    // Register a callback to run on each spawned instance of a named location.
+    //
+    // Prefer this over modifying a location's prefab.  Since Valheim 1.0 a
+    // ZoneLocation's prefab is a SoftReference: the asset system owns it, loads
+    // it on demand, and may not have it loaded at all when your code runs.  You
+    // can still change a field on one that happens to be loaded, but you cannot
+    // parent anything to it, because Unity will not make a scene object the
+    // child of a prefab asset.  That failure is silent: the code runs, logs
+    // whatever you told it to, and the location spawns without your changes.
+    //
+    // Decorating the spawned instance sidesteps all of it, and also handles
+    // locations that stream in later rather than only the ones present at
+    // world load.
+    public static void OnLocationSpawned(
+        string locationName, Action<Location> callback) {
+      List<Action<Location>> callbacks;
+      if (!locationCallbacks.TryGetValue(locationName, out callbacks)) {
+        callbacks = new List<Action<Location>>();
+        locationCallbacks[locationName] = callbacks;
+      }
+      callbacks.Add(callback);
+    }
+
+    private static readonly Dictionary<string, List<Action<Location>>>
+        locationCallbacks = new Dictionary<string, List<Action<Location>>>();
+
+    [HarmonyPatch(typeof(Location), nameof(Location.Awake))]
+    private static class LocationSpawnedPatch {
+      private const string CloneSuffix = "(Clone)";
+
+      static void Postfix(Location __instance) {
+        var name = __instance.gameObject.name;
+        if (name.EndsWith(CloneSuffix)) {
+          name = name.Substring(0, name.Length - CloneSuffix.Length);
+        }
+
+        List<Action<Location>> callbacks;
+        if (!locationCallbacks.TryGetValue(name, out callbacks)) {
+          return;
+        }
+
+        foreach (var callback in callbacks) {
+          // This runs for every location as the world streams in, so one bad
+          // callback must not be able to break exploration.
+          try {
+            callback(__instance);
+          } catch (Exception ex) {
+            Logger.LogError($"Exception decorating location {name}: {ex}");
+          }
+        }
+      }
     }
 
     public class Hook {
@@ -371,33 +419,6 @@ namespace Pokeheim {
       if (dictionary.ContainsKey(element)) {
         dictionary[element] = newText;
       }
-    }
-
-    // If a unique location hasn't spawned, you should modify the prefab of it.
-    // Otherwise, you should modify the one that already exists in the world.
-    public static GameObject GetSpawnedLocationOrPrefab(string name) {
-      var zoneLocation = ZoneManager.Instance.GetZoneLocation(name);
-      if (zoneLocation == null) {
-        Logger.LogError($"No such location: {name}");
-        return null;
-      }
-
-      // Locations are soft-referenced now, so the prefab is a handle rather
-      // than the object itself.  The handle knows its name without loading.
-      var prefabName = zoneLocation.m_prefab.Name;
-      var cloneName = prefabName + "(Clone)";
-      foreach (var location in Location.s_allLocations) {
-        if (location.gameObject.name == cloneName) {
-          Logger.LogDebug($"Found existing instance of location {name}.");
-          return location.gameObject;
-        }
-      }
-
-      Logger.LogDebug($"Found no existing instances of location {name}.");
-      // Force the soft reference to resolve, since callers expect a usable
-      // prefab rather than a handle.
-      zoneLocation.m_prefab.Load();
-      return zoneLocation.m_prefab.Asset;
     }
 
     private static string cachedAssetRootPath = null;
