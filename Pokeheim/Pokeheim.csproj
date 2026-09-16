@@ -73,37 +73,42 @@
     <Compile Include="MusicMods.cs" />
     <Compile Include="Intro.cs" />
     <Compile Include="LoadingScreen.cs" />
+    <Compile Include="Debugging.cs" />
 
     <!-- Stage 1: Basics, no deps. -->
-    <Compile Include="Debugging.cs" />
     <Compile Include="Pokedex.cs" />
     <Compile Include="Sounds.cs" />
     <Compile Include="Giovanni.cs" />
+    <Compile Include="SerpentMods.cs" />
+
+    <!--
+    <Compile Include="BossMods.cs" />
+    <Compile Include="Credits.cs" />
+    <Compile Include="PlayerMods.cs" />
+    <Compile Include="ProfessorRaven.cs" />
+    <Compile Include="DressUp.cs" />
+    <Compile Include="OdinMods.cs" />
+    -->
 
     <!-- Stage 2: -->
 
     <!-- Features still to be revived.  Uncomment as each stage brings one
          back, together with its section of testing-script.md.  See
          docs/superpowers/specs/2026-09-04-pokeheim-revival-design.md.
+
     <Compile Include="BallItem.cs" />
     <Compile Include="BallProjectile.cs" />
     <Compile Include="Berries.cs" />
-    <Compile Include="BossMods.cs" />
     <Compile Include="Captured.cs" />
-    <Compile Include="ContainerMods.cs" />
-    <Compile Include="Credits.cs" />
-    <Compile Include="DressUp.cs" />
     <Compile Include="Fainting.cs" />
     <Compile Include="Inhabitant.cs" />
     <Compile Include="InventoryMods.cs" />
     <Compile Include="MonsterWithWeapons.cs" />
-    <Compile Include="OdinMods.cs" />
-    <Compile Include="PlayerMods.cs" />
-    <Compile Include="ProfessorRaven.cs" />
-    <Compile Include="Riding.cs" />
-    <Compile Include="SerpentMods.cs" />
     <Compile Include="ShinyMods.cs" />
     <Compile Include="Suppressipes.cs" />
+
+    <Compile Include="ContainerMods.cs" />
+    <Compile Include="Riding.cs" />
     -->
   </ItemGroup>
 

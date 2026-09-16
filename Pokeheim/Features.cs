@@ -46,12 +46,13 @@ namespace Pokeheim {
     public const string Music = "Music";
     public const string Intro = "Intro";
     public const string LoadingScreen = "LoadingScreen";
+    public const string Debugging = "Debugging";
 
     // Stage 1: basics
     public const string Pokedex = "Pokedex";
     public const string Sounds = "Sounds";
-    public const string Debugging = "Debugging";
     public const string Giovanni = "Giovanni";
+    public const string ShorlineSerpents = "ShorlineSerpents";
 
     // Stage 2:
 

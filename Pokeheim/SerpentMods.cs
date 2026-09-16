@@ -24,6 +24,7 @@ using UnityEngine;
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
+  [Feature(Features.ShorlineSerpents)]
   public static class SerpentMods {
     [PokeheimInit]
     public static void Init() {
