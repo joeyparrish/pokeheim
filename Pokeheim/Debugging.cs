@@ -412,7 +412,7 @@ namespace Pokeheim {
     }
 
     [RegisterCommand]
-    class FindLocation : ConsoleCommand {
+    public class FindLocation : ConsoleCommand {
       public override string Name => "findlocation";
       public override string Help => "[name] - Find all instances of a certain location.  With no name, lists what this world has.";
       public override bool IsCheat => true;

@@ -271,7 +271,7 @@ namespace Pokeheim {
 
 #if DEBUG
     [RegisterCommand]
-    class FindBoss : FindLocation {
+    class FindBoss : Debugging.FindLocation {
       public override string Name => "findboss";
       public override string Help => "[name or index] - Find all altars for a given boss.";
       public override bool IsCheat => true;

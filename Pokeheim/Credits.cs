@@ -20,13 +20,14 @@ using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using TMPro;
 
 using Logger = Jotunn.Logger;
 
 namespace Pokeheim {
+  [Feature(Features.Credits)]
   public static class Credits {
     private static Dictionary<string, List<Contributor>> contributors = new Dictionary<string, List<Contributor>> {
       {"Code", new List<Contributor> {
@@ -201,15 +202,51 @@ namespace Pokeheim {
       }
     }
 
+    // The name we give our own credits block, so that we can recognize it
+    // later and avoid adding it twice.
+    private const string PokeheimCreditsName = "Pokeheim Credits";
+
+    // Measure text without disturbing the component it is measured with.
+    // GetPreferredValues uses that component's current settings but leaves
+    // both the settings and the displayed text alone, so it can run before the
+    // new text is assigned.
+    //
+    // "width" is what the text wraps against, so pass the width the text is
+    // going to have, not the one it has now.  A height of 0 means
+    // "unconstrained", which is what we want since height is the answer.
     private static float GetTextHeight(
-        Text template, string newText, int newFontSize = 0) {
-      TextGenerationSettings generationSettings =
-          template.GetGenerationSettings(template.rectTransform.rect.size);
-      if (newFontSize != 0) {
-        generationSettings.fontSize = newFontSize;
+        TMP_Text template, string newText, float width) {
+      return template.GetPreferredValues(newText, width, 0f).y;
+    }
+
+    // The credits list grows downward from a pivot at its top, so a child
+    // anchored to the top is positioned relative to a point that does not
+    // move, and is the only kind that has to be moved by hand to make room.
+    // Children anchored to the bottom (the "Thank you" line) or to the middle
+    // (a layout ruler, see below) already follow the list as it grows, and
+    // moving those as well would move them twice.
+    private static bool IsTopAnchored(RectTransform rect) {
+      return Mathf.Approximately(rect.anchorMin.y, 1f) &&
+             Mathf.Approximately(rect.anchorMax.y, 1f);
+    }
+
+    // Valheim leaves a disabled, empty RectTransform in the credits list whose
+    // name states what it measures: the gap between the bottom of the credits
+    // text and the top of the "Thank you" line.  Reading its height spaces our
+    // section the way Valheim spaces its own, and keeps us in step if they
+    // ever retune the layout.  The fallback is that height as of 1.0.12,
+    // rounded, in case the ruler is ever removed.
+    private const string PaddingRulerName = "Ruler_TopThankYou-to-BottomOfText";
+    private const float FallbackPaddingHeight = 548f;
+
+    private static float GetPaddingHeight(Transform creditsList) {
+      var ruler = creditsList.Find(PaddingRulerName) as RectTransform;
+      if (ruler == null) {
+        Logger.LogWarning(
+            $"No {PaddingRulerName} in the credits to measure padding with.");
+        return FallbackPaddingHeight;
       }
-      TextGenerator textGen = new TextGenerator();
-      return textGen.GetPreferredHeight(newText, generationSettings);
+      return ruler.rect.height;
     }
 
     [HarmonyPatch(typeof(TextViewer), nameof(TextViewer.LateUpdate))]
@@ -229,24 +266,45 @@ namespace Pokeheim {
       }
     }
 
+    // Add a Pokeheim section to the credits shown from the main menu.
+    //
+    // The credits panel is inactive at this point, which is why the search for
+    // the text object below has to ask for inactive objects.  Measuring the
+    // text still works; TextMeshProUGUI will compute a preferred size for a
+    // component whose object is not active.
+    //
+    // FejdStartup.Start later runs Localization.Localize over this whole
+    // transform.  That leaves text containing no "$token" alone, so what we
+    // write here survives it.
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     class HookIntoMainMenuCredits_Patch {
       static void Postfix(FejdStartup __instance) {
         var creditsList = __instance.m_creditsList;
 
-        Text templateHeading =
-            creditsList.Find("Irongate")?.GetComponent<Text>();
+        if (creditsList.Find(PokeheimCreditsName) != null) {
+          // Somebody already did this.
+          return;
+        }
+
+        TextMeshProUGUI templateHeading =
+            creditsList.Find("Irongate")?.GetComponent<TextMeshProUGUI>();
         if (templateHeading == null) {
           Logger.LogError("Failed to find UI heading to hook credits!");
           return;
         }
 
-        Text heading = UnityEngine.Object.Instantiate(
-            templateHeading,
-            templateHeading.transform.parent).GetComponent<Text>();
+        // Where the vanilla credits currently begin.  Our section takes this
+        // spot, and the vanilla ones move down into the room we make below.
+        var startPosition = templateHeading.rectTransform.anchoredPosition;
 
-        Text text = null;
-        foreach (var child in heading.GetComponentsInChildren<Text>()) {
+        var heading = UnityEngine.Object.Instantiate(
+            templateHeading, templateHeading.transform.parent);
+        heading.name = PokeheimCreditsName;
+
+        TextMeshProUGUI text = null;
+        foreach (var child in
+                 heading.GetComponentsInChildren<TextMeshProUGUI>(
+                     includeInactive: true)) {
           if (child != heading) {
             text = child;
             break;
@@ -258,52 +316,67 @@ namespace Pokeheim {
         }
 
         var headingText = "Pokéheim";
-        var headingHeight = heading.rectTransform.sizeDelta.y;
-
-        // Use a smaller font size
-        var textText = "\n" +
+        var bodyText = "\n" +
                        GetContributorsText(contributors, brief: false) +
                        GetContributorsText(translators, brief: false);
-        var textHeight = GetTextHeight(text, textText, text.fontSize);
 
-        var paddingHeight = headingHeight * 2f;
+        // Auto-sizing would make the measurement below meaningless, since the
+        // size TMP settles on depends on the box we have not sized yet.
+        text.enableAutoSizing = false;
+
+        // Make the text area half again as wide as the vanilla one, and
+        // measure against that width rather than the width it has now.
+        var textWidth = text.rectTransform.rect.width * 1.5f;
+        var textHeight = GetTextHeight(text, bodyText, textWidth);
+
+        var headingHeight = heading.rectTransform.rect.height;
+        var paddingHeight = GetPaddingHeight(creditsList);
         var totalHeight = headingHeight + textHeight + paddingHeight;
-        Logger.LogDebug($"Added credits size: {totalHeight}");
-
-        var headingPosition = heading.rectTransform.position;
-        headingPosition.y += totalHeight;
-        heading.rectTransform.position = headingPosition;
+        Logger.LogDebug(
+            $"Added credits size: heading={headingHeight}" +
+            $" text={textHeight} padding={paddingHeight} total={totalHeight}");
 
         heading.text = headingText;
-        text.text = textText;
+        text.text = bodyText;
 
-        // Grow the text area to fit the new text.  Make it 1.5x as wide as it
-        // used to be.
-        text.rectTransform.sizeDelta = new Vector2(
-            text.rectTransform.sizeDelta.x * 1.5f,
-            textHeight);
+        // SetSizeWithCurrentAnchors rather than assigning sizeDelta directly:
+        // on a stretched rect, sizeDelta is an offset from the anchors and not
+        // a size, so assigning a size to it would be wrong.  This sets the
+        // size either way.
+        text.rectTransform.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Horizontal, textWidth);
+        text.rectTransform.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Vertical, textHeight);
 
-        // Grow the credits list to account for the new text, as well.
-        creditsList.sizeDelta = new Vector2(
-            creditsList.sizeDelta.x,
-            creditsList.sizeDelta.y + totalHeight);
-        Logger.LogDebug($"Overall credits size: {creditsList.rect}");
+        // Grow the list to make room.  Height is also what gives the new text
+        // time to scroll past: FejdStartup.Update scrolls until the bottom of
+        // this rect rises above half the viewport, then stops.
+        creditsList.SetSizeWithCurrentAnchors(
+            RectTransform.Axis.Vertical,
+            creditsList.rect.height + totalHeight);
 
-        // Shift all the credits children down.
+        heading.rectTransform.anchoredPosition = startPosition;
+
+        // Move the vanilla credits down into the space we just made.
         foreach (Transform child in creditsList) {
-          var childTransform = child.GetComponent<RectTransform>();
-          if (childTransform != null &&
-              // NOTE: The "Thank you!" text is anchored to the bottom of the
-              // credits object, so don't adjust its position.
-              child.gameObject.name != "Thank you") {
-            var position = childTransform.position;
-            position.y -= totalHeight;
-            Logger.LogDebug(
-                $"Adjusted credits element: {childTransform}" +
-                $" from {childTransform.position} to {position}");
-            childTransform.position = position;
+          var childRect = child as RectTransform;
+          if (childRect == null ||
+              childRect == heading.rectTransform ||
+              !IsTopAnchored(childRect)) {
+            continue;
           }
+
+          // anchoredPosition, not position.  Every size above is in this
+          // rect's own units, and the credits live under a scaled canvas
+          // (CanvasScaler plus GuiScaler), so doing this arithmetic in world
+          // space would be wrong by the canvas scale factor at any resolution
+          // where that factor is not 1.
+          var position = childRect.anchoredPosition;
+          position.y -= totalHeight;
+          childRect.anchoredPosition = position;
         }
+
+        Logger.LogDebug($"Overall credits size: {creditsList.rect}");
       }
     }
 

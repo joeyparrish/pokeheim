@@ -47,6 +47,7 @@ namespace Pokeheim {
     public const string Intro = "Intro";
     public const string LoadingScreen = "LoadingScreen";
     public const string Debugging = "Debugging";
+    public const string Credits = "Credits";
 
     // Stage 1: basics
     public const string Pokedex = "Pokedex";
