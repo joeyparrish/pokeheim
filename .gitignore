@@ -374,3 +374,7 @@ Pokeheim.zip
 
 # no musescore backups
 .mscbackup
+
+# editor swap files
+*.sw*
+*~
