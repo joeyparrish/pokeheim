@@ -54,6 +54,7 @@ namespace Pokeheim {
     public const string Sounds = "Sounds";
     public const string Giovanni = "Giovanni";
     public const string ShorlineSerpents = "ShorlineSerpents";
+    public const string PlayerMods = "PlayerMods";
 
     // Stage 2:
 

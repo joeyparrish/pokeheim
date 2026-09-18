@@ -19,6 +19,7 @@
 using HarmonyLib;
 
 namespace Pokeheim {
+  [Feature(Features.PlayerMods)]
   public static class PlayerMods {
     // Don't take damage from the monsters.  Clothing is just for decoration.
     [HarmonyPatch(typeof(Player), nameof(Player.GetBodyArmor))]

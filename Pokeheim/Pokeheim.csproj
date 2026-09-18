@@ -81,11 +81,11 @@
     <Compile Include="Sounds.cs" />
     <Compile Include="Giovanni.cs" />
     <Compile Include="SerpentMods.cs" />
+    <Compile Include="PlayerMods.cs" />
 
     <!--
     <Compile Include="BossMods.cs" />
     <Compile Include="OdinMods.cs" />
-    <Compile Include="PlayerMods.cs" />
     <Compile Include="ProfessorRaven.cs" />
     <Compile Include="DressUp.cs" />
     -->
