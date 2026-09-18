@@ -50,14 +50,30 @@ jobs:
         run: |
           wget -O bepinex.zip "https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/${{ steps.bepinexversion.outputs.bepinexversion }}/"
           unzip bepinex.zip -d ~/BepInExRaw
-          # Two ordering requirements here, both of which fail the same way if
-          # you get them wrong, with "Missing configuration":
-          #  - force_install_dir has to come before login, or newer steamcmd
-          #    rejects it with "Please use force_install_dir before logon!"
-          #  - app_info_update is required before app_update, because runners
-          #    are ephemeral and a cold steamcmd has no app info cached.
-          #    Re-running the job does not help, since it starts cold again.
-          steamcmd +force_install_dir "$HOME/VHINSTALL" +login anonymous +app_info_update 1 +app_update 896660 validate +exit
+          # force_install_dir has to come before login, or newer steamcmd
+          # rejects it with "Please use force_install_dir before logon!".
+          #
+          # The retry is for "Missing configuration", which an anonymous
+          # app_update reports when steamcmd has no app info cached.  Runners
+          # are ephemeral, so the cache is always cold; app_info_update starts
+          # the fetch but does not wait for it, leaving a race that this job
+          # loses perhaps half the time.  A losing attempt still leaves the app
+          # info on disk, so a later attempt reads it and succeeds.
+          #
+          # Test for the installed directory rather than steamcmd's exit
+          # status, which is 0 even when it prints "Failed to install app".
+          for attempt in 1 2 3; do
+            steamcmd +force_install_dir "$HOME/VHINSTALL" +login anonymous +app_info_update 1 +app_update 896660 validate +exit || true
+            if [ -d "$HOME/VHINSTALL/valheim_server_Data" ]; then
+              break
+            fi
+            echo "steamcmd attempt $attempt installed nothing; retrying"
+            sleep 15
+          done
+          if [ ! -d "$HOME/VHINSTALL/valheim_server_Data" ]; then
+            echo "steamcmd failed to install the Valheim server"
+            exit 1
+          fi
           # We build against the dedicated server, whose data directory is
           # named valheim_server_Data.  Jotunn's Paths.props only looks for
           # Valheim_Data or valheim_Data when setting VALHEIM_MANAGED, so
